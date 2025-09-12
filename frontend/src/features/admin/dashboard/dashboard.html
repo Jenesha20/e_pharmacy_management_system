@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- FontAwesome -->
+  <script src="https://kit.fontawesome.com/a2e0e6ad63.js" crossorigin="anonymous"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body class="bg-gray-100 font-sans">
+
+  <!-- Sidebar -->
+  <div id="sidebar"></div>
+
+  <!-- Main content -->
+  <main class="ml-64 flex-1 p-6">
+
+    <!-- Dashboard Header -->
+    <h1 class="text-2xl font-bold mb-1">Dashboard</h1>
+    <p class="text-gray-600 mb-6">A quick data overview of the inventory.</p>
+
+    <!-- Cards Row -->
+    <div class="grid grid-cols-4 gap-6 mb-8">
+      <!-- Customers Card -->
+      <div class="bg-white p-4 rounded-lg shadow">
+        <div class="flex items-center space-x-3">
+          <div class="bg-blue-100 p-3 rounded-full text-blue-500">
+            <i class="fas fa-users"></i>
+          </div>
+          <div>
+            <h2 class="text-gray-600">Customers</h2>
+            <p class="text-2xl font-bold">120</p>
+          </div>
+        </div>
+        <a href="../customers/customers.html" class="text-blue-500 text-sm mt-2 inline-block">Show Details</a>
+      </div>
+
+      <!-- Orders Card -->
+      <div class="bg-white p-4 rounded-lg shadow">
+        <div class="flex items-center space-x-3">
+          <div class="bg-green-100 p-3 rounded-full text-green-500">
+            <i class="fas fa-shopping-cart"></i>
+          </div>
+          <div>
+            <h2 class="text-gray-600">Orders</h2>
+            <p class="text-2xl font-bold">234</p>
+          </div>
+        </div>
+        <a href="../orders/orders.html" class="text-green-500 text-sm mt-2 inline-block">Show Details</a>
+      </div>
+
+      <!-- Sales Card -->
+      <div class="bg-white p-4 rounded-lg shadow">
+        <div class="flex items-center space-x-3">
+          <div class="bg-yellow-100 p-3 rounded-full text-yellow-500">
+            <i class="fas fa-dollar-sign"></i>
+          </div>
+          <div>
+            <h2 class="text-gray-600">Sales</h2>
+            <p class="text-2xl font-bold">$456</p>
+          </div>
+        </div>
+        <a href="../reports/reports.html" class="text-yellow-500 text-sm mt-2 inline-block">Show Details</a>
+      </div>
+
+      <!-- Out of Stock Card -->
+      <div class="bg-white p-4 rounded-lg shadow">
+        <div class="flex items-center space-x-3">
+          <div class="bg-red-100 p-3 rounded-full text-red-500">
+            <i class="fas fa-cubes"></i>
+          </div>
+          <div>
+            <h2 class="text-gray-600">Out of Stock</h2>
+            <p class="text-2xl font-bold">56</p>
+          </div>
+        </div>
+        <a href="../inventory/inventory.html" class="text-red-500 text-sm mt-2 inline-block">Show Details</a>
+      </div>
+    </div>
+    
+
+    <!-- Lower Section -->
+    <div class="grid grid-cols-3 gap-6">
+      <!-- Expiry Medicine -->
+      <div class="col-span-2 bg-white p-4 rounded-lg shadow">
+        <h2 class="font-bold text-lg mb-4">Expiry Medicine</h2>
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b">
+              <th class="py-2">Medicine ID</th>
+              <th>Category Name</th>
+              <th>Stock in Qty</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="4" class="py-4 text-center text-gray-400">No data</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Today's Report -->
+      <div class="bg-white p-4 rounded-lg shadow">
+        <h2 class="font-bold text-lg mb-4">Today’s Report</h2>
+        <div id="reportChart" style="height: 220px;"></div>
+        <div class="mt-4">
+          <p class="text-lg font-bold">Total Earning $50.00 
+            <span class="text-green-500 text-sm ml-2">+35%</span>
+          </p>
+          <ul class="mt-2 text-sm text-gray-600">
+            <li><span class="text-red-500">●</span> Total Purchase</li>
+            <li><span class="text-yellow-500">●</span> Cash Received</li>
+            <li><span class="text-blue-500">●</span> Bank Receive</li>
+            <li><span class="text-green-500">●</span> Total Service</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- JS Scripts -->
+  <script src="dashboard.js"></script>
+</body>
+</html>

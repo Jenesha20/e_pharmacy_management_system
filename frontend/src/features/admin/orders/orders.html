@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/a2e0e6ad63.js" crossorigin="anonymous"></script>
+    <title>Orders</title>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div id="sidebar"></div>
+
+    <main class="ml-64 flex-1 p-6">
+        <!-- Header: Orders + Filter -->
+        <div class="flex items-center justify-between mb-6">
+            <div>
+              <h1 class="text-2xl font-bold mb-1">Orders</h1>
+              <p class="text-gray-600">A quick data overview of the order.</p>
+            </div>
+
+            <div class="flex items-center space-x-4">
+              <div class="flex items-center space-x-2">
+                <label for="startDate" class="text-gray-700">From:</label>
+                <input type="date" id="startDate" class="px-3 py-2 border rounded-md shadow-sm focus:ring focus:ring-blue-300">
+                
+                <label for="endDate" class="text-gray-700">To:</label>
+                <input type="date" id="endDate" class="px-3 py-2 border rounded-md shadow-sm focus:ring focus:ring-blue-300">
+              </div>
+
+              <button id="refreshBtn" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded-md">
+                <i class="fas fa-sync-alt"></i> Refresh
+              </button>
+            </div>
+        </div>
+
+        <!-- Cards -->
+        <div class="grid grid-cols-4 gap-6 mb-8">
+            <!-- All orders Card -->
+            <div class="bg-white p-4 rounded-lg shadow">
+              <div class="flex items-center space-x-3">
+                <div class="bg-blue-100 p-3 rounded-full text-blue-500">
+                  <i class="fas fa-users"></i>
+                </div>
+                <div>
+                  <h2 class="text-gray-600">All orders</h2>
+                  <p id="allOrdersCount" class="text-2xl font-bold">0</p>
+                </div>
+              </div>
+              <button class="text-blue-500 text-sm mt-2 inline-block filter-btn" data-status="All">
+                Show Details
+              </button>
+            </div>
+
+            <!-- Inprogress Card -->
+            <div class="bg-white p-4 rounded-lg shadow">
+              <div class="flex items-center space-x-3">
+                <div class="bg-green-100 p-3 rounded-full text-green-500">
+                  <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div>
+                  <h2 class="text-gray-600">Inprogress</h2>
+                  <p id="inprogressCount" class="text-2xl font-bold">0</p>
+                </div>
+              </div>
+              <button class="text-red-500 text-sm mt-2 inline-block filter-btn" data-status="Inprogress">
+                Show Details
+              </button>
+            </div>
+
+            <!-- Packed Card -->
+            <div class="bg-white p-4 rounded-lg shadow">
+              <div class="flex items-center space-x-3">
+                <div class="bg-yellow-100 p-3 rounded-full text-yellow-500">
+                  <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div>
+                  <h2 class="text-gray-600">Packed</h2>
+                  <p id="packedCount" class="text-2xl font-bold">0</p>
+                </div>
+              </div>
+              <button class="text-yellow-500 text-sm mt-2 inline-block filter-btn" data-status="Packed">
+                Show Details
+              </button>
+            </div>
+
+            <!-- Delivered Card -->
+            <div class="bg-white p-4 rounded-lg shadow">
+              <div class="flex items-center space-x-3">
+                <div class="bg-red-100 p-3 rounded-full text-red-500">
+                  <i class="fas fa-cubes"></i>
+                </div>
+                <div>
+                  <h2 class="text-gray-600">Delivered</h2>
+                  <p id="deliveredCount" class="text-2xl font-bold">0</p>
+                </div>
+              </div>
+              <button class="text-green-500 text-sm mt-2 inline-block filter-btn" data-status="Delivered">
+                Show Details
+              </button>
+            </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="bg-white p-6 rounded-lg shadow">
+          <h2 class="text-xl font-semibold mb-4">Orders</h2>
+          <table class="w-full border-collapse border border-gray-300">
+            <thead>
+              <tr class="bg-gray-100">
+                <th class="border border-gray-300 px-4 py-2">Order ID</th>
+                <th class="border border-gray-300 px-4 py-2">Customer ID</th>
+                <th class="border border-gray-300 px-4 py-2">Name</th>
+                <th class="border border-gray-300 px-4 py-2">Quantity</th>
+                <th class="border border-gray-300 px-4 py-2">Price</th>
+                <th class="border border-gray-300 px-4 py-2">Date</th>
+                <th class="border border-gray-300 px-4 py-2">Status</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTable"></tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex justify-center items-center space-x-4 mt-4">
+          <button id="prevPage" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded-md">Prev</button>
+          <span id="pageInfo" class="font-semibold"></span>
+          <button id="nextPage" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded-md">Next</button>
+        </div>
+
+        <!-- Toast -->
+        <div id="toast" class="fixed top-6 right-6 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg opacity-0 transition-opacity duration-500"></div>
+    </main>    
+
+    <script src="orders.js"></script>
+</body>
+</html>
