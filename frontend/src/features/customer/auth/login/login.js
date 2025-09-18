@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("loginForm");
 
+  if (!form) return;
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -21,22 +23,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (user) {
         alert("Login successful!");
-        // Save current user in localStorage
         localStorage.setItem("currentUser", JSON.stringify(user));
 
-        // OPTIONAL: Merge guest cart into DB
-        const guestCart = JSON.parse(localStorage.getItem("guestCart")) || [];
-        if (guestCart.length > 0) {
-          await fetch("http://localhost:3000/cart/merge", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userId: user.id, items: guestCart })
-          });
-          localStorage.removeItem("guestCart");
-        }
-
-        // Redirect to landing page
-        window.location.href = "../../customer/home/landing/landing.html";
+        // Redirect to landing
+        window.location.href = "../../../customer/home/landing/landing.html";
       } else {
         alert("Invalid email or password.");
       }

@@ -3,14 +3,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-
+    const name = document.getElementById("name").value;
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
     const confirmPassword = document.getElementById("confirmPassword").value;
     const agreed = document.getElementById("agree").checked;
 
     // Validation
-    if (!email || !password || !confirmPassword) {
+    if (!name ||!email || !password || !confirmPassword) {
       alert("Please fill all fields.");
       return;
     }
