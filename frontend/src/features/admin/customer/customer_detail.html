@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Customer Details</title>
+</head>
+<body class="bg-gray-100">
+  <div id="sidebar"></div>
+
+  <main class="ml-64 flex-1 p-6">
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold">Customers</h1>
+        <a href="customer.html" class="text-gray-700 hover:underline">&lt;&lt; Back to Customer</a>
+      </div>
+
+      <!-- Customer Info -->
+      <div class="grid grid-cols-2 gap-6 mb-6">
+        <div>
+          <label class="block text-gray-600">Customer Name</label>
+          <input type="text" id="custName" class="w-full border rounded p-2" readonly>
+        </div>
+        <div>
+          <label class="block text-gray-600">Customer ID</label>
+          <input type="text" id="custId" class="w-full border rounded p-2" readonly>
+        </div>
+        <div>
+          <label class="block text-gray-600">Mail Id</label>
+          <input type="text" id="custMail" class="w-full border rounded p-2" readonly>
+        </div>
+        <div>
+          <label class="block text-gray-600">Age</label>
+          <input type="text" id="custAge" class="w-full border rounded p-2" readonly>
+        </div>
+        <div>
+          <label class="block text-gray-600">Date of birth</label>
+          <input type="text" id="custDob" class="w-full border rounded p-2" readonly>
+        </div>
+        <div>
+          <label class="block text-gray-600">Address</label>
+          <input type="text" id="custAddress" class="w-full border rounded p-2" readonly>
+        </div>
+      </div>
+
+      <!-- Orders Table -->
+      <h2 class="text-xl font-semibold mb-4">Orders</h2>
+      <table class="w-full border-collapse border border-gray-300">
+        <thead>
+          <tr class="bg-gray-100">
+            <th class="border px-4 py-2">Order ID</th>
+            <th class="border px-4 py-2">Customer ID</th>
+            <th class="border px-4 py-2">Category</th>
+            <th class="border px-4 py-2">Name</th>
+            <th class="border px-4 py-2">Quantity</th>
+            <th class="border px-4 py-2">Price</th>
+          </tr>
+        </thead>
+        <tbody id="ordersTable"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <script src="customer_detail.js"></script>
+</body>
+</html>

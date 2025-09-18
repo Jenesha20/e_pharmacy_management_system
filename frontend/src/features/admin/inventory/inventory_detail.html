@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Inventory Detail</title>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div id="sidebar"></div>
+    <main class="ml-64 flex-1 p-6">
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold">Inventory</h1>
+            <a href="inventory.html" class="text-gray-700 hover:underline">&lt;&lt; Back to Inventory</a>
+          </div>
+    
+          <!-- Customer Info -->
+          <div class="grid grid-cols-2 gap-6 mb-6">
+            <div>
+              <label class="block text-gray-600">Medicine Name</label>
+              <input type="text" id="medName" class="w-full border rounded p-2" readonly>
+            </div>
+            <div>
+              <label class="block text-gray-600">Medicine ID</label>
+              <input type="text" id="medId" class="w-full border rounded p-2" readonly>
+            </div>
+            <div>
+              <label class="block text-gray-600">Category</label>
+              <input type="text" id="medCat" class="w-full border rounded p-2" readonly>
+            </div>
+            <div>
+              <label class="block text-gray-600">Stock</label>
+              <input type="text" id="medStock" class="w-full border rounded p-2" readonly>
+            </div>
+            <div>
+              <label class="block text-gray-600">Expiry Date</label>
+              <input type="text" id="medExpiry" class="w-full border rounded p-2" readonly>
+            </div>
+            <div>
+              <label class="block text-gray-600">Side Effects</label>
+              <input type="text" id="medEffect" class="w-full border rounded p-2" readonly>
+            </div>
+            <div>
+                <label class="block text-gray-600">How to Use</label>
+                <input type="text" id="medUse" class="w-full border rounded p-2" readonly>
+              </div>
+          </div>
+          </div>
+          </main>
+    <script src="inventory_detail.js"></script>
+</body>
+</html>

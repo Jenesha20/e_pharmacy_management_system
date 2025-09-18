@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/a2e0e6ad63.js" crossorigin="anonymous"></script>
+    <title>Alerts</title>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div id="sidebar"></div>
+    <main class="ml-64 flex-1 p-6">
+        <!-- Customer Header -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <!-- Header -->
+          <div class="flex justify-between items-center mb-6">
+            <div>
+              <h1 class="text-3xl font-bold">Notification</h1>
+              <p class="text-gray-500">List of Notifications.</p>
+              
+            </div>
+    
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                  <select id="categoryFilter" class="px-3 py-2 border rounded-md shadow-sm">
+                    <option value="">Select Type</option>
+                    <option value="Out of Stock">Out of Stock</option>
+                    <option value="Expiry">Expiry</option>
+                    <option value="Pending prescription">Pending prescription</option>
+                  </select>
+                  <button id="resetBtn" class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Reset</button>
+                </div>
+              </div>
+              
+          </div>
+    
+          <!-- Customer Table -->
+          <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-semibold mb-4">Customer</h2>
+            <p id="tableMessage" class="text-gray-500 mb-4"></p> 
+            <table class="w-full border-collapse border border-gray-300">
+              <thead>
+                <tr class="bg-gray-100">
+                  <th class="border border-gray-300 px-4 py-2">Type</th>
+                  <th class="border border-gray-300 px-4 py-2">Notification</th>
+                  <th class="border border-gray-300 px-4 py-2">Action</th>
+                </tr>
+              </thead>
+              <tbody id="alertTable">
+                <!-- Data injected via JS -->
+              </tbody>
+            </table>
+          </div>
+    
+          <!-- Pagination -->
+          <div id="pagination" class="flex justify-center items-center space-x-2 mt-4"></div>
+        </div>
+      </main>
+<script src="alerts.js"></script>
+    
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Verification</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+  <!-- Sidebar (will be injected) -->
+  <div id="sidebar"></div>
+
+  <!-- Main -->
+  <main class="ml-64 p-6">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="text-2xl font-bold">Verification</h1>
+        <p class="text-gray-600">List of prescriptions for verification.</p>
+      </div>
+    </div>
+
+    <!-- Controls: Search + Category + Reset -->
+    <div class="flex items-center justify-between  mb-4">
+      <div class="flex items-center bg-white rounded-md border px-3 py-2 shadow-sm w-1/3">
+        <input id="searchInput" type="text" placeholder="Search Order ID, Medicine ID or Category..."
+               class="flex-1 outline-none text-gray-700" />
+        <button id="searchClearBtn" class="ml-2 text-gray-400 hover:text-gray-600" title="Clear">✕</button>
+      </div>
+      <div>
+      <select id="categoryFilter" class="px-3 py-2 border rounded-md shadow-sm">
+        <option value="">All categories</option>
+        <option value="Generic Medicine">Generic Medicine</option>
+        <option value="Diabetes">Diabetes</option>
+        <option value="Antibiotics">Antibiotics</option>
+      </select>
+
+      <button id="resetBtn" class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Reset</button>
+    </div>
+    </div>
+
+    <!-- Table -->
+    <div class="bg-white p-4 rounded-lg shadow">
+      <table class="w-full border-collapse">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="text-left px-4 py-2 border">Order ID</th>
+            <th class="text-left px-4 py-2 border">Medicine ID</th>
+            <th class="text-left px-4 py-2 border">Category</th>
+            <th class="text-left px-4 py-2 border">Status</th>
+            <th class="text-center px-4 py-2 border">Action</th>
+          </tr>
+        </thead>
+        <tbody id="verificationTable" class="text-sm"></tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex items-center justify-center gap-4 mt-4">
+      <button id="prevPage" class="px-3 py-1 bg-gray-200 rounded-md hover:bg-gray-300">Prev</button>
+      <span id="pageInfo" class="text-gray-600"></span>
+      <button id="nextPage" class="px-3 py-1 bg-gray-200 rounded-md hover:bg-gray-300">Next</button>
+    </div>
+  </main>
+
+  <!-- Modal (hidden by default) -->
+  <div id="prescriptionModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+    <div id="prescriptionModalBox" class="relative bg-white rounded-lg shadow-lg max-w-3xl w-full mx-4">
+      <!-- X Close -->
+      <button id="modalClose" class="absolute top-3 right-3 text-2xl text-gray-600 hover:text-red-600">&times;</button>
+
+      <!-- Image area -->
+      <div class="p-4">
+        <img id="prescriptionImage" src="" alt="Prescription" class="w-full max-h-[70vh] object-contain rounded-md" />
+      </div>
+
+      <!-- Buttons bottom-left of the modal content -->
+      <div class="px-4 pb-4 flex items-center">
+        <div class="flex gap-3">
+          <button id="modalApprove" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Approve</button>
+          <button id="modalReject" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Reject</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast (top-right) -->
+  <div id="toast" class="fixed top-6 right-6 bg-gray-800 text-white px-4 py-2 rounded shadow opacity-0 transform translate-y-2 transition-all duration-300 z-50"></div>
+
+  <!-- script -->
+  <script src="verification.js" defer></script>
+</body>
+</html>

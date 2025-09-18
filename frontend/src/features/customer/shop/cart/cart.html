@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Shopping Cart</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<style>
+    body { font-family: 'Inter', sans-serif; }
+</style>
+</head>
+<body class="bg-gray-50">
+
+<div id="header"></div>
+
+<div class="container mx-auto px-4 sm:px-6 lg:px-8">
+<main class="mt-12">
+  <div class="flex justify-between items-center mb-8"> <h1 class="text-3xl font-bold text-gray-900">Cart</h1> 
+    <a class="text-gray-600 hover:text-gray-900 font-medium flex items-center" href="../browse/browse.html"> 
+        <span class="material-icons mr-1">arrow_back</span> Back to Products 
+    </a> 
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+
+  <!-- Cart Items + Prescription Upload -->
+  <div class="lg:col-span-2">
+    <div class="space-y-6" id="cartItems"></div>
+
+    <!-- Prescription Upload -->
+    <div class="mt-8">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Upload Prescription</h2>
+      <div id="uploadContainer" class="bg-white border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+        <input type="file" id="prescriptionInput" class="hidden" onchange="handlePrescriptionUpload(event)" />
+        <p class="text-lg font-medium text-gray-800">Upload Prescription</p>
+        <p class="text-sm text-gray-500 mt-1 mb-4">Drag and drop or browse to upload your prescription</p>
+        <button id="browseBtn"
+          onclick="document.getElementById('prescriptionInput').click()"
+          class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-4 rounded-md hover:bg-gray-50">
+          Browse Files
+        </button>
+      </div>
+    </div>
+
+    <!-- Prescription List -->
+    <div class="mt-8">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Prescription List</h2>
+      <div id="prescriptionList" class="flex flex-wrap gap-3"></div>
+    </div>
+  </div>
+
+  <!-- Order Summary -->
+  <div class="bg-white p-6 rounded-lg shadow-sm h-fit">
+    <h2 class="text-xl font-bold text-gray-900 mb-6">Order Summary</h2>
+    <div id="orderSummary"></div>
+    <p class="text-xs text-gray-500 mt-6">
+      By placing your order, you agree to our 
+      <a class="underline" href="#">Terms and Conditions</a> and 
+      <a class="underline" href="#">Privacy Policy</a>.
+    </p>
+    <button class="w-full mt-8 bg-green-500 text-white font-bold py-3 rounded-lg hover:bg-green-600 transition-colors">
+      Proceed to Checkout
+    </button>
+  </div>
+
+</div>
+</main>
+</div>
+
+<div id="footer"></div>
+<script src="cart.js"></script>
+</body>
+</html>

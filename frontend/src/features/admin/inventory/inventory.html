@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Inventory Dashboard</title>
+</head>
+<body class="bg-gray-100 ">
+
+  <!-- Sidebar -->
+  <div id="sidebar"></div>
+
+  <!-- Main Content -->
+  <main class="ml-64 flex-1 p-6">
+    
+    <!-- Inventory Header -->
+    <div class="flex items-center justify-between mb-6">
+    <div class="mb-4">
+      <h1 class="text-2xl font-bold mb-1">Inventory</h1>
+      <p class="text-gray-600">A quick data overview of the Inventory.</p>
+    </div>
+    <div>
+     <a href="inventory_addition.html"> <button 
+        class="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded shadow-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1"
+      >
+        Add New Items +
+      </button></a>
+    </div>
+  </div>
+
+
+    <!-- Cards -->
+    <div class="grid grid-cols-4 gap-6 mb-6">
+      <!-- All medicine Card -->
+      <div class="bg-white p-4 rounded-lg shadow">
+        <div class="flex items-center space-x-3">
+          <div class="bg-blue-100 p-3 rounded-full text-blue-500">
+            <i class="fas fa-users"></i>
+          </div>
+          <div>
+            <h2 class="text-gray-600">All Medicine</h2>
+            <p id="allOrdersCount" class="text-2xl font-bold">0</p>
+          </div>
+        </div>
+        <button class="text-blue-500 text-sm mt-2 inline-block filter-btn" data-status="All">
+          Show Details
+        </button>
+      </div>
+
+      <!-- Category Card -->
+      <div class="bg-white p-4 rounded-lg shadow">
+        <div class="flex items-center space-x-3">
+          <div class="bg-green-100 p-3 rounded-full text-green-500">
+            <i class="fas fa-shopping-cart"></i>
+          </div>
+          <div>
+            <h2 class="text-gray-600">Medicine Category</h2>
+            <p id="inprogressCount" class="text-2xl font-bold">0</p>
+          </div>
+        </div>
+        <button class="text-red-500 text-sm mt-2 inline-block filter-btn" data-status="Category">
+          Show Details
+        </button>        
+      </div>
+
+      <!-- Packed Card -->
+      <div class="bg-white p-4 rounded-lg shadow">
+        <div class="flex items-center space-x-3">
+          <div class="bg-yellow-100 p-3 rounded-full text-yellow-500">
+            <i class="fas fa-dollar-sign"></i>
+          </div>
+          <div>
+            <h2 class="text-gray-600">Medicine Shortage</h2>
+            <p id="packedCount" class="text-2xl font-bold">0</p>
+          </div>
+        </div>
+        <button class="text-yellow-500 text-sm mt-2 inline-block filter-btn" data-status="Shortage">
+          Show Details
+        </button>
+      </div>
+
+      <!-- Delivered Card -->
+      <div class="bg-white p-4 rounded-lg shadow">
+        <div class="flex items-center space-x-3">
+          <div class="bg-red-100 p-3 rounded-full text-red-500">
+            <i class="fas fa-cubes"></i>
+          </div>
+          <div>
+            <h2 class="text-gray-600">Medicine Expiry</h2>
+            <p id="deliveredCount" class="text-2xl font-bold">0</p>
+          </div>
+        </div>
+        <button class="text-green-500 text-sm mt-2 inline-block filter-btn" data-status="Expiry">
+          Show Details
+        </button>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="flex items-center justify-between  mb-4">
+      <div class="flex items-center bg-white rounded-md border px-3 py-2 shadow-sm w-1/3">
+        <input id="searchInput" type="text" placeholder="Search Medicine Name, Medicine ID or Category..."
+               class="flex-1 outline-none text-gray-700" />
+        <button id="searchClearBtn" class="ml-2 text-gray-400 hover:text-gray-600" title="Clear">✕</button>
+      </div>
+      <div>
+      <select id="categoryFilter" class="px-3 py-2 border rounded-md shadow-sm">
+        <option value="">All categories</option>
+        <option value="Generic Medicine">Generic Medicine</option>
+        <option value="Diabetes">Diabetes</option>
+        <option value="Antibiotics">Antibiotics</option>
+      </select>
+
+      <button id="resetBtn" class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Reset</button>
+    </div>
+    </div>
+
+    <!-- Table -->
+<!-- Inventory Table -->
+<div class="bg-white p-6 rounded-lg shadow">
+  <h2 class="text-xl font-semibold mb-4">Inventory</h2>
+  <table class="w-full border-collapse border border-gray-300">
+    <p id="tableMessage" class="text-gray-500 mb-4"></p> 
+    <thead>
+      <tr class="bg-gray-100">
+        <th class="border border-gray-300 px-4 py-2">Medicine Name</th>
+        <th class="border border-gray-300 px-4 py-2">Medicine ID</th>
+        <th class="border border-gray-300 px-4 py-2">Category Name</th>
+        <th class="border border-gray-300 px-4 py-2">Stock in Qty</th>
+        <th class="border border-gray-300 px-4 py-2">Expiry Date</th>
+        <th class="border border-gray-300 px-4 py-2">Action</th>
+      </tr>
+    </thead>
+    
+    </thead>
+    <tbody id="inventoryTable">
+      <!-- Data injected via JS -->
+    </tbody>
+  </table>
+</div>
+
+<!-- Pagination -->
+<div id="pagination" class="flex justify-center items-center space-x-2 mt-4"></div>
+
+
+
+    <!-- Pagination -->
+    <div id="pagination" class="flex justify-center mt-4 space-x-2"></div>
+
+  </main>
+
+  <!-- JS -->
+  <script src="inventory.js"></script>
+</body>
+</html>

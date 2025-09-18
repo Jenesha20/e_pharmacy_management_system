@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://kit.fontawesome.com/a2e0e6ad63.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
+  <title>Reports</title>
+</head>
+<body class="bg-gray-100 font-sans">
+  <div id="sidebar"></div>
+
+  <main class="ml-64 flex-1 p-6">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
+        <div>
+          <h1 class="text-3xl font-bold">Reports</h1>
+          <p class="text-gray-500">Reports and Analysis of the pharmacy.</p>
+        </div>
+
+        <!-- Filters -->
+        <div class="flex items-center gap-3 flex-wrap">
+          <select id="categoryFilter" class="px-3 py-2 border rounded-md shadow-sm">
+            <option value="">Select Category</option>
+            <option value="Cold">Cold and Flu</option>
+            <option value="ENT">ENT</option>
+            <option value="Pain relief">Pain Relief</option>
+          </select>
+      
+          <input type="date" id="startDate" class="px-3 py-2 border rounded-md" />
+          <input type="date" id="endDate" class="px-3 py-2 border rounded-md" />
+          <button id="filterBtn" class="px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Apply</button>
+          <button id="resetBtn" class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Reset</button>
+          <button id="printBtn" class="px-3 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">Print</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 p-4 gap-6">
+      <!-- Stock Report -->
+      <div class="bg-white p-4 rounded-lg shadow">
+        <h2 class="font-bold text-lg mb-4">Stock Report</h2>
+        <div id="reportChart" style="height: 450px;"></div>
+      </div>
+
+      <!-- Sales Report -->
+      <div class="bg-white p-4 rounded-lg shadow">
+        <h2 class="font-bold text-lg mb-4">Sales Report</h2>
+        <div id="chartContainer" style="height: 450px; width: 100%;"></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="reports.js"></script>
+</body>
+</html>
