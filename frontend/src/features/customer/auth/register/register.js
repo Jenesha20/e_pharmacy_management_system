@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const userData = { email, password };
+    const userData = { name,email, password };
 
     try {
       const response = await fetch("http://localhost:3000/user", {
