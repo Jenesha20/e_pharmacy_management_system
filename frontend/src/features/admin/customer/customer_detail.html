@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://kit.fontawesome.com/a2e0e6ad63.js" crossorigin="anonymous"></script>
   <title>Customer Details</title>
 </head>
 <body class="bg-gray-100">
@@ -11,54 +12,114 @@
 
   <main class="ml-64 flex-1 p-6">
     <div class="bg-white rounded-lg shadow-md p-6">
+      <!-- Header -->
       <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold">Customers</h1>
-        <a href="customer.html" class="text-gray-700 hover:underline">&lt;&lt; Back to Customer</a>
+        <h1 class="text-3xl font-bold">Customer Details</h1>
+        <a href="customer.html" class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
+          <i class="fas fa-arrow-left mr-2"></i> Back to Customers
+        </a>
       </div>
 
-      <!-- Customer Info -->
-      <div class="grid grid-cols-2 gap-6 mb-6">
-        <div>
-          <label class="block text-gray-600">Customer Name</label>
-          <input type="text" id="custName" class="w-full border rounded p-2" readonly>
+      <!-- Customer Profile -->
+      <div class="bg-white p-6 rounded-lg shadow mb-6">
+        <h2 class="text-xl font-semibold mb-4 border-b pb-2">Profile Information</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label class="block text-gray-600 text-sm font-medium mb-1">Customer ID</label>
+            <div id="custId" class="w-full border rounded p-2 bg-gray-50"></div>
+          </div>
+          <div>
+            <label class="block text-gray-600 text-sm font-medium mb-1">Name</label>
+            <div id="custName" class="w-full border rounded p-2 bg-gray-50"></div>
+          </div>
+          <div>
+            <label class="block text-gray-600 text-sm font-medium mb-1">Email</label>
+            <div id="custMail" class="w-full border rounded p-2 bg-gray-50"></div>
+          </div>
+          <div>
+            <label class="block text-gray-600 text-sm font-medium mb-1">Phone</label>
+            <div id="custPhone" class="w-full border rounded p-2 bg-gray-50"></div>
+          </div>
+          <div>
+            <label class="block text-gray-600 text-sm font-medium mb-1">Date of Birth</label>
+            <div id="custDob" class="w-full border rounded p-2 bg-gray-50"></div>
+          </div>
+          <div>
+            <label class="block text-gray-600 text-sm font-medium mb-1">Age</label>
+            <div id="custAge" class="w-full border rounded p-2 bg-gray-50"></div>
+          </div>
+          <div>
+            <label class="block text-gray-600 text-sm font-medium mb-1">Gender</label>
+            <div id="custGender" class="w-full border rounded p-2 bg-gray-50"></div>
+          </div>
+          <div>
+            <label class="block text-gray-600 text-sm font-medium mb-1">Status</label>
+            <div id="custStatus" class="w-full border rounded p-2 bg-gray-50"></div>
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-gray-600 text-sm font-medium mb-1">Member Since</label>
+            <div id="custCreated" class="w-full border rounded p-2 bg-gray-50"></div>
+          </div>
         </div>
-        <div>
-          <label class="block text-gray-600">Customer ID</label>
-          <input type="text" id="custId" class="w-full border rounded p-2" readonly>
-        </div>
-        <div>
-          <label class="block text-gray-600">Mail Id</label>
-          <input type="text" id="custMail" class="w-full border rounded p-2" readonly>
-        </div>
-        <div>
-          <label class="block text-gray-600">Age</label>
-          <input type="text" id="custAge" class="w-full border rounded p-2" readonly>
-        </div>
-        <div>
-          <label class="block text-gray-600">Date of birth</label>
-          <input type="text" id="custDob" class="w-full border rounded p-2" readonly>
-        </div>
-        <div>
-          <label class="block text-gray-600">Address</label>
-          <input type="text" id="custAddress" class="w-full border rounded p-2" readonly>
+      </div>
+
+      <!-- Address Information -->
+      <div class="bg-white p-6 rounded-lg shadow mb-6">
+        <h2 class="text-xl font-semibold mb-4 border-b pb-2">Address Book</h2>
+        <div id="addressContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Addresses will be populated here -->
         </div>
       </div>
 
       <!-- Orders Table -->
-      <h2 class="text-xl font-semibold mb-4">Orders</h2>
-      <table class="w-full border-collapse border border-gray-300">
-        <thead>
-          <tr class="bg-gray-100">
-            <th class="border px-4 py-2">Order ID</th>
-            <th class="border px-4 py-2">Customer ID</th>
-            <th class="border px-4 py-2">Category</th>
-            <th class="border px-4 py-2">Name</th>
-            <th class="border px-4 py-2">Quantity</th>
-            <th class="border px-4 py-2">Price</th>
-          </tr>
-        </thead>
-        <tbody id="ordersTable"></tbody>
-      </table>
+      <div class="bg-white p-6 rounded-lg shadow mb-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-semibold">Order History</h2>
+          <span id="orderCount" class="text-sm text-gray-600"></span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse border border-gray-300">
+            <thead>
+              <tr class="bg-gray-100">
+                <th class="border px-4 py-2">Order #</th>
+                <th class="border px-4 py-2">Date</th>
+                <th class="border px-4 py-2">Items</th>
+                <th class="border px-4 py-2">Total Amount</th>
+                <th class="border px-4 py-2">Status</th>
+                <th class="border px-4 py-2">Payment</th>
+                <th class="border px-4 py-2">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTable">
+              <!-- Orders will be populated here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Prescriptions Table -->
+      <div class="bg-white p-6 rounded-lg shadow">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-semibold">Prescription History</h2>
+          <span id="prescriptionCount" class="text-sm text-gray-600"></span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse border border-gray-300">
+            <thead>
+              <tr class="bg-gray-100">
+                <th class="border px-4 py-2">Prescription ID</th>
+                <th class="border px-4 py-2">Upload Date</th>
+                <th class="border px-4 py-2">Status</th>
+                <th class="border px-4 py-2">Verified By</th>
+                <th class="border px-4 py-2">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="prescriptionsTable">
+              <!-- Prescriptions will be populated here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </main>
 

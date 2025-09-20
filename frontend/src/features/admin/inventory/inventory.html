@@ -4,9 +4,72 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <title>Inventory Dashboard</title>
+  <style>
+    .low-stock {
+      background-color: #fef3cd;
+    }
+    .out-of-stock {
+      background-color: #f8d7da;
+    }
+    .expiring-soon {
+      background-color: #fff3cd;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 1024px) {
+      main {
+        margin-left: 0;
+      }
+      
+      .grid-cols-4 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .grid-cols-4 {
+        grid-template-columns: 1fr;
+      }
+      
+      .flex.items-center.justify-between {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .flex.items-center.justify-between > div:last-child {
+        margin-top: 1rem;
+        align-self: flex-end;
+      }
+      
+      .flex.items-center.bg-white.rounded-md {
+        width: 100%;
+        margin-bottom: 1rem;
+      }
+      
+      .flex.space-x-2 {
+        width: 100%;
+        flex-wrap: wrap;
+      }
+      
+      .flex.space-x-2 > * {
+        margin-bottom: 0.5rem;
+      }
+    }
+    
+    @media (max-width: 640px) {
+      .overflow-x-auto {
+        overflow-x: auto;
+      }
+      
+      table {
+        min-width: 600px;
+      }
+    }
+  </style>
 </head>
-<body class="bg-gray-100 ">
+<body class="bg-gray-100">
 
   <!-- Sidebar -->
   <div id="sidebar"></div>
@@ -16,31 +79,33 @@
     
     <!-- Inventory Header -->
     <div class="flex items-center justify-between mb-6">
-    <div class="mb-4">
-      <h1 class="text-2xl font-bold mb-1">Inventory</h1>
-      <p class="text-gray-600">A quick data overview of the Inventory.</p>
+      <div class="mb-4">
+        <h1 class="text-2xl font-bold mb-1">Inventory</h1>
+        <p class="text-gray-600">A comprehensive overview of your pharmacy inventory.</p>
+      </div>
+      <div>
+        <button id="exportBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-4 py-2 rounded shadow-md transition-colors duration-200 mr-2">
+          <i class="fas fa-file-export mr-1"></i> Export CSV
+        </button>
+        <a href="inventory_addition.html">
+          <button class="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded shadow-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1">
+            <i class="fas fa-plus mr-1"></i> Add New Product
+          </button>
+        </a>
+      </div>
     </div>
-    <div>
-     <a href="inventory_addition.html"> <button 
-        class="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded shadow-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1"
-      >
-        Add New Items +
-      </button></a>
-    </div>
-  </div>
-
 
     <!-- Cards -->
     <div class="grid grid-cols-4 gap-6 mb-6">
-      <!-- All medicine Card -->
+      <!-- All Products Card -->
       <div class="bg-white p-4 rounded-lg shadow">
         <div class="flex items-center space-x-3">
           <div class="bg-blue-100 p-3 rounded-full text-blue-500">
-            <i class="fas fa-users"></i>
+            <i class="fas fa-pills"></i>
           </div>
           <div>
-            <h2 class="text-gray-600">All Medicine</h2>
-            <p id="allOrdersCount" class="text-2xl font-bold">0</p>
+            <h2 class="text-gray-600">All Products</h2>
+            <p id="allProductsCount" class="text-2xl font-bold">0</p>
           </div>
         </div>
         <button class="text-blue-500 text-sm mt-2 inline-block filter-btn" data-status="All">
@@ -48,105 +113,122 @@
         </button>
       </div>
 
-      <!-- Category Card -->
+      <!-- Categories Card -->
       <div class="bg-white p-4 rounded-lg shadow">
         <div class="flex items-center space-x-3">
           <div class="bg-green-100 p-3 rounded-full text-green-500">
-            <i class="fas fa-shopping-cart"></i>
+            <i class="fas fa-tags"></i>
           </div>
           <div>
-            <h2 class="text-gray-600">Medicine Category</h2>
-            <p id="inprogressCount" class="text-2xl font-bold">0</p>
+            <h2 class="text-gray-600">Categories</h2>
+            <p id="categoriesCount" class="text-2xl font-bold">0</p>
           </div>
         </div>
-        <button class="text-red-500 text-sm mt-2 inline-block filter-btn" data-status="Category">
+        <button class="text-green-500 text-sm mt-2 inline-block filter-btn" data-status="Category">
           Show Details
         </button>        
       </div>
 
-      <!-- Packed Card -->
+      <!-- Low Stock Card -->
       <div class="bg-white p-4 rounded-lg shadow">
         <div class="flex items-center space-x-3">
           <div class="bg-yellow-100 p-3 rounded-full text-yellow-500">
-            <i class="fas fa-dollar-sign"></i>
+            <i class="fas fa-exclamation-triangle"></i>
           </div>
           <div>
-            <h2 class="text-gray-600">Medicine Shortage</h2>
-            <p id="packedCount" class="text-2xl font-bold">0</p>
+            <h2 class="text-gray-600">Low Stock</h2>
+            <p id="lowStockCount" class="text-2xl font-bold">0</p>
           </div>
         </div>
-        <button class="text-yellow-500 text-sm mt-2 inline-block filter-btn" data-status="Shortage">
+        <button class="text-yellow-500 text-sm mt-2 inline-block filter-btn" data-status="LowStock">
           Show Details
         </button>
       </div>
 
-      <!-- Delivered Card -->
+      <!-- Expiring Soon Card -->
       <div class="bg-white p-4 rounded-lg shadow">
         <div class="flex items-center space-x-3">
           <div class="bg-red-100 p-3 rounded-full text-red-500">
-            <i class="fas fa-cubes"></i>
+            <i class="fas fa-calendar-times"></i>
           </div>
           <div>
-            <h2 class="text-gray-600">Medicine Expiry</h2>
-            <p id="deliveredCount" class="text-2xl font-bold">0</p>
+            <h2 class="text-gray-600">Expiring Soon</h2>
+            <p id="expiringCount" class="text-2xl font-bold">0</p>
           </div>
         </div>
-        <button class="text-green-500 text-sm mt-2 inline-block filter-btn" data-status="Expiry">
+        <button class="text-red-500 text-sm mt-2 inline-block filter-btn" data-status="Expiry">
           Show Details
         </button>
       </div>
     </div>
 
     <!-- Filters -->
-    <div class="flex items-center justify-between  mb-4">
+    <div class="flex items-center justify-between mb-4">
       <div class="flex items-center bg-white rounded-md border px-3 py-2 shadow-sm w-1/3">
-        <input id="searchInput" type="text" placeholder="Search Medicine Name, Medicine ID or Category..."
+        <i class="fas fa-search text-gray-400 mr-2"></i>
+        <input id="searchInput" type="text" placeholder="Search Product Name, SKU or Category..."
                class="flex-1 outline-none text-gray-700" />
         <button id="searchClearBtn" class="ml-2 text-gray-400 hover:text-gray-600" title="Clear">✕</button>
       </div>
-      <div>
-      <select id="categoryFilter" class="px-3 py-2 border rounded-md shadow-sm">
-        <option value="">All categories</option>
-        <option value="Generic Medicine">Generic Medicine</option>
-        <option value="Diabetes">Diabetes</option>
-        <option value="Antibiotics">Antibiotics</option>
-      </select>
-
-      <button id="resetBtn" class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Reset</button>
-    </div>
+      <div class="flex space-x-2">
+        <select id="categoryFilter" class="px-3 py-2 border rounded-md shadow-sm">
+          <option value="">All categories</option>
+          <!-- Categories will be populated dynamically -->
+        </select>
+        <select id="stockFilter" class="px-3 py-2 border rounded-md shadow-sm">
+          <option value="">All stock status</option>
+          <option value="low">Low Stock</option>
+          <option value="out">Out of Stock</option>
+          <option value="sufficient">Sufficient Stock</option>
+        </select>
+        <button id="resetBtn" class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+          <i class="fas fa-redo-alt mr-1"></i> Reset
+        </button>
+      </div>
     </div>
 
     <!-- Table -->
-<!-- Inventory Table -->
-<div class="bg-white p-6 rounded-lg shadow">
-  <h2 class="text-xl font-semibold mb-4">Inventory</h2>
-  <table class="w-full border-collapse border border-gray-300">
-    <p id="tableMessage" class="text-gray-500 mb-4"></p> 
-    <thead>
-      <tr class="bg-gray-100">
-        <th class="border border-gray-300 px-4 py-2">Medicine Name</th>
-        <th class="border border-gray-300 px-4 py-2">Medicine ID</th>
-        <th class="border border-gray-300 px-4 py-2">Category Name</th>
-        <th class="border border-gray-300 px-4 py-2">Stock in Qty</th>
-        <th class="border border-gray-300 px-4 py-2">Expiry Date</th>
-        <th class="border border-gray-300 px-4 py-2">Action</th>
-      </tr>
-    </thead>
-    
-    </thead>
-    <tbody id="inventoryTable">
-      <!-- Data injected via JS -->
-    </tbody>
-  </table>
-</div>
-
-<!-- Pagination -->
-<div id="pagination" class="flex justify-center items-center space-x-2 mt-4"></div>
-
-
+    <div class="bg-white p-6 rounded-lg shadow">
+      <h2 class="text-xl font-semibold mb-4">Inventory</h2>
+      <p id="tableMessage" class="text-gray-500 mb-4"></p> 
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr class="bg-gray-100">
+              <th class="border border-gray-300 px-4 py-2">Image</th>
+              <th class="border border-gray-300 px-4 py-2">Product Name</th>
+              <th class="border border-gray-300 px-4 py-2">SKU</th>
+              <th class="border border-gray-300 px-4 py-2">Category</th>
+              <th class="border border-gray-300 px-4 py-2">Stock Qty</th>
+              <th class="border border-gray-300 px-4 py-2">Price</th>
+              <th class="border border-gray-300 px-4 py-2">Expiry Date</th>
+              <th class="border border-gray-300 px-4 py-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="inventoryTable">
+            <!-- Data injected via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
 
     <!-- Pagination -->
-    <div id="pagination" class="flex justify-center mt-4 space-x-2"></div>
+    <div id="pagination" class="flex justify-center items-center space-x-2 mt-4"></div>
+
+    <!-- Restock Modal -->
+    <div id="restockModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center hidden">
+      <div class="bg-white p-6 rounded-lg shadow-lg w-1/3">
+        <h3 class="text-xl font-semibold mb-4">Restock Product</h3>
+        <div class="mb-4">
+          <label class="block text-gray-700 mb-2" for="restockQuantity">Quantity to Add</label>
+          <input type="number" id="restockQuantity" class="w-full px-3 py-2 border rounded-md" min="1" value="1">
+        </div>
+        <div class="flex justify-end space-x-2">
+          <button id="cancelRestock" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button>
+          <button id="confirmRestock" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">Confirm</button>
+        </div>
+      </div>
+    </div>
 
   </main>
 

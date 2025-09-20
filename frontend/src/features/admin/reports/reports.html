@@ -6,6 +6,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://kit.fontawesome.com/a2e0e6ad63.js" crossorigin="anonymous"></script>
   <script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <title>Reports</title>
 </head>
 <body class="bg-gray-100 font-sans">
@@ -22,33 +24,65 @@
 
         <!-- Filters -->
         <div class="flex items-center gap-3 flex-wrap">
+          <select id="reportType" class="px-3 py-2 border rounded-md shadow-sm">
+            <option value="sales">Sales Report</option>
+            <option value="customer">Customer Report</option>
+            <option value="product">Product Performance</option>
+            <option value="stock">Stock Report</option>
+            <option value="prescription">Prescription Report</option>
+          </select>
+          
           <select id="categoryFilter" class="px-3 py-2 border rounded-md shadow-sm">
-            <option value="">Select Category</option>
-            <option value="Cold">Cold and Flu</option>
-            <option value="ENT">ENT</option>
-            <option value="Pain relief">Pain Relief</option>
+            <option value="">All Categories</option>
           </select>
       
           <input type="date" id="startDate" class="px-3 py-2 border rounded-md" />
           <input type="date" id="endDate" class="px-3 py-2 border rounded-md" />
           <button id="filterBtn" class="px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Apply</button>
           <button id="resetBtn" class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Reset</button>
-          <button id="printBtn" class="px-3 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">Print</button>
+          <button id="exportPdfBtn" class="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">PDF</button>
+          <button id="exportExcelBtn" class="px-3 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">Excel</button>
         </div>
       </div>
     </div>
 
-    <div class="grid grid-cols-2 p-4 gap-6">
-      <!-- Stock Report -->
+    <!-- Report Summary Cards -->
+    <div id="summaryCards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <!-- Cards will be dynamically generated -->
+    </div>
+
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 p-4 gap-6">
+      <!-- Main Chart -->
       <div class="bg-white p-4 rounded-lg shadow">
-        <h2 class="font-bold text-lg mb-4">Stock Report</h2>
-        <div id="reportChart" style="height: 450px;"></div>
+        <h2 class="font-bold text-lg mb-4" id="mainChartTitle">Sales Report</h2>
+        <div id="mainChartContainer" style="height: 450px;"></div>
       </div>
 
-      <!-- Sales Report -->
+      <!-- Secondary Chart/Data -->
       <div class="bg-white p-4 rounded-lg shadow">
-        <h2 class="font-bold text-lg mb-4">Sales Report</h2>
-        <div id="chartContainer" style="height: 450px; width: 100%;"></div>
+        <h2 class="font-bold text-lg mb-4" id="secondaryChartTitle">Product Performance</h2>
+        <div id="secondaryChartContainer" style="height: 450px; width: 100%;"></div>
+      </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="bg-white p-4 rounded-lg shadow mt-6">
+      <h2 class="font-bold text-lg mb-4">Detailed Data</h2>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200" id="dataTable">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Value</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Change</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <!-- Data will be populated dynamically -->
+          </tbody>
+        </table>
       </div>
     </div>
   </main>

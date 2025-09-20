@@ -3,8 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Verification</title>
+  <title>Prescription Verification</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .status-filter-btn.active {
+      box-shadow: 0 0 0 2px white, 0 0 0 4px currentColor;
+    }
+  </style>
 </head>
 <body class="bg-gray-100 font-sans">
 
@@ -15,28 +21,82 @@
   <main class="ml-64 p-6">
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h1 class="text-2xl font-bold">Verification</h1>
-        <p class="text-gray-600">List of prescriptions for verification.</p>
+        <h1 class="text-2xl font-bold">Prescription Verification</h1>
+        <p class="text-gray-600">Review and verify uploaded prescriptions.</p>
+      </div>
+      <div class="flex items-center space-x-2">
+        <span class="text-sm text-gray-500">Filter by status:</span>
+        <div id="statusFilters" class="flex space-x-1">
+          <button data-status="all" class="status-filter-btn px-3 py-1 bg-blue-600 text-white rounded-md text-sm active">All</button>
+          <button data-status="pending" class="status-filter-btn px-3 py-1 bg-yellow-500 text-white rounded-md text-sm">Pending</button>
+          <button data-status="approved" class="status-filter-btn px-3 py-1 bg-green-600 text-white rounded-md text-sm">Approved</button>
+          <button data-status="rejected" class="status-filter-btn px-3 py-1 bg-red-600 text-white rounded-md text-sm">Rejected</button>
+        </div>
       </div>
     </div>
 
-    <!-- Controls: Search + Category + Reset -->
-    <div class="flex items-center justify-between  mb-4">
-      <div class="flex items-center bg-white rounded-md border px-3 py-2 shadow-sm w-1/3">
-        <input id="searchInput" type="text" placeholder="Search Order ID, Medicine ID or Category..."
-               class="flex-1 outline-none text-gray-700" />
-        <button id="searchClearBtn" class="ml-2 text-gray-400 hover:text-gray-600" title="Clear">✕</button>
+    <!-- Stats Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div class="bg-white p-4 rounded-lg shadow flex items-center justify-between">
+        <div>
+          <p class="text-gray-500 text-sm">Total Prescriptions</p>
+          <p id="totalCount" class="text-2xl font-bold">0</p>
+        </div>
+        <div class="bg-blue-100 p-3 rounded-full">
+          <i class="fas fa-file-prescription text-blue-600 text-xl"></i>
+        </div>
       </div>
+      <div class="bg-white p-4 rounded-lg shadow flex items-center justify-between">
+        <div>
+          <p class="text-gray-500 text-sm">Pending</p>
+          <p id="pendingCount" class="text-2xl font-bold">0</p>
+        </div>
+        <div class="bg-yellow-100 p-3 rounded-full">
+          <i class="fas fa-clock text-yellow-600 text-xl"></i>
+        </div>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow flex items-center justify-between">
+        <div>
+          <p class="text-gray-500 text-sm">Approved</p>
+          <p id="approvedCount" class="text-2xl font-bold">0</p>
+        </div>
+        <div class="bg-green-100 p-3 rounded-full">
+          <i class="fas fa-check-circle text-green-600 text-xl"></i>
+        </div>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow flex items-center justify-between">
+        <div>
+          <p class="text-gray-500 text-sm">Rejected</p>
+          <p id="rejectedCount" class="text-2xl font-bold">0</p>
+        </div>
+        <div class="bg-red-100 p-3 rounded-full">
+          <i class="fas fa-times-circle text-red-600 text-xl"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls: Search + Category + Date + Reset -->
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center space-x-3">
+        <div class="flex items-center bg-white rounded-md border px-3 py-2 shadow-sm w-64">
+          <i class="fas fa-search text-gray-400 mr-2"></i>
+          <input id="searchInput" type="text" placeholder="Search prescriptions..."
+                 class="flex-1 outline-none text-gray-700" />
+          <button id="searchClearBtn" class="ml-2 text-gray-400 hover:text-gray-600" title="Clear">✕</button>
+        </div>
+        
+        <select id="customerFilter" class="px-3 py-2 border rounded-md shadow-sm w-48">
+          <option value="">All customers</option>
+        </select>
+        
+        <input type="date" id="dateFilter" class="px-3 py-2 border rounded-md shadow-sm">
+      </div>
+      
       <div>
-      <select id="categoryFilter" class="px-3 py-2 border rounded-md shadow-sm">
-        <option value="">All categories</option>
-        <option value="Generic Medicine">Generic Medicine</option>
-        <option value="Diabetes">Diabetes</option>
-        <option value="Antibiotics">Antibiotics</option>
-      </select>
-
-      <button id="resetBtn" class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Reset</button>
-    </div>
+        <button id="resetBtn" class="px-3 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
+          <i class="fas fa-redo-alt mr-1"></i> Reset
+        </button>
+      </div>
     </div>
 
     <!-- Table -->
@@ -44,11 +104,12 @@
       <table class="w-full border-collapse">
         <thead class="bg-gray-100">
           <tr>
+            <th class="text-left px-4 py-2 border">Prescription ID</th>
+            <th class="text-left px-4 py-2 border">Customer</th>
             <th class="text-left px-4 py-2 border">Order ID</th>
-            <th class="text-left px-4 py-2 border">Medicine ID</th>
-            <th class="text-left px-4 py-2 border">Category</th>
+            <th class="text-left px-4 py-2 border">Upload Date</th>
             <th class="text-left px-4 py-2 border">Status</th>
-            <th class="text-center px-4 py-2 border">Action</th>
+            <th class="text-center px-4 py-2 border">Actions</th>
           </tr>
         </thead>
         <tbody id="verificationTable" class="text-sm"></tbody>
@@ -65,20 +126,82 @@
 
   <!-- Modal (hidden by default) -->
   <div id="prescriptionModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
-    <div id="prescriptionModalBox" class="relative bg-white rounded-lg shadow-lg max-w-3xl w-full mx-4">
+    <div id="prescriptionModalBox" class="relative bg-white rounded-lg shadow-lg max-w-5xl w-full mx-4 max-h-[90vh] overflow-y-auto">
       <!-- X Close -->
-      <button id="modalClose" class="absolute top-3 right-3 text-2xl text-gray-600 hover:text-red-600">&times;</button>
+      <button id="modalClose" class="absolute top-3 right-3 text-2xl text-gray-600 hover:text-red-600 z-10">&times;</button>
 
-      <!-- Image area -->
-      <div class="p-4">
-        <img id="prescriptionImage" src="" alt="Prescription" class="w-full max-h-[70vh] object-contain rounded-md" />
-      </div>
+      <div class="p-6">
+        <h2 class="text-xl font-bold mb-4">Prescription Verification</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <!-- Customer Information -->
+          <div class="bg-gray-50 p-4 rounded-md">
+            <h3 class="font-semibold mb-2 text-blue-700"><i class="fas fa-user mr-2"></i>Customer Information</h3>
+            <div id="customerInfo" class="text-sm">
+              <p><span class="font-medium">Name:</span> <span id="customerName">-</span></p>
+              <p><span class="font-medium">Email:</span> <span id="customerEmail">-</span></p>
+              <p><span class="font-medium">Phone:</span> <span id="customerPhone">-</span></p>
+              <p><span class="font-medium">Address:</span> <span id="customerAddress">-</span></p>
+            </div>
+          </div>
+          
+          <!-- Order Information -->
+          <div class="bg-gray-50 p-4 rounded-md">
+            <h3 class="font-semibold mb-2 text-blue-700"><i class="fas fa-shopping-cart mr-2"></i>Order Information</h3>
+            <div id="orderInfo" class="text-sm">
+              <p><span class="font-medium">Order ID:</span> <span id="orderId">-</span></p>
+              <p><span class="font-medium">Date:</span> <span id="orderDate">-</span></p>
+              <p><span class="font-medium">Amount:</span> <span id="orderAmount">-</span></p>
+              <p><span class="font-medium">Items:</span> <span id="orderItems">-</span></p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Image area -->
+        <div class="mb-6">
+          <h3 class="font-semibold mb-2 text-blue-700"><i class="fas fa-file-image mr-2"></i>Prescription Image</h3>
+          <div class="border rounded-md p-2 bg-gray-50 flex justify-center">
+            <img id="prescriptionImage" src="" alt="Prescription" class="max-w-full max-h-[50vh] object-contain rounded-md" />
+          </div>
+        </div>
+        
+        <!-- Verification Notes (for rejection) -->
+        <div id="rejectionSection" class="mb-6 hidden">
+          <h3 class="font-semibold mb-2 text-red-700"><i class="fas fa-exclamation-circle mr-2"></i>Rejection Reason</h3>
+          <select id="rejectionReason" class="w-full p-2 border rounded-md mb-2">
+            <option value="">Select a reason</option>
+            <option value="Illegible prescription">Illegible prescription</option>
+            <option value="Expired prescription">Expired prescription</option>
+            <option value="Missing information">Missing information</option>
+            <option value="Prescription doesn't match order">Prescription doesn't match order</option>
+            <option value="Other">Other (specify in notes)</option>
+          </select>
+          <textarea id="verificationNotes" class="w-full p-2 border rounded-md" rows="3" placeholder="Add detailed verification notes..."></textarea>
+        </div>
+        
+        <!-- Verification History -->
+        <div id="verificationHistory" class="mb-6 hidden">
+          <h3 class="font-semibold mb-2 text-green-700"><i class="fas fa-history mr-2"></i>Verification History</h3>
+          <div class="text-sm bg-gray-50 p-3 rounded-md">
+            <p><span class="font-medium">Verified by:</span> <span id="verifiedBy">-</span></p>
+            <p><span class="font-medium">Verified on:</span> <span id="verifiedOn">-</span></p>
+            <p><span class="font-medium">Notes:</span> <span id="historyNotes">-</span></p>
+          </div>
+        </div>
 
-      <!-- Buttons bottom-left of the modal content -->
-      <div class="px-4 pb-4 flex items-center">
-        <div class="flex gap-3">
-          <button id="modalApprove" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Approve</button>
-          <button id="modalReject" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Reject</button>
+        <!-- Buttons -->
+        <div class="flex justify-between items-center">
+          <div class="flex gap-3">
+            <button id="modalApprove" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+              <i class="fas fa-check mr-1"></i> Approve
+            </button>
+            <button id="modalReject" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+              <i class="fas fa-times mr-1"></i> Reject
+            </button>
+          </div>
+          <button id="confirmAction" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 hidden">
+            Confirm
+          </button>
         </div>
       </div>
     </div>

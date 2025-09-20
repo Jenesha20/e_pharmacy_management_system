@@ -1,3 +1,91 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
+  
+  <script src="https://kit.fontawesome.com/a2e0e6ad63.js" crossorigin="anonymous"></script>
+
+</head>
+<body class="bg-gray-100 font-sans">
+
+  <div id="sidebar"></div>
+
+  <main class="ml-64 flex-1 p-6">
+
+    <h1 class="text-2xl font-bold mb-1">Dashboard</h1>
+    <p class="text-gray-600 mb-6">A quick data overview of the inventory.</p>
+
+    <div class="grid grid-cols-4 gap-6 mb-8">
+      <div class="bg-white p-4 rounded-lg shadow">
+        <div class="flex items-center space-x-3">
+          <div class="bg-blue-100 p-3 rounded-full text-blue-500">
+            <i class="fas fa-users"></i>
+          </div>
+          <div>
+            <h2 class="text-gray-600">Customers</h2>
+            <p id="customerCount" class="text-2xl font-bold">0</p>
+          </div>
+        </div>
+        <a href="../customer/customer.html" class="text-blue-500 text-sm mt-2 inline-block">Show Details</a>
+      </div>
+
+      <div class="bg-white p-4 rounded-lg shadow">
+        <div class="flex items-center space-x-3">
+          <div class="bg-green-100 p-3 rounded-full text-green-500">
+            <i class="fas fa-shopping-cart"></i>
+          </div>
+          <div>
+            <h2 class="text-gray-600">Orders</h2>
+            <p id="orderCount" class="text-2xl font-bold">0</p>
+          </div>
+        </div>
+        <a href="../orders/orders.html" class="text-green-500 text-sm mt-2 inline-block">Show Details</a>
+      </div>
+
+      <div class="bg-white p-4 rounded-lg shadow">
+        <div class="flex items-center space-x-3">
+          <div class="bg-yellow-100 p-3 rounded-full text-yellow-500">
+            <i class="fas fa-dollar-sign"></i>
+          </div>
+          <div>
+            <h2 class="text-gray-600">Sales</h2>
+            <p id="salesCount" class="text-2xl font-bold">0</p>
+          </div>
+        </div>
+        <a href="../reports/reports.html" class="text-yellow-500 text-sm mt-2 inline-block">Show Details</a>
+      </div>
+
+      <div class="bg-white p-4 rounded-lg shadow">
+        <div class="flex items-center space-x-3">
+          <div class="bg-red-100 p-3 rounded-full text-red-500">
+            <i class="fas fa-cubes"></i>
+          </div>
+          <div>
+            <h2 class="text-gray-600">Out of Stock</h2>
+            <p id="stockCount" class="text-2xl font-bold">0</p>
+          </div>
+        </div>
+        <a href="../inventory/inventory.html" class="text-red-500 text-sm mt-2 inline-block">Show Details</a>
+      </div>
+    </div>
+   
+      <div class="bg-white p-4 rounded-lg shadow">
+        <h2 class="font-bold text-lg mb-4">Sales Report</h2>
+        <div id="chartContainer" style="height: 480px; width: 100%;"></div>
+      </div>
+  
+  </main>
+
+
+  <script src="dashboard.js"></script>
+</body>
+</html> -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,21 +100,56 @@
   <!-- FontAwesome -->
   <script src="https://kit.fontawesome.com/a2e0e6ad63.js" crossorigin="anonymous"></script>
 
+  <style>
+    .sidebar-transition {
+      transition: all 0.3s ease;
+    }
+    @media (max-width: 768px) {
+      .sidebar-hidden {
+        transform: translateX(-100%);
+      }
+      .sidebar-visible {
+        transform: translateX(0);
+      }
+    }
+  </style>
 </head>
-<body class="bg-gray-100 font-sans">
+<body class="bg-gray-100 font-sans min-h-screen">
+
+  <!-- Mobile menu button -->
+  <div class="md:hidden fixed top-4 left-4 z-50">
+    <button id="mobileMenuBtn" class="p-2 rounded-md bg-blue-600 text-white">
+      <i class="fas fa-bars"></i>
+    </button>
+  </div>
 
   <!-- Sidebar -->
-  <div id="sidebar"></div>
+  <div id="sidebar" class="fixed left-0 top-0 h-full w-64 bg-blue-800 text-white sidebar-transition md:translate-x-0 sidebar-hidden md:sidebar-visible z-40">
+    <!-- Sidebar content will be loaded here -->
+  </div>
+
+  <!-- Overlay for mobile -->
+  <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden"></div>
 
   <!-- Main content -->
-  <main class="ml-64 flex-1 p-6">
+  <main class="md:ml-64 flex-1 p-6 pt-20 md:pt-6">
 
     <!-- Dashboard Header -->
-    <h1 class="text-2xl font-bold mb-1">Dashboard</h1>
-    <p class="text-gray-600 mb-6">A quick data overview of the inventory.</p>
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+      <div>
+        <h1 class="text-2xl font-bold mb-1">Dashboard</h1>
+        <p class="text-gray-600">A quick data overview of the inventory.</p>
+      </div>
+      <div class="mt-4 md:mt-0">
+        <div class="flex items-center space-x-2">
+          <span class="text-sm text-gray-600">Last updated:</span>
+          <span id="lastUpdated" class="text-sm font-medium"></span>
+        </div>
+      </div>
+    </div>
 
     <!-- Cards Row -->
-    <div class="grid grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <!-- Customers Card -->
       <div class="bg-white p-4 rounded-lg shadow">
         <div class="flex items-center space-x-3">
@@ -63,7 +186,7 @@
           </div>
           <div>
             <h2 class="text-gray-600">Sales</h2>
-            <p id="salesCount" class="text-2xl font-bold">0</p>
+            <p id="salesCount" class="text-2xl font-bold">$0</p>
           </div>
         </div>
         <a href="../reports/reports.html" class="text-yellow-500 text-sm mt-2 inline-block">Show Details</a>
@@ -82,16 +205,71 @@
         </div>
         <a href="../inventory/inventory.html" class="text-red-500 text-sm mt-2 inline-block">Show Details</a>
       </div>
+
+      <!-- Pending Prescriptions Card -->
+      <!-- <div class="bg-white p-4 rounded-lg shadow">
+        <div class="flex items-center space-x-3">
+          <div class="bg-purple-100 p-3 rounded-full text-purple-500">
+            <i class="fas fa-file-prescription"></i>
+          </div>
+          <div>
+            <h2 class="text-gray-600">Pending Rx</h2>
+            <p id="prescriptionCount" class="text-2xl font-bold">0</p>
+          </div>
+        </div>
+        <a href="../prescription/prescription.html" class="text-purple-500 text-sm mt-2 inline-block">Verify Now</a>
+      </div> -->
+
+      <!-- Notifications Card -->
+      <!-- <div class="bg-white p-4 rounded-lg shadow">
+        <div class="flex items-center space-x-3">
+          <div class="bg-orange-100 p-3 rounded-full text-orange-500">
+            <i class="fas fa-bell"></i>
+          </div>
+          <div>
+            <h2 class="text-gray-600">Alerts</h2>
+            <p id="notificationCount" class="text-2xl font-bold">0</p>
+          </div>
+        </div>
+        <a href="../alerts/alerts.html" class="text-orange-500 text-sm mt-2 inline-block">View All</a>
+      </div> -->
     </div>
-      <!-- Today's Report -->
+
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <!-- Sales Report -->
       <div class="bg-white p-4 rounded-lg shadow">
-        <h2 class="font-bold text-lg mb-4">Sales Report</h2>
-        <div id="chartContainer" style="height: 480px; width: 100%;"></div>
+        <h2 class="font-bold text-lg mb-4">Sales Report (Last 7 Days)</h2>
+        <div id="salesChartContainer" style="height: 300px; width: 100%;"></div>
       </div>
-  
+
+      <!-- Order Status Chart -->
+      <div class="bg-white p-4 rounded-lg shadow">
+        <h2 class="font-bold text-lg mb-4">Order Status Distribution</h2>
+        <div id="statusChartContainer" style="height: 300px; width: 100%;"></div>
+      </div>
+    </div>
+
+    <!-- Top Products Chart -->
+    <div class="bg-white p-4 rounded-lg shadow mb-8">
+      <h2 class="font-bold text-lg mb-4">Top Selling Products</h2>
+      <div id="productsChartContainer" style="height: 300px; width: 100%;"></div>
+    </div>
+
+    <!-- Server Status Alert -->
+    <div id="serverError" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 hidden" role="alert">
+      <p class="font-bold">Server Connection Issue</p>
+      <p>Could not connect to the server. Displaying mock data for demonstration.</p>
+    </div>
+    <!-- <div class="mt-4 flex gap-2">
+      <button onclick="downloadCSV(window.salesDataForExport, 'sales-data.csv')" class="px-3 py-1 bg-blue-600 text-white rounded">Download CSV</button>
+      <button onclick="downloadJSON(window.salesDataForExport, 'sales-data.json')" class="px-3 py-1 bg-green-600 text-white rounded">Download JSON</button>
+      <button onclick="printData(window.salesDataForExport)" class="px-3 py-1 bg-gray-600 text-white rounded">Print</button>
+    </div> -->
+    
   </main>
 
-  <!-- JS Scripts -->
-  <script src="dashboard.js"></script>
+ <script src="dashboard.js"></script>
+  
 </body>
 </html>

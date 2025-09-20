@@ -646,7 +646,7 @@ async function fetchProductDetailsForGuestCart(guestCart) {
       };
     });
 
-    productsRequiringPrescription = cartItems.filter(i => i.tag).length;
+    productsRequiringPrescription = cartItems.filter(i => i.prescription_required).length;
     console.log("Guest cart items:", cartItems);
     renderCart(cartItems);
     renderOrderSummary(cartItems);
@@ -718,7 +718,7 @@ async function fetchCart() {
         };
       });
 
-      productsRequiringPrescription = cartItems.filter(i => i.tag).length;
+      productsRequiringPrescription = cartItems.filter(i => i.prescription_required).length;
       renderCart(cartItems);
       renderOrderSummary(cartItems);
       updateUploadState();
@@ -727,7 +727,7 @@ async function fetchCart() {
     }
   } else {
     // For guest users, data is already loaded from local storage
-    productsRequiringPrescription = cartItems.filter(i => i.tag).length;
+    productsRequiringPrescription = cartItems.filter(i => i.prescription_required).length;
     renderCart(cartItems);
     renderOrderSummary(cartItems);
     updateUploadState();
@@ -756,7 +756,7 @@ function renderCart(cartItems) {
   cartItems.forEach(item => {
     let prescriptionDropdown = "";
 
-    if (item.tag) {
+    if (item.prescription_required) {
       // Find prescriptions that are mapped to this medicine
       const medicinePrescriptions = prescriptions.filter(p => 
         p.medicineIds && p.medicineIds.includes(item.id)
@@ -921,7 +921,7 @@ function handlePrescriptionUpload(event) {
 function getSelectedMedicineIdsForUpload() {
   // This is a placeholder - you'll need to implement the UI for multi-select
   // For now, return all medicine IDs that require prescriptions
-  const prescriptionRequiredItems = cartItems.filter(item => item.tag);
+  const prescriptionRequiredItems = cartItems.filter(item => item.prescription_required);
   return prescriptionRequiredItems.map(item => item.id);
 }
 
@@ -937,7 +937,7 @@ async function removeCartItem(productId) {
         
         // Update local cartItems array
         cartItems = cartItems.filter(i => i.id != productId);
-        productsRequiringPrescription = cartItems.filter(i => i.tag).length;
+        productsRequiringPrescription = cartItems.filter(i => i.prescription_required).length;
         renderCart(cartItems);
         renderOrderSummary(cartItems);
         updateUploadState();
@@ -948,7 +948,7 @@ async function removeCartItem(productId) {
   } else {
     // For guest users, remove from local storage
     cartItems = cartItems.filter(i => i.id != productId);
-    productsRequiringPrescription = cartItems.filter(i => i.tag).length;
+    productsRequiringPrescription = cartItems.filter(i => i.prescription_required).length;
     renderCart(cartItems);
     renderOrderSummary(cartItems);
     updateUploadState();

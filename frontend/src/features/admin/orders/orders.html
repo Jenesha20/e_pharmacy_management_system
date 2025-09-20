@@ -6,6 +6,64 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://kit.fontawesome.com/a2e0e6ad63.js" crossorigin="anonymous"></script>
     <title>Orders</title>
+    <style>
+        .expandable-row {
+            cursor: pointer;
+        }
+        .order-details {
+            display: none;
+            background-color: #f9fafb;
+        }
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .status-pending { background-color: #fef3c7; color: #92400e; }
+        .status-processing { background-color: #dbeafe; color: #1e40af; }
+        .status-packed { background-color: #fce7f3; color: #9d174d; }
+        .status-shipped { background-color: #d1fae5; color: #065f46; }
+        .status-delivered { background-color: #dcfce7; color: #166534; }
+        .status-cancelled { background-color: #fee2e2; color: #991b1b; }
+        
+        .payment-status-completed { background-color: #dcfce7; color: #166534; }
+        .payment-status-pending { background-color: #fef3c7; color: #92400e; }
+        .payment-status-failed { background-color: #fee2e2; color: #991b1b; }
+        
+        .prescription-thumb {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+        }
+        .modal-content {
+            margin: 5% auto;
+            display: block;
+            max-width: 80%;
+            max-height: 80%;
+        }
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body class="bg-gray-100 font-sans">
     <div id="sidebar"></div>
@@ -15,10 +73,33 @@
         <div class="flex items-center justify-between mb-6">
             <div>
               <h1 class="text-2xl font-bold mb-1">Orders</h1>
-              <p class="text-gray-600">A quick data overview of the order.</p>
+              <p class="text-gray-600">A comprehensive overview of all customer orders.</p>
             </div>
 
             <div class="flex items-center space-x-4">
+              <div class="relative">
+                <input type="text" id="searchInput" placeholder="Search orders..." 
+                       class="px-4 py-2 border rounded-md shadow-sm focus:ring focus:ring-blue-300 w-64">
+                <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
+              </div>
+              
+              <select id="statusFilter" class="px-3 py-2 border rounded-md shadow-sm focus:ring focus:ring-blue-300">
+                <option value="">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="processing">Processing</option>
+                <option value="packed">Packed</option>
+                <option value="shipped">Shipped</option>
+                <option value="delivered">Delivered</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+              
+              <select id="paymentStatusFilter" class="px-3 py-2 border rounded-md shadow-sm focus:ring focus:ring-blue-300">
+                <option value="">All Payment Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="completed">Completed</option>
+                <option value="failed">Failed</option>
+              </select>
+              
               <div class="flex items-center space-x-2">
                 <label for="startDate" class="text-gray-700">From:</label>
                 <input type="date" id="startDate" class="px-3 py-2 border rounded-md shadow-sm focus:ring focus:ring-blue-300">
@@ -27,7 +108,7 @@
                 <input type="date" id="endDate" class="px-3 py-2 border rounded-md shadow-sm focus:ring focus:ring-blue-300">
               </div>
 
-              <button id="refreshBtn" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded-md">
+              <button id="refreshBtn" class="px-4 py-2 bg-blue-500 text-white hover:bg-blue-600 rounded-md">
                 <i class="fas fa-sync-alt"></i> Refresh
               </button>
             </div>
@@ -39,30 +120,30 @@
             <div class="bg-white p-4 rounded-lg shadow">
               <div class="flex items-center space-x-3">
                 <div class="bg-blue-100 p-3 rounded-full text-blue-500">
-                  <i class="fas fa-users"></i>
+                  <i class="fas fa-shopping-bag"></i>
                 </div>
                 <div>
                   <h2 class="text-gray-600">All orders</h2>
                   <p id="allOrdersCount" class="text-2xl font-bold">0</p>
                 </div>
               </div>
-              <button class="text-blue-500 text-sm mt-2 inline-block filter-btn" data-status="All">
+              <button class="text-blue-500 text-sm mt-2 inline-block filter-btn" data-status="all">
                 Show Details
               </button>
             </div>
 
-            <!-- Inprogress Card -->
+            <!-- Processing Card -->
             <div class="bg-white p-4 rounded-lg shadow">
               <div class="flex items-center space-x-3">
                 <div class="bg-green-100 p-3 rounded-full text-green-500">
-                  <i class="fas fa-shopping-cart"></i>
+                  <i class="fas fa-cog"></i>
                 </div>
                 <div>
-                  <h2 class="text-gray-600">Inprogress</h2>
-                  <p id="inprogressCount" class="text-2xl font-bold">0</p>
+                  <h2 class="text-gray-600">Processing</h2>
+                  <p id="processingCount" class="text-2xl font-bold">0</p>
                 </div>
               </div>
-              <button class="text-red-500 text-sm mt-2 inline-block filter-btn" data-status="Inprogress">
+              <button class="text-green-500 text-sm mt-2 inline-block filter-btn" data-status="processing">
                 Show Details
               </button>
             </div>
@@ -71,14 +152,14 @@
             <div class="bg-white p-4 rounded-lg shadow">
               <div class="flex items-center space-x-3">
                 <div class="bg-yellow-100 p-3 rounded-full text-yellow-500">
-                  <i class="fas fa-dollar-sign"></i>
+                  <i class="fas fa-box"></i>
                 </div>
                 <div>
                   <h2 class="text-gray-600">Packed</h2>
                   <p id="packedCount" class="text-2xl font-bold">0</p>
                 </div>
               </div>
-              <button class="text-yellow-500 text-sm mt-2 inline-block filter-btn" data-status="Packed">
+              <button class="text-yellow-500 text-sm mt-2 inline-block filter-btn" data-status="packed">
                 Show Details
               </button>
             </div>
@@ -87,14 +168,14 @@
             <div class="bg-white p-4 rounded-lg shadow">
               <div class="flex items-center space-x-3">
                 <div class="bg-red-100 p-3 rounded-full text-red-500">
-                  <i class="fas fa-cubes"></i>
+                  <i class="fas fa-truck"></i>
                 </div>
                 <div>
                   <h2 class="text-gray-600">Delivered</h2>
                   <p id="deliveredCount" class="text-2xl font-bold">0</p>
                 </div>
               </div>
-              <button class="text-green-500 text-sm mt-2 inline-block filter-btn" data-status="Delivered">
+              <button class="text-red-500 text-sm mt-2 inline-block filter-btn" data-status="delivered">
                 Show Details
               </button>
             </div>
@@ -106,13 +187,14 @@
           <table class="w-full border-collapse border border-gray-300">
             <thead>
               <tr class="bg-gray-100">
-                <th class="border border-gray-300 px-4 py-2">Order ID</th>
-                <th class="border border-gray-300 px-4 py-2">Customer ID</th>
-                <th class="border border-gray-300 px-4 py-2">Name</th>
-                <th class="border border-gray-300 px-4 py-2">Quantity</th>
-                <th class="border border-gray-300 px-4 py-2">Price</th>
-                <th class="border border-gray-300 px-4 py-2">Date</th>
-                <th class="border border-gray-300 px-4 py-2">Status</th>
+                <th class="border border-gray-300 px-4 py-2">Order Number</th>
+                <th class="border border-gray-300 px-4 py-2">Customer</th>
+                <th class="border border-gray-300 px-4 py-2">Order Date</th>
+                <th class="border border-gray-300 px-4 py-2">Items</th>
+                <th class="border border-gray-300 px-4 py-2">Total Amount</th>
+                <th class="border border-gray-300 px-4 py-2">Order Status</th>
+                <th class="border border-gray-300 px-4 py-2">Payment Status</th>
+                <th class="border border-gray-300 px-4 py-2">Actions</th>
               </tr>
             </thead>
             <tbody id="ordersTable"></tbody>
@@ -128,6 +210,12 @@
 
         <!-- Toast -->
         <div id="toast" class="fixed top-6 right-6 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg opacity-0 transition-opacity duration-500"></div>
+        
+        <!-- Prescription Modal -->
+        <div id="prescriptionModal" class="modal">
+          <span class="close-modal">&times;</span>
+          <img class="modal-content" id="modalImage">
+        </div>
     </main>    
 
     <script src="orders.js"></script>

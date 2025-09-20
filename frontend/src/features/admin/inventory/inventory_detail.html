@@ -4,50 +4,128 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>Inventory Detail</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Medicine Details</title>
+    <style>
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+            main {
+                margin-left: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .grid-cols-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            .flex.justify-between.items-center {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .flex.justify-between.items-center > a {
+                margin-top: 1rem;
+                align-self: flex-end;
+            }
+            
+            .flex.space-x-4 {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .flex.space-x-4 > * {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
 </head>
 <body class="bg-gray-100 font-sans">
     <div id="sidebar"></div>
     <main class="ml-64 flex-1 p-6">
         <div class="bg-white rounded-lg shadow-md p-6">
           <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold">Inventory</h1>
+            <h1 class="text-3xl font-bold">Medicine Details</h1>
             <a href="inventory.html" class="text-gray-700 hover:underline">&lt;&lt; Back to Inventory</a>
           </div>
     
-          <!-- Customer Info -->
+          <!-- Product Image -->
+          <div class="flex justify-center mb-6">
+            <img id="product-image" src="" alt="Medicine Image" class="w-48 h-48 object-contain border rounded-lg">
+          </div>
+
+          <!-- Medicine Info -->
           <div class="grid grid-cols-2 gap-6 mb-6">
             <div>
-              <label class="block text-gray-600">Medicine Name</label>
-              <input type="text" id="medName" class="w-full border rounded p-2" readonly>
+              <label class="block text-gray-600 font-medium">Medicine Name</label>
+              <p id="medicine-name" class="text-lg font-semibold mt-1"></p>
             </div>
             <div>
-              <label class="block text-gray-600">Medicine ID</label>
-              <input type="text" id="medId" class="w-full border rounded p-2" readonly>
+              <label class="block text-gray-600 font-medium">SKU</label>
+              <p id="medicine-sku" class="text-lg font-semibold mt-1"></p>
             </div>
             <div>
-              <label class="block text-gray-600">Category</label>
-              <input type="text" id="medCat" class="w-full border rounded p-2" readonly>
+              <label class="block text-gray-600 font-medium">Category</label>
+              <p id="medicine-category" class="text-lg font-semibold mt-1"></p>
             </div>
             <div>
-              <label class="block text-gray-600">Stock</label>
-              <input type="text" id="medStock" class="w-full border rounded p-2" readonly>
+              <label class="block text-gray-600 font-medium">Manufacturer</label>
+              <p id="manufacturer" class="text-lg font-semibold mt-1"></p>
             </div>
             <div>
-              <label class="block text-gray-600">Expiry Date</label>
-              <input type="text" id="medExpiry" class="w-full border rounded p-2" readonly>
+              <label class="block text-gray-600 font-medium">Composition</label>
+              <p id="composition" class="text-lg font-semibold mt-1"></p>
             </div>
             <div>
-              <label class="block text-gray-600">Side Effects</label>
-              <input type="text" id="medEffect" class="w-full border rounded p-2" readonly>
+              <label class="block text-gray-600 font-medium">Price</label>
+              <p id="price" class="text-lg font-semibold mt-1"></p>
             </div>
             <div>
-                <label class="block text-gray-600">How to Use</label>
-                <input type="text" id="medUse" class="w-full border rounded p-2" readonly>
-              </div>
+              <label class="block text-gray-600 font-medium">Stock Quantity</label>
+              <p id="stock-quantity" class="text-lg font-semibold mt-1"></p>
+            </div>
+            <div>
+              <label class="block text-gray-600 font-medium">Low Stock Threshold</label>
+              <p id="low-stock-threshold" class="text-lg font-semibold mt-1"></p>
+            </div>
+            <div>
+              <label class="block text-gray-600 font-medium">Expiry Date</label>
+              <p id="expiry-date" class="text-lg font-semibold mt-1"></p>
+            </div>
+            <div>
+              <label class="block text-gray-600 font-medium">Requires Prescription</label>
+              <p id="requires-prescription" class="text-lg font-semibold mt-1"></p>
+            </div>
+            <div>
+              <label class="block text-gray-600 font-medium">Featured Product</label>
+              <p id="featured-product" class="text-lg font-semibold mt-1"></p>
+            </div>
           </div>
+
+          <!-- Description -->
+          <div class="mb-6">
+            <label class="block text-gray-600 font-medium">Description</label>
+            <p id="description" class="mt-1 text-gray-800"></p>
           </div>
-          </main>
+
+          <!-- Side Effects -->
+          <div class="mb-6">
+            <label class="block text-gray-600 font-medium">Side Effects</label>
+            <p id="side-effects" class="mt-1 text-gray-800"></p>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex space-x-4 mt-8">
+            <a id="edit-button" href="#" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+              <i class="fas fa-edit mr-2"></i> Edit Product
+            </a>
+            <button id="restock-button" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">
+              <i class="fas fa-cubes mr-2"></i> Restock
+            </button>
+          </div>
+        </div>
+    </main>
     <script src="inventory_detail.js"></script>
 </body>
 </html>
