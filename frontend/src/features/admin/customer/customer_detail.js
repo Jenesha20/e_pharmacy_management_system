@@ -185,7 +185,7 @@
   function renderAddresses() {
     const addressContainer = document.getElementById("addressContainer");
     
-    if (customerAddresses.length === 0) {
+    if (customerAddresses.length == 0) {
       addressContainer.innerHTML = '<p class="text-gray-500 col-span-2 text-center py-4">No addresses found</p>';
       return;
     }
@@ -216,13 +216,13 @@
     const ordersTable = document.getElementById("ordersTable");
     const orderCount = document.getElementById("orderCount");
     
-    if (customerOrders.length === 0) {
+    if (customerOrders.length == 0) {
       ordersTable.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-gray-500">No orders found</td></tr>';
       orderCount.textContent = "0 orders";
       return;
     }
     
-    orderCount.textContent = `${customerOrders.length} order${customerOrders.length !== 1 ? 's' : ''}`;
+    orderCount.textContent = `${customerOrders.length} order${customerOrders.length != 1 ? 's' : ''}`;
     ordersTable.innerHTML = '';
     
     customerOrders.forEach(order => {
@@ -230,7 +230,7 @@
         <tr class="hover:bg-gray-50">
           <td class="border px-4 py-2 font-medium">${order.order_number}</td>
           <td class="border px-4 py-2">${formatDate(order.order_date)}</td>
-          <td class="border px-4 py-2">${order.items ? order.items.length : 0} item${order.items && order.items.length !== 1 ? 's' : ''}</td>
+          <td class="border px-4 py-2">${order.items ? order.items.length : 0} item${order.items && order.items.length != 1 ? 's' : ''}</td>
           <td class="border px-4 py-2">$${parseFloat(order.total_amount).toFixed(2)}</td>
           <td class="border px-4 py-2">
             <span class="px-2 py-1 rounded-full text-xs ${getStatusClass(order.status)}">${formatStatus(order.status)}</span>
@@ -263,13 +263,13 @@
     const prescriptionsTable = document.getElementById("prescriptionsTable");
     const prescriptionCount = document.getElementById("prescriptionCount");
     
-    if (customerPrescriptions.length === 0) {
+    if (customerPrescriptions.length == 0) {
       prescriptionsTable.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-500">No prescriptions found</td></tr>';
       prescriptionCount.textContent = "0 prescriptions";
       return;
     }
     
-    prescriptionCount.textContent = `${customerPrescriptions.length} prescription${customerPrescriptions.length !== 1 ? 's' : ''}`;
+    prescriptionCount.textContent = `${customerPrescriptions.length} prescription${customerPrescriptions.length != 1 ? 's' : ''}`;
     prescriptionsTable.innerHTML = '';
     
     customerPrescriptions.forEach(prescription => {
@@ -319,7 +319,7 @@
     let age = today.getFullYear() - dob.getFullYear();
     const monthDiff = today.getMonth() - dob.getMonth();
     
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+    if (monthDiff < 0 || (monthDiff == 0 && today.getDate() < dob.getDate())) {
       age--;
     }
     

@@ -348,7 +348,7 @@ function renderTable(data) {
   const start = (currentPage - 1) * rowsPerPage;
   const paginatedData = data.slice(start, start + rowsPerPage);
 
-  if (paginatedData.length === 0) {
+  if (paginatedData.length == 0) {
       table.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-gray-500">No customers found</td></tr>`;
       document.getElementById("tableMessage").textContent = "No customers match your search criteria.";
       return;
@@ -387,7 +387,7 @@ function renderTable(data) {
 // Populate location filter with unique city values
 function populateLocationFilter() {
   const filter = document.getElementById("locationFilter");
-  const uniqueCities = [...new Set(customersData.map(customer => customer.city))].filter(city => city !== "N/A");
+  const uniqueCities = [...new Set(customersData.map(customer => customer.city))].filter(city => city != "N/A");
   
   uniqueCities.forEach(city => {
       const option = document.createElement("option");
@@ -434,7 +434,7 @@ function applyFilters(searchTerm = "") {
   
   filteredData = customersData.filter(customer => {
       // Search filter
-      const matchesSearch = searchTerm === "" || 
+      const matchesSearch = searchTerm == "" || 
           customer.first_name.toLowerCase().includes(searchTerm) ||
           customer.last_name.toLowerCase().includes(searchTerm) ||
           customer.email.toLowerCase().includes(searchTerm) ||
@@ -442,15 +442,15 @@ function applyFilters(searchTerm = "") {
       
       // Location filter
       const locationValue = document.getElementById("locationFilter").value;
-      const matchesLocation = locationValue === "" || customer.city === locationValue;
+      const matchesLocation = locationValue == "" || customer.city == locationValue;
       
       // Status filter
       const statusValue = document.getElementById("statusFilter").value;
       let matchesStatus = true;
-      if (statusValue === "verified") {
-          matchesStatus = customer.is_verified === true;
-      } else if (statusValue === "unverified") {
-          matchesStatus = customer.is_verified === false;
+      if (statusValue == "verified") {
+          matchesStatus = customer.is_verified == true;
+      } else if (statusValue == "unverified") {
+          matchesStatus = customer.is_verified == false;
       }
       
       return matchesSearch && matchesLocation && matchesStatus;
@@ -483,8 +483,8 @@ function renderPagination(data) {
   const prevBtn = document.createElement("button");
   prevBtn.textContent = "Previous";
   prevBtn.className = "px-3 py-1 border rounded " + 
-      (currentPage === 1 ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "hover:bg-gray-200");
-  prevBtn.disabled = currentPage === 1;
+      (currentPage == 1 ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "hover:bg-gray-200");
+  prevBtn.disabled = currentPage == 1;
   prevBtn.addEventListener("click", () => {
       if (currentPage > 1) {
           currentPage--;
@@ -506,7 +506,7 @@ function renderPagination(data) {
       const btn = document.createElement("button");
       btn.textContent = i;
       btn.className = "px-3 py-1 border rounded " + 
-          (i === currentPage ? "bg-blue-500 text-white" : "hover:bg-gray-200");
+          (i == currentPage ? "bg-blue-500 text-white" : "hover:bg-gray-200");
       btn.addEventListener("click", () => {
           currentPage = i;
           renderTable(filteredData);
@@ -518,8 +518,8 @@ function renderPagination(data) {
   const nextBtn = document.createElement("button");
   nextBtn.textContent = "Next";
   nextBtn.className = "px-3 py-1 border rounded " + 
-      (currentPage === pageCount ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "hover:bg-gray-200");
-  nextBtn.disabled = currentPage === pageCount;
+      (currentPage == pageCount ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "hover:bg-gray-200");
+  nextBtn.disabled = currentPage == pageCount;
   nextBtn.addEventListener("click", () => {
       if (currentPage < pageCount) {
           currentPage++;

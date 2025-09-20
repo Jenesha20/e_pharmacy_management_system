@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Register</title>
+  <title>Register - E-Pharmacy Management System</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
@@ -11,83 +11,160 @@
     body {
       font-family: 'Inter', sans-serif;
     }
+    .password-strength-meter {
+      height: 5px;
+      background-color: #e2e8f0;
+      border-radius: 3px;
+      margin-top: 5px;
+    }
+    .password-strength-meter-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+    .error-message {
+      color: #ef4444;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+    @media (max-width: 768px) {
+      .flex-col-reverse {
+        flex-direction: column-reverse;
+      }
+    }
   </style>
 </head>
 <body class="bg-white">
-  <div class="flex h-screen">
-    <div class="w-1/2 bg-[#A1E970] bg-opacity-50 flex justify-center items-center">
-        <img src="/frontend/src/core/assests/register.png" alt="illustration" class="max-w-md"/>
+  <div class="min-h-screen flex flex-col">
+    <!-- Back button -->
+    <div class="p-4 absolute">
+      <button id="backButton" class="flex items-center text-gray-600 hover:text-gray-800">
+        <span class="material-icons mr-1">arrow_back</span>
+        Back
+      </button>
+    </div>
+    <div class="flex flex-1 flex-col md:flex-row">
+     
+      <div class="w-full md:w-1/2 bg-[#A1E970] bg-opacity-50 flex justify-center items-center p-4 order-2 md:order-1">
+        <img src="/frontend/src/core/assests/register.png" alt="illustration" class="max-w-md w-full"/>
       </div>
-    <div class="w-1/2 flex flex-col justify-center items-center px-24">
-      <div class="w-full max-w-sm">
-        <h1 class="text-4xl font-bold mb-8">Welcome</h1>
-        <form id="registerForm">
-          <div class="mb-4">
-            <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
-            <input 
-              id="name"
-              type="text"
-              placeholder="Enter your Name.."
-              class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm 
-                     placeholder-gray-400 focus:outline-none focus:ring-[#A1E970] focus:border-[#A1E970] sm:text-sm"
-            />
-          </div>
-          <div class="mb-4">
-            <label for="email" class="block text-sm font-medium text-gray-700">E-mail</label>
-            <input 
-              id="email"
-              type="email"
-              placeholder="Enter your email.."
-              class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm 
-                     placeholder-gray-400 focus:outline-none focus:ring-[#A1E970] focus:border-[#A1E970] sm:text-sm"
-            />
-          </div>
-        
-          <div class="mb-4">
-            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-            <input 
-              id="password"
-              type="password"
-              placeholder="Enter your password.."
-              class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm 
-                     placeholder-gray-400 focus:outline-none focus:ring-[#A1E970] focus:border-lime-500 sm:text-sm"
-            />
-          </div>
-        
-          <div class="mb-4">
-            <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirm Password</label>
-            <input 
-              id="confirmPassword"
-              type="password"
-              placeholder="Confirm your password.."
-              class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm 
-                     placeholder-gray-400 focus:outline-none focus:ring-[#A1E970] focus:border-[#A1E970] sm:text-sm"
-            />
-          </div>
-        
-          <div class="mb-4">
-            <input type="checkbox" id="agree" />
-            <label for="agree" class="text-sm">By signing up you agree to our <a href="#" class="text-cyan-500 hover:text-cyan-600">Policy</a> and 
-            <a href="#" class="text-cyan-500 hover:text-cyan-600">T&C</a></label>
-          </div>
-        
-          <button 
-            type="submit"
-            class="w-full mt-6 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium 
-                   bg-[#A1E970] hover:bg-[#A1E970] focus:outline-none focus:ring-2 
-                   focus:ring-offset-2 focus:ring-[#A1E970]"
-          >
-            Register
-          </button>
-        </form>
-        
-        <p class="mt-8 text-sm text-gray-600">
-          Already a member? 
-          <a href="../login/login.html" class="font-medium text-cyan-500 hover:text-cyan-600">Login</a>
-        </p>
+      
+      <div class="w-full md:w-1/2 flex flex-col justify-center items-center px-6 md:px-24 py-8 order-1 md:order-2">
+        <div class="w-full max-w-sm">
+          <h1 class="text-3xl md:text-4xl font-bold mb-6 md:mb-8">Create Account</h1>
+          <form id="registerForm">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label for="firstName" class="block text-sm font-medium text-gray-700">First Name</label>
+                <input 
+                  id="firstName"
+                  type="text"
+                  placeholder="First Name"
+                  class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm 
+                         placeholder-gray-400 focus:outline-none focus:ring-[#A1E970] focus:border-[#A1E970] sm:text-sm"
+                />
+                <div id="firstNameError" class="error-message"></div>
+              </div>
+              <div>
+                <label for="lastName" class="block text-sm font-medium text-gray-700">Last Name</label>
+                <input 
+                  id="lastName"
+                  type="text"
+                  placeholder="Last Name"
+                  class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm 
+                         placeholder-gray-400 focus:outline-none focus:ring-[#A1E970] focus:border-[#A1E970] sm:text-sm"
+                />
+                <div id="lastNameError" class="error-message"></div>
+              </div>
+            </div>
+            
+            <div class="mb-4">
+              <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+              <input 
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm 
+                       placeholder-gray-400 focus:outline-none focus:ring-[#A1E970] focus:border-[#A1E970] sm:text-sm"
+              />
+              <div id="emailError" class="error-message"></div>
+            </div>
+            
+            <div class="mb-4">
+              <label for="phoneNumber" class="block text-sm font-medium text-gray-700">Phone Number</label>
+              <input 
+                id="phoneNumber"
+                type="tel"
+                placeholder="Enter your phone number"
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm 
+                       placeholder-gray-400 focus:outline-none focus:ring-[#A1E970] focus:border-[#A1E970] sm:text-sm"
+              />
+              <div id="phoneError" class="error-message"></div>
+            </div>
+          
+            <div class="mb-4">
+              <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+              <div class="relative">
+                <input 
+                  id="password"
+                  type="password"
+                  placeholder="Create a password"
+                  class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm 
+                         placeholder-gray-400 focus:outline-none focus:ring-[#A1E970] focus:border-lime-500 sm:text-sm"
+                />
+                <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                  <span class="material-icons text-gray-400">visibility</span>
+                </button>
+              </div>
+              <div class="password-strength-meter">
+                <div id="passwordStrengthMeter" class="password-strength-meter-fill" style="width: 0%"></div>
+              </div>
+              <div id="passwordStrengthText" class="text-xs mt-1"></div>
+              <div id="passwordError" class="error-message"></div>
+            </div>
+          
+            <div class="mb-4">
+              <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+              <div class="relative">
+                <input 
+                  id="confirmPassword"
+                  type="password"
+                  placeholder="Confirm your password"
+                  class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm 
+                         placeholder-gray-400 focus:outline-none focus:ring-[#A1E970] focus:border-[#A1E970] sm:text-sm"
+                />
+                <button type="button" id="toggleConfirmPassword" class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                  <span class="material-icons text-gray-400">visibility</span>
+                </button>
+              </div>
+              <div id="confirmPasswordError" class="error-message"></div>
+            </div>
+          
+            <div class="mb-4 flex items-start">
+              <input type="checkbox" id="agree" class="mt-1 mr-2" />
+              <label for="agree" class="text-sm">By signing up you agree to our <a href="#" class="text-cyan-500 hover:text-cyan-600">Privacy Policy</a> and 
+              <a href="#" class="text-cyan-500 hover:text-cyan-600">Terms & Conditions</a></label>
+            </div>
+            <div id="agreeError" class="error-message mb-4"></div>
+          
+            <button 
+              type="submit"
+              id="submitButton"
+              class="w-full mt-2 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium 
+                     bg-[#A1E970] hover:bg-[#8ed45f] focus:outline-none focus:ring-2 
+                     focus:ring-offset-2 focus:ring-[#A1E970] transition-colors duration-200"
+            >
+              Create Account
+            </button>
+          </form>
+          
+          <p class="mt-6 text-sm text-gray-600 text-center">
+            Already have an account? 
+            <a href="../login/login.html" class="font-medium text-cyan-500 hover:text-cyan-600">Login</a>
+          </p>
+        </div>
       </div>
     </div>
-    
   </div>
   <script src="register.js"></script>
 </body>

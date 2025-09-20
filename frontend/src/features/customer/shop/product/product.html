@@ -1,27 +1,79 @@
 <!DOCTYPE html>
-<html lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>J-Med Product Page</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
-<style>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>J-Med Product Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    <style>
         body {
             font-family: 'Roboto', sans-serif;
+        }
+        .image-zoom-container {
+            position: relative;
+            overflow: hidden;
+            cursor: zoom-in;
+        }
+        .image-zoom-container.zoomed {
+            cursor: zoom-out;
+            overflow: visible;
+        }
+        .image-zoom-container.zoomed img {
+            transform: scale(2);
+            z-index: 100;
+            position: relative;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .prescription-upload {
+            transition: all 0.3s ease;
         }
     </style>
 </head>
 <body class="bg-white">
 <div id="header"></div>
-<main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <div class="flex justify-between items-center mb-8"> <h1 class="text-3xl font-bold text-gray-900">Product</h1> 
-        <a class="text-gray-600 hover:text-gray-900 font-medium flex items-center" href="../browse/browse.html"> 
-            <span class="material-icons mr-1">arrow_back</span> Back to Products 
+<main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    <div class="flex justify-between items-center mb-6 md:mb-8"> 
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Product</h1> 
+        <a class="text-gray-600 hover:text-gray-900 font-medium flex items-center text-sm md:text-base" href="../browse/browse.html"> 
+            <span class="material-icons mr-1 text-base md:text-lg">arrow_back</span> 
+            <span class="hidden sm:inline">Back to Products</span>
+            <span class="sm:hidden">Back</span>
         </a> 
     </div>
     <div id="product-detail"></div>
-  </main>  
+    <div id="prescription-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 m-4 max-w-md w-full">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold">Upload Prescription</h3>
+                <button id="close-modal" class="text-gray-500 hover:text-gray-700">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <p class="text-gray-600 mb-4">This product requires a prescription. Please upload a clear image of your prescription to continue.</p>
+            <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center mb-4">
+                <input type="file" id="prescription-file" accept="image/*" class="hidden">
+                <label for="prescription-file" class="cursor-pointer">
+                    <span class="material-icons text-4xl text-gray-400 mb-2">cloud_upload</span>
+                    <p class="text-gray-500">Click to upload prescription</p>
+                </label>
+                <div id="file-name" class="mt-2 text-sm text-gray-600 hidden"></div>
+            </div>
+            <div class="flex justify-end space-x-3">
+                <button id="cancel-upload" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100">Cancel</button>
+                <button id="confirm-upload" class="px-4 py-2 bg-[#A1E970] rounded-lg text-black font-medium hover:bg-opacity-80 disabled:opacity-50" disabled>Confirm</button>
+            </div>
+        </div>
+    </div>
+</main>  
 <div id="footer"></div>
 <script src="product.js"></script>
-</body></html>
+</body>
+</html>
