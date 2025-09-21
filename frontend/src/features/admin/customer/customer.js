@@ -323,7 +323,15 @@ async function fetchData() {
 
 // Process and enrich customer data with additional information
 function processCustomerData() {
+    console.log('=== PROCESSING CUSTOMER DATA ===');
+    console.log('Customers data:', customersData);
+    console.log('Customer addresses:', customerAddresses);
+    console.log('Orders data:', ordersData);
+    console.log('Prescriptions data:', prescriptionsData);
+    
     customersData.forEach(customer => {
+        console.log('Processing customer:', customer.customer_id, 'Type:', typeof customer.customer_id);
+        
         // Get default or first valid address
         const address = customerAddresses.find(addr => 
             addr.customer_id == customer.customer_id && addr.is_default
@@ -333,15 +341,24 @@ function processCustomerData() {
         customer.state = address && address.state ? address.state : "N/A";
     
         // Orders
-        customer.orders = ordersData.filter(order => order.customer_id == customer.customer_id);
+        customer.orders = ordersData.filter(order => {
+            console.log('Comparing order customer_id:', order.customer_id, 'with customer:', customer.customer_id, 'Match:', order.customer_id == customer.customer_id);
+            return order.customer_id == customer.customer_id;
+        });
         customer.orderCount = customer.orders.length;
         customer.totalSpent = customer.orders.reduce((total, order) => total + parseFloat(order.total_amount || 0), 0);
     
         // Prescriptions
-        customer.prescriptions = prescriptionsData.filter(pres => pres.customer_id == customer.customer_id);
+        customer.prescriptions = prescriptionsData.filter(pres => {
+            console.log('Comparing prescription customer_id:', pres.customer_id, 'with customer:', customer.customer_id, 'Match:', pres.customer_id == customer.customer_id);
+            return pres.customer_id == customer.customer_id;
+        });
         customer.prescriptionCount = customer.prescriptions.length;
+        
+        console.log('Customer processed - Orders:', customer.orderCount, 'Prescriptions:', customer.prescriptionCount);
     });
     
+    console.log('=== END PROCESSING CUSTOMER DATA ===');
 }
 
 // Render customer table

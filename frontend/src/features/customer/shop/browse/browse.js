@@ -259,16 +259,23 @@ loadComponent("footer", "/frontend/src/core/components/footer.html");
   
     featuredProducts.forEach(product => {
         const card = document.createElement("div");
-        card.className = "bg-white rounded-lg overflow-hidden shadow-sm";
-  
+        card.className = "bg-white rounded-lg overflow-hidden shadow-sm relative";
+
         card.innerHTML = `
             <!-- Prescription Badge -->
-  
+            ${
+              product.requires_prescription
+              ? `<span class="absolute top-1 right-1 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded text-center">
+                  Rx
+              </span>`
+              : ""
+            }
+
             <!-- Stock Status -->
             ${
               !product.inStock
-              ? `<span class="absolute top-2 left-2 bg-gray-500 text-white text-xs font-bold px-2 py-1 rounded">
-                  Out of Stock
+              ? `<span class="absolute top-1 left-1 bg-gray-500 text-white text-xs px-1.5 py-0.5 rounded text-center">
+                  Out
               </span>`
               : ""
             }
@@ -593,15 +600,22 @@ async function addToCart(productId) {
         const card = document.createElement("div");
         card.className = "bg-white rounded-lg overflow-hidden shadow-sm p-3 relative";
         
-  
+
         card.innerHTML = `
             <!-- Prescription Badge -->
-  
+            ${
+              product.requires_prescription
+              ? `<span class="absolute top-1 right-1 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded text-center">
+                  Rx
+              </span>`
+              : ""
+            }
+
             <!-- Stock Status -->
             ${
               !product.inStock
-              ? `<span class="absolute top-2 left-2 bg-gray-500 text-white text-xs font-bold px-2 py-1 rounded">
-                  Out of Stock
+              ? `<span class="absolute top-1 left-1 bg-gray-500 text-white text-xs px-1.5 py-0.5 rounded text-center">
+                  Out
               </span>`
               : ""
             }

@@ -1,5 +1,76 @@
 // Order details page functionality with backend integration
-import { getCompleteOrderDetails } from '../../core/utils/orders-api.js';
+// Note: Import statements require a local server to work properly
+// For now, we'll define the functions locally to avoid import issues
+
+// API functions (copied from orders-api.js to avoid import issues)
+const API_BASE_URL = 'http://localhost:3000';
+
+// Get complete order details with items and products
+async function getCompleteOrderDetails(orderId) {
+  console.log('Attempting to fetch order details from backend for ID:', orderId);
+  try {
+    // Get order details
+    const orderResponse = await fetch(`${API_BASE_URL}/orders/${orderId}`);
+    console.log('Order response status:', orderResponse.status);
+    if (!orderResponse.ok) {
+      console.log('Order response not ok:', orderResponse.status, orderResponse.statusText);
+      throw new Error(`Failed to fetch order: ${orderResponse.status} ${orderResponse.statusText}`);
+    }
+    const order = await orderResponse.json();
+    console.log('Order fetched from backend:', order);
+    
+    // Get order items using the numeric order_id from the order
+    console.log('Fetching order items for order_id:', order.order_id);
+    const itemsResponse = await fetch(`${API_BASE_URL}/order_items?order_id=${order.order_id}`);
+    console.log('Order items response status:', itemsResponse.status);
+    if (!itemsResponse.ok) throw new Error('Failed to fetch order items');
+    const orderItems = await itemsResponse.json();
+    console.log('Raw order items fetched for order_id:', order.order_id, orderItems);
+    console.log('Number of order items found:', orderItems.length);
+    
+    // Filter out items with undefined or invalid product_id
+    const validOrderItems = orderItems.filter(item => item.product_id && item.product_id !== undefined && item.product_id !== null);
+    console.log('Valid order items after filtering:', validOrderItems);
+    
+    // Get product details for each item
+    const itemsWithProducts = await Promise.all(
+      validOrderItems.map(async (item) => {
+        try {
+          console.log('Fetching product for ID:', item.product_id);
+          const productResponse = await fetch(`${API_BASE_URL}/products/${item.product_id}`);
+          if (!productResponse.ok) throw new Error('Failed to fetch product');
+          const product = await productResponse.json();
+          return { ...item, product };
+        } catch (error) {
+          console.error('Error fetching product:', error);
+          return item;
+        }
+      })
+    );
+    
+    // Get address details
+    let address = null;
+    if (order.shipping_address_id) {
+      try {
+        const addressResponse = await fetch(`${API_BASE_URL}/customer_addresses/${order.shipping_address_id}`);
+        if (addressResponse.ok) {
+          address = await addressResponse.json();
+        }
+      } catch (error) {
+        console.error('Error fetching address:', error);
+      }
+    }
+    
+    return {
+      ...order,
+      items: itemsWithProducts,
+      address
+    };
+  } catch (error) {
+    console.error('Error fetching complete order details:', error);
+    throw error;
+  }
+}
 
 let currentOrder = null;
 
@@ -13,13 +84,13 @@ document.addEventListener('DOMContentLoaded', function() {
 // Load header and footer
 async function loadHeader() {
   try {
-    const response = await fetch('../../core/components/navbar.html');
+    const response = await fetch('../../../../core/components/navbar.html');
     const html = await response.text();
     document.getElementById('header').innerHTML = html;
     
     // Load navbar script
     const script = document.createElement('script');
-    script.src = '../../core/components/navbar.js';
+    script.src = '../../../../core/components/navbar.js';
     document.head.appendChild(script);
   } catch (error) {
     console.error('Error loading header:', error);
@@ -47,8 +118,29 @@ async function loadOrderDetails() {
   try {
     showLoadingState();
     
-    // Fetch complete order details from backend
-    currentOrder = await getCompleteOrderDetails(orderId);
+    // Try to fetch complete order details from backend
+    try {
+      currentOrder = await getCompleteOrderDetails(orderId);
+      console.log('Order details fetched from backend:', currentOrder);
+    } catch (backendError) {
+      console.warn('Backend API failed, checking localStorage:', backendError);
+      
+      // Fallback: check localStorage for the order
+      const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+      console.log('Available orders in localStorage:', orders.length);
+      console.log('Looking for order ID:', orderId);
+      console.log('Available order IDs:', orders.map(o => o.id));
+      
+      currentOrder = orders.find(order => order.id == orderId);
+      
+      if (!currentOrder) {
+        console.error('Order not found in localStorage either');
+        console.error('Available localStorage keys:', Object.keys(localStorage));
+        throw new Error('Order not found');
+      }
+      
+      console.log('Order details loaded from localStorage:', currentOrder);
+    }
     
     hideLoadingState();
     displayOrderDetails();
@@ -116,6 +208,9 @@ function displayOrderDetails() {
   
   // Display order summary
   displayOrderSummary();
+  
+  // Update cancel order button visibility
+  updateCancelOrderButtonVisibility();
 }
 
 // Display order status timeline
@@ -143,6 +238,29 @@ function displayOrderStatus() {
 // Get order status steps
 function getOrderStatusSteps(currentStatus) {
   const orderDate = new Date(currentOrder.order_date);
+  
+  // Handle cancelled orders
+  if (currentStatus === 'cancelled') {
+    const cancellationDate = currentOrder.cancellation_date ? 
+      new Date(currentOrder.cancellation_date) : 
+      new Date();
+    
+    return [
+      {
+        label: 'Order Placed',
+        icon: 'fas fa-shopping-cart',
+        date: orderDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+        completed: true
+      },
+      {
+        label: 'Order Cancelled',
+        icon: 'fas fa-times-circle',
+        date: cancellationDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+        completed: true
+      }
+    ];
+  }
+  
   const steps = [
     {
       label: 'Order Placed',
@@ -189,7 +307,19 @@ function getStatusDate(status) {
 // Display order items
 function displayOrderItems() {
   const itemsContainer = document.getElementById('orderItems');
-  if (!itemsContainer || !currentOrder.items) return;
+  if (!itemsContainer) return;
+  
+  if (!currentOrder.items || currentOrder.items.length === 0) {
+    itemsContainer.innerHTML = `
+      <div class="text-center py-8">
+        <i class="fas fa-shopping-bag text-gray-400 text-4xl mb-4"></i>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">No Items Found</h3>
+        <p class="text-gray-500">The order items are not available or still being processed.</p>
+        <p class="text-sm text-gray-400 mt-2">Order Total: $${currentOrder.total_amount?.toFixed(2) || '0.00'}</p>
+      </div>
+    `;
+    return;
+  }
   
   itemsContainer.innerHTML = currentOrder.items.map(item => `
     <div class="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
@@ -206,14 +336,14 @@ function displayOrderItems() {
       <div class="flex-grow">
         <h3 class="font-medium text-gray-900">${item.product?.name || 'Unknown Product'}</h3>
         <p class="text-sm text-gray-500">${item.product?.composition || 'Medicine'}</p>
-        <p class="text-sm text-gray-600">Quantity: ${item.quantity}</p>
-        <p class="text-sm text-gray-600">Unit Price: $${item.unit_price.toFixed(2)}</p>
+        <p class="text-sm text-gray-600">Quantity: ${item.quantity || 1}</p>
+        <p class="text-sm text-gray-600">Unit Price: $${(item.unit_price || item.price || 0).toFixed(2)}</p>
         ${item.product?.requires_prescription ? '<p class="text-xs text-orange-600 mt-1"><i class="fas fa-exclamation-triangle mr-1"></i>Prescription Required</p>' : ''}
       </div>
       
       <div class="text-right">
-        <p class="text-lg font-semibold text-gray-900">$${item.subtotal.toFixed(2)}</p>
-        <p class="text-sm text-gray-500">$${item.unit_price.toFixed(2)} each</p>
+        <p class="text-lg font-semibold text-gray-900">$${(item.subtotal || (item.unit_price || item.price || 0) * (item.quantity || 1) || 0).toFixed(2)}</p>
+        <p class="text-sm text-gray-500">$${(item.unit_price || item.price || 0).toFixed(2)} each</p>
       </div>
     </div>
   `).join('');
@@ -350,7 +480,178 @@ function showNotification(message, type = 'success', duration = 3000) {
   }, duration);
 }
 
+// Update cancel order button visibility
+function updateCancelOrderButtonVisibility() {
+  const cancelOrderContainer = document.getElementById('cancelOrderContainer');
+  if (!cancelOrderContainer || !currentOrder) return;
+  
+  // Only show cancel button for confirmed orders
+  if (currentOrder.status === 'confirmed') {
+    cancelOrderContainer.style.display = 'block';
+  } else {
+    cancelOrderContainer.style.display = 'none';
+  }
+}
+
+// Cancel Order Functions
+function toggleCancelDropdown() {
+  const dropdown = document.getElementById('cancelOrderDropdown');
+  if (!dropdown) return;
+  
+  if (dropdown.classList.contains('hidden')) {
+    // Show dropdown and calculate refund amounts
+    dropdown.classList.remove('hidden');
+    calculateRefundAmounts();
+    
+    // Close dropdown when clicking outside
+    setTimeout(() => {
+      document.addEventListener('click', handleOutsideClick);
+    }, 100);
+  } else {
+    // Hide dropdown
+    dropdown.classList.add('hidden');
+    document.removeEventListener('click', handleOutsideClick);
+  }
+}
+
+function handleOutsideClick(event) {
+  const container = document.getElementById('cancelOrderContainer');
+  if (container && !container.contains(event.target)) {
+    const dropdown = document.getElementById('cancelOrderDropdown');
+    if (dropdown) {
+      dropdown.classList.add('hidden');
+    }
+    document.removeEventListener('click', handleOutsideClick);
+  }
+}
+
+function calculateRefundAmounts() {
+  if (!currentOrder) return;
+  
+  const orderTotal = currentOrder.total_amount || 0;
+  const cancellationFee = orderTotal * 0.1; // 10% fee
+  const refundAmount = orderTotal - cancellationFee;
+  
+  document.getElementById('cancelOrderTotal').textContent = `$${orderTotal.toFixed(2)}`;
+  document.getElementById('cancelOrderFee').textContent = `$${cancellationFee.toFixed(2)}`;
+  document.getElementById('cancelOrderRefund').textContent = `$${refundAmount.toFixed(2)}`;
+}
+
+function confirmCancelOrder() {
+  if (!currentOrder) {
+    showNotification('Order not found', 'error');
+    return;
+  }
+  
+  // Check if order can be cancelled (only confirmed orders)
+  if (currentOrder.status !== 'confirmed') {
+    showNotification('This order cannot be cancelled', 'error');
+    return;
+  }
+  
+  // Show confirmation dialog
+  const orderTotal = currentOrder.total_amount || 0;
+  const cancellationFee = orderTotal * 0.1;
+  const refundAmount = orderTotal - cancellationFee;
+  
+  const confirmed = confirm(
+    `Are you sure you want to cancel this order?\n\n` +
+    `Order Total: $${orderTotal.toFixed(2)}\n` +
+    `Cancellation Fee (10%): $${cancellationFee.toFixed(2)}\n` +
+    `Refund Amount: $${refundAmount.toFixed(2)}\n\n` +
+    `The refund will be processed within 5 business days.`
+  );
+  
+  if (confirmed) {
+    processOrderCancellation();
+  }
+}
+
+async function processOrderCancellation() {
+  try {
+    // Show loading state
+    const confirmButton = document.querySelector('button[onclick="confirmCancelOrder()"]');
+    if (confirmButton) {
+      confirmButton.disabled = true;
+      confirmButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+    }
+    
+    // Update order status to cancelled
+    const updatedOrder = {
+      ...currentOrder,
+      status: 'cancelled',
+      cancellation_date: new Date().toISOString(),
+      refund_amount: currentOrder.total_amount - (currentOrder.total_amount * 0.1)
+    };
+    
+    // Update in API
+    try {
+      const response = await fetch(`${API_BASE_URL}/orders/${currentOrder.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          status: 'cancelled',
+          cancellation_date: updatedOrder.cancellation_date,
+          refund_amount: updatedOrder.refund_amount
+        })
+      });
+      
+      if (response.ok) {
+        console.log('Order cancelled in API successfully');
+      } else {
+        console.warn('Failed to update order in API');
+      }
+    } catch (error) {
+      console.warn('API not available, updating localStorage only:', error);
+    }
+    
+    // Update in localStorage
+    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+    const orderIndex = orders.findIndex(order => order.id === currentOrder.id);
+    if (orderIndex !== -1) {
+      orders[orderIndex] = updatedOrder;
+      localStorage.setItem('orders', JSON.stringify(orders));
+    }
+    
+    // Update current order
+    currentOrder = updatedOrder;
+    
+    // Hide dropdown
+    const dropdown = document.getElementById('cancelOrderDropdown');
+    if (dropdown) {
+      dropdown.classList.add('hidden');
+    }
+    
+    // Refresh the order display
+    displayOrderDetails();
+    
+    // Show success notification
+    showNotification('Order cancelled successfully. Refund will be processed within 5 business days.', 'success');
+    
+    // Reset button
+    if (confirmButton) {
+      confirmButton.disabled = false;
+      confirmButton.innerHTML = '<i class="fas fa-check mr-2"></i>Confirm Cancel';
+    }
+    
+  } catch (error) {
+    console.error('Error cancelling order:', error);
+    showNotification('Failed to cancel order. Please try again.', 'error');
+    
+    // Reset button
+    const confirmButton = document.querySelector('button[onclick="confirmCancelOrder()"]');
+    if (confirmButton) {
+      confirmButton.disabled = false;
+      confirmButton.innerHTML = '<i class="fas fa-check mr-2"></i>Confirm Cancel';
+    }
+  }
+}
+
 // Make functions globally available
 window.reorderItems = reorderItems;
 window.downloadInvoice = downloadInvoice;
 window.contactSupport = contactSupport;
+window.toggleCancelDropdown = toggleCancelDropdown;
+window.confirmCancelOrder = confirmCancelOrder;

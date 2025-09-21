@@ -127,6 +127,65 @@
                 <i class="fas fa-redo mr-2"></i>
                 Reorder Items
               </button>
+              
+              <!-- Cancel Order Button with Dropdown -->
+              <div class="relative" id="cancelOrderContainer">
+                <button onclick="toggleCancelDropdown()" class="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                  <i class="fas fa-times mr-2"></i>
+                  Cancel Order
+                </button>
+                
+                <!-- Cancel Order Dropdown -->
+                <div id="cancelOrderDropdown" class="hidden absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                  <div class="p-4">
+                    <div class="flex items-center mb-3">
+                      <i class="fas fa-exclamation-triangle text-orange-500 mr-2"></i>
+                      <h3 class="font-semibold text-gray-900">Cancel Order</h3>
+                    </div>
+                    
+                    <div class="mb-4 policy-info">
+                      <div class="flex items-start">
+                        <i class="fas fa-info-circle text-yellow-600 mr-2 mt-0.5"></i>
+                        <div class="text-sm">
+                          <p class="policy-title">Cancellation Policy</p>
+                          <ul class="policy-list space-y-1">
+                            <li>• 10% cancellation fee will be deducted</li>
+                            <li>• Refund will be processed within 5 business days</li>
+                            <li>• Refund will be credited to your original payment method</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="mb-4 refund-calculation">
+                      <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">Order Total:</span>
+                        <span class="font-medium" id="cancelOrderTotal">$0.00</span>
+                      </div>
+                      <div class="flex justify-between text-sm">
+                        <span class="text-gray-600">Cancellation Fee (10%):</span>
+                        <span class="font-medium cancellation-fee" id="cancelOrderFee">$0.00</span>
+                      </div>
+                      <div class="flex justify-between text-sm font-semibold pt-2 border-t border-gray-200">
+                        <span>Refund Amount:</span>
+                        <span class="refund-amount" id="cancelOrderRefund">$0.00</span>
+                      </div>
+                    </div>
+                    
+                    <div class="flex space-x-2">
+                      <button onclick="confirmCancelOrder()" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                        <i class="fas fa-check mr-2"></i>
+                        Confirm Cancel
+                      </button>
+                      <button onclick="toggleCancelDropdown()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors">
+                        <i class="fas fa-times mr-2"></i>
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
               <button onclick="downloadInvoice()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors">
                 <i class="fas fa-download mr-2"></i>
                 Download Invoice

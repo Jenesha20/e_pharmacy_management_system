@@ -268,7 +268,13 @@ try {
 
   // Enrich orders with additional data
   orders = orders.map(order => {
-    const customer = customers.find(c => c.customer_id === order.customer_id);
+    console.log('Processing order:', order.order_id, 'customer_id:', order.customer_id);
+    
+    // Convert customer_id to number for comparison
+    const customerId = parseInt(order.customer_id);
+    const customer = customers.find(c => c.customer_id === customerId);
+    console.log('Found customer:', customer);
+    
     const address = customerAddresses.find(a => a.address_id === order.shipping_address_id);
     const items = orderItems.filter(item => item.order_id === order.order_id);
     const prescription = order.prescription_id ? prescriptions.find(p => p.prescription_id === order.prescription_id) : null;
@@ -289,7 +295,7 @@ try {
     
     return {
       ...order,
-      customer_name: customer ? `${customer.first_name} ${customer.last_name}` : 'Unknown Customer',
+      customer_name: customer ? `${customer.first_name} ${customer.last_name}` : `Customer ID: ${order.customer_id}`,
       customer_email: customer ? customer.email : 'N/A',
       customer_phone: customer ? customer.phone_number : 'N/A',
       shipping_address: address ? `${address.address_line1}, ${address.city}, ${address.state} ${address.zip_code}` : 'Address not found',

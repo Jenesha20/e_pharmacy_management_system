@@ -114,7 +114,7 @@
   let customerPrescriptions = [];
 // Fix: define urlParams first
 const urlParams = new URLSearchParams(window.location.search);
-const customerId = Number(urlParams.get('customerId')); // also convert to number for JSON Server
+const customerId = urlParams.get('customerId'); // Keep as string since customer_id is now string
 
   // Fetch customer data from API
   async function fetchCustomerData(customerId) {
@@ -126,16 +126,22 @@ const customerId = Number(urlParams.get('customerId')); // also convert to numbe
         '<tr><td colspan="5" class="p-4 text-center text-gray-500">Loading prescriptions...</td></tr>';
   
       // Fetch all data in parallel
-      const [customerRes, addressesRes, ordersRes, prescriptionsRes] = await Promise.all([
-        fetch(`${ENDPOINTS.CUSTOMERS}/${customerId}`),
+      const [customersRes, addressesRes, ordersRes, prescriptionsRes] = await Promise.all([
+        fetch(ENDPOINTS.CUSTOMERS),
         fetch(`${ENDPOINTS.CUSTOMER_ADDRESSES}?customer_id=${customerId}`),
         fetch(`${ENDPOINTS.ORDERS}?customer_id=${customerId}`),
         fetch(`${ENDPOINTS.PRESCRIPTIONS}?customer_id=${customerId}`)
       ]);
   
-      if (!customerRes.ok) throw new Error("Customer not found");
+      if (!customersRes.ok) throw new Error("Failed to fetch customers");
       
-      customerData = await customerRes.json();
+      const allCustomers = await customersRes.json();
+      customerData = allCustomers.find(customer => customer.customer_id === customerId);
+      
+      if (!customerData) {
+        throw new Error("Customer not found");
+      }
+      
       customerAddresses = await addressesRes.json();
       customerOrders = await ordersRes.json();
       customerPrescriptions = await prescriptionsRes.json();

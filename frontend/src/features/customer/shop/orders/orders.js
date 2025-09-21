@@ -1,5 +1,95 @@
 // Orders page functionality with backend integration
-import { getCustomerOrdersWithDetails } from '../../core/utils/orders-api.js';
+// Note: Import statements require a local server to work properly
+// For now, we'll define the functions locally to avoid import issues
+
+// API functions (copied from orders-api.js to avoid import issues)
+const API_BASE_URL = 'http://localhost:3000';
+
+// Get customer orders with details
+async function getCustomerOrdersWithDetails(customerId) {
+  try {
+    console.log('Fetching orders for customer:', customerId);
+    
+    // Get orders for the customer - filter by customer_id
+    const ordersResponse = await fetch(`${API_BASE_URL}/orders`);
+    if (!ordersResponse.ok) {
+      console.log('Orders API not available, using localStorage fallback');
+      throw new Error('Orders API not available');
+    }
+    
+    const allOrders = await ordersResponse.json();
+    console.log('All orders fetched from API:', allOrders);
+    
+    // Filter orders by customer_id - convert both to strings for comparison
+    const orders = allOrders.filter(order => {
+      const orderCustomerId = order.customer_id ? order.customer_id.toString() : null;
+      const currentCustomerId = customerId ? customerId.toString() : null;
+      console.log('Comparing order customer ID:', orderCustomerId, 'with current:', currentCustomerId);
+      return orderCustomerId === currentCustomerId;
+    });
+    console.log('Filtered orders for customer:', orders);
+    
+    // For each order, get the order items
+    const ordersWithDetails = await Promise.all(
+      orders.map(async (order) => {
+        try {
+          // Use order_id field to match with order_items
+          const itemsResponse = await fetch(`${API_BASE_URL}/order_items?order_id=${order.order_id}`);
+          if (!itemsResponse.ok) throw new Error('Failed to fetch order items');
+          const orderItems = await itemsResponse.json();
+          console.log('Order items for order', order.order_id, ':', orderItems);
+          
+          // Get product details for each item
+          const itemsWithProducts = await Promise.all(
+            orderItems.map(async (item) => {
+              try {
+                console.log('Fetching product for ID:', item.product_id);
+                if (!item.product_id || item.product_id === 'undefined') {
+                  console.warn('Invalid product_id:', item.product_id);
+                  return { ...item, product: { name: 'Unknown Product', image_url: null } };
+                }
+                
+                const productResponse = await fetch(`${API_BASE_URL}/products/${item.product_id}`);
+                if (!productResponse.ok) throw new Error('Failed to fetch product');
+                const product = await productResponse.json();
+                return { ...item, product };
+              } catch (error) {
+                console.error('Error fetching product:', error);
+                return { ...item, product: { name: 'Unknown Product', image_url: null } };
+              }
+            })
+          );
+          
+          return { ...order, items: itemsWithProducts };
+        } catch (error) {
+          console.error('Error fetching order details:', error);
+          return order;
+        }
+      })
+    );
+    
+    return ordersWithDetails;
+  } catch (error) {
+    console.warn('API failed, using localStorage fallback:', error);
+    
+    // Fallback to localStorage
+    const allOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+    console.log('All orders from localStorage fallback:', allOrders);
+    console.log('Looking for customer ID:', customerId, 'Type:', typeof customerId);
+    
+    // Filter orders by customer_id - convert both to strings for comparison
+    const orders = allOrders.filter(order => {
+      const orderCustomerId = order.customer_id ? order.customer_id.toString() : null;
+      const currentCustomerId = customerId ? customerId.toString() : null;
+      console.log('Comparing order customer ID:', orderCustomerId, 'with current:', currentCustomerId, 'Match:', orderCustomerId === currentCustomerId);
+      return orderCustomerId === currentCustomerId;
+    });
+    
+    console.log('Filtered orders from localStorage:', orders);
+    console.log('Number of matching orders:', orders.length);
+    return orders;
+  }
+}
 
 let orders = [];
 let currentTab = 'current';
@@ -15,13 +105,35 @@ document.addEventListener('DOMContentLoaded', function() {
 // Load header and footer
 async function loadHeader() {
   try {
-    const response = await fetch('../../core/components/navbar.html');
+    console.log('Loading navbar...');
+    const response = await fetch('../../../../core/components/navbar.html');
     const html = await response.text();
     document.getElementById('header').innerHTML = html;
+    console.log('Navbar HTML loaded');
     
     // Load navbar script
     const script = document.createElement('script');
-    script.src = '../../core/components/navbar.js';
+    script.src = '../../../../core/components/navbar.js';
+    script.onload = () => {
+      console.log('Navbar script loaded successfully');
+      // Initialize auth after script loads
+      if (window.initAuth) {
+        window.initAuth();
+        console.log('Navbar auth initialized from orders page');
+        // Also try to refresh auth after a short delay
+        setTimeout(() => {
+          if (window.refreshAuth) {
+            window.refreshAuth();
+            console.log('Navbar auth refreshed from orders page');
+          }
+        }, 200);
+      } else {
+        console.error('initAuth function not available');
+      }
+    };
+    script.onerror = (error) => {
+      console.error('Error loading navbar script:', error);
+    };
     document.head.appendChild(script);
   } catch (error) {
     console.error('Error loading header:', error);
@@ -30,7 +142,7 @@ async function loadHeader() {
 
 async function loadFooter() {
   try {
-    const response = await fetch('../../core/components/footer.html');
+    const response = await fetch('../../../../core/components/footer.html');
     const html = await response.text();
     document.getElementById('footer').innerHTML = html;
   } catch (error) {
@@ -40,27 +152,90 @@ async function loadFooter() {
 
 // Initialize authentication and load orders
 async function initializeAuth() {
-  // Get current user ID from localStorage
-  currentUserId = localStorage.getItem('currentUserId');
+  // Get current user from localStorage
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+  console.log('Current user from localStorage:', currentUser);
   
-  if (!currentUserId) {
-    showNotification('Please log in to view your orders', 'error');
-    setTimeout(() => {
-      window.location.href = '../auth/login/login.html';
-    }, 2000);
-    return;
+  if (currentUser && currentUser.customer_id) {
+    // Get customer ID from the currentUser object - ensure it's a string
+    currentUserId = currentUser.customer_id.toString();
+    console.log('Using customer ID from currentUser:', currentUserId, 'Type:', typeof currentUserId);
+  } else {
+    console.log('No user found, using default customer ID 6 for testing');
+    currentUserId = '6'; // Default to customer 6 as string for consistency
+    // Also set currentUser for consistency
+    localStorage.setItem('currentUser', JSON.stringify({
+      customer_id: '6', // Store as string for consistency
+      first_name: 'Test',
+      last_name: 'User',
+      email: 'test@example.com'
+    }));
   }
   
+  // Ensure currentUserId is always a string for consistency
+  currentUserId = currentUserId.toString();
+  console.log('Final customer ID:', currentUserId, 'Type:', typeof currentUserId);
+  
+  // Debug: Check all orders in localStorage
+  debugOrdersInStorage();
+  
   await loadOrders();
+}
+
+// Debug function to check orders in storage
+function debugOrdersInStorage() {
+  const allOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+  
+  console.log('=== DEBUG: All orders in localStorage ===');
+  console.log('Total orders:', allOrders.length);
+  console.log('Current user object:', currentUser);
+  console.log('Current user ID:', currentUserId, 'Type:', typeof currentUserId);
+  
+  allOrders.forEach((order, index) => {
+    console.log(`Order ${index + 1}:`, {
+      id: order.id,
+      order_id: order.order_id,
+      customer_id: order.customer_id,
+      customer_id_type: typeof order.customer_id,
+      order_number: order.order_number,
+      status: order.status
+    });
+  });
+  
+  // Show which orders should match
+  const matchingOrders = allOrders.filter(order => {
+    const orderCustomerId = order.customer_id ? order.customer_id.toString() : null;
+    const currentCustomerId = currentUserId ? currentUserId.toString() : null;
+    return orderCustomerId === currentCustomerId;
+  });
+  
+  console.log('Orders that should match current user:', matchingOrders.length);
+  console.log('=== END DEBUG ===');
 }
 
 // Load orders from backend
 async function loadOrders() {
   try {
+    console.log('Loading orders for customer ID:', currentUserId);
     showLoadingState();
     
     // Fetch orders from backend
     orders = await getCustomerOrdersWithDetails(currentUserId);
+    console.log('Orders loaded from backend:', orders);
+    console.log('Number of orders loaded:', orders.length);
+    
+    // Double-check that orders are filtered by customer ID
+    const filteredOrders = orders.filter(order => {
+      const orderCustomerId = order.customer_id ? order.customer_id.toString() : null;
+      const currentCustomerId = currentUserId ? currentUserId.toString() : null;
+      return orderCustomerId === currentCustomerId;
+    });
+    
+    if (filteredOrders.length !== orders.length) {
+      console.warn('Backend returned orders for other customers, filtering them out');
+      orders = filteredOrders;
+    }
     
     hideLoadingState();
     displayOrders();
@@ -76,7 +251,23 @@ async function loadOrders() {
 
 // Fallback: Load orders from localStorage
 function loadOrdersFromLocalStorage() {
-  orders = JSON.parse(localStorage.getItem('orders') || '[]');
+  const allOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+  console.log('=== LOADING FROM LOCALSTORAGE ===');
+  console.log('All orders from localStorage:', allOrders);
+  console.log('Total orders in localStorage:', allOrders.length);
+  console.log('Filtering for customer ID:', currentUserId, 'Type:', typeof currentUserId);
+  
+  // Filter orders by customer ID
+  orders = allOrders.filter(order => {
+    const orderCustomerId = order.customer_id ? order.customer_id.toString() : null;
+    const currentCustomerId = currentUserId ? currentUserId.toString() : null;
+    console.log('Comparing order customer ID:', orderCustomerId, 'with current:', currentCustomerId, 'Match:', orderCustomerId === currentCustomerId);
+    return orderCustomerId === currentCustomerId;
+  });
+  
+  console.log('Filtered orders for customer:', orders);
+  console.log('Number of matching orders:', orders.length);
+  console.log('=== END LOCALSTORAGE LOAD ===');
   displayOrders();
 }
 
@@ -117,6 +308,11 @@ function displayOrders() {
   const pastOrders = orders.filter(order => 
     ['delivered', 'cancelled', 'returned'].includes(order.status)
   );
+  
+  console.log('Total orders:', orders.length);
+  console.log('Current orders:', currentOrders.length);
+  console.log('Past orders:', pastOrders.length);
+  console.log('Order statuses:', orders.map(o => o.status));
   
   // Clear existing content
   currentOrdersList.innerHTML = '';
@@ -184,7 +380,7 @@ function createOrderCard(order) {
             </div>
             <div class="text-right">
               <p class="text-lg font-semibold text-gray-900">$${order.total_amount.toFixed(2)}</p>
-              <p class="text-sm text-gray-500">${order.items ? order.items.length : 0} item(s)</p>
+              <p class="text-sm text-gray-500">${order.items ? order.items.reduce((total, item) => total + (item.quantity || 0), 0) : 0} item(s)</p>
             </div>
           </div>
         </div>

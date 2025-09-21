@@ -141,9 +141,9 @@ document.addEventListener("DOMContentLoaded", () => {
           
           // Store user data in localStorage
           localStorage.setItem("currentUser", JSON.stringify(user));
-//           // After successful login
- const id=localStorage.getItem("currentUser");
- console.log(localStorage.getItem(id));
+          console.log('Login successful - stored user:', user);
+          console.log('Login successful - user email:', user.email);
+          console.log('Login successful - user first_name:', user.first_name);
 
           
           // Show success message

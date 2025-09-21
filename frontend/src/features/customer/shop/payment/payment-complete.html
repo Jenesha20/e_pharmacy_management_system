@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Payment Complete - J-Med J-Pharmacy</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="payment-complete.css">
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+  
+  <div id="header"></div>
+  
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1">
+    <main class="mt-8">
+      <!-- Breadcrumbs -->
+      <nav class="flex mb-6" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+          <li class="inline-flex items-center">
+            <a href="../browse/browse.html" class="text-gray-700 hover:text-blue-600">
+              <i class="fas fa-home w-4 h-4 mr-2"></i>
+              Shop
+            </a>
+          </li>
+          <li>
+            <div class="flex items-center">
+              <i class="fas fa-chevron-right text-gray-400 mx-1"></i>
+              <a href="../cart/cart.html" class="text-gray-700 hover:text-blue-600">Cart</a>
+            </div>
+          </li>
+          <li>
+            <div class="flex items-center">
+              <i class="fas fa-chevron-right text-gray-400 mx-1"></i>
+              <a href="payment.html" class="text-gray-700 hover:text-blue-600">Payment</a>
+            </div>
+          </li>
+          <li>
+            <div class="flex items-center">
+              <i class="fas fa-chevron-right text-gray-400 mx-1"></i>
+              <span class="text-gray-500">Complete</span>
+            </div>
+          </li>
+        </ol>
+      </nav>
+
+      <!-- Payment Success Content -->
+      <div class="max-w-2xl mx-auto text-center">
+        <!-- Success Icon -->
+        <div class="mb-8">
+          <div class="mx-auto w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6 success-icon">
+            <i class="fas fa-check text-green-500 text-4xl"></i>
+          </div>
+          <h1 class="text-4xl font-bold text-gray-900 mb-4">Payment Complete!</h1>
+          <p class="text-xl text-gray-600 mb-8">Your order has been successfully placed and payment has been processed.</p>
+        </div>
+
+        <!-- Order Summary Card -->
+        <div class="bg-white rounded-lg shadow-sm p-8 mb-8 order-summary-card">
+          <h2 class="text-2xl font-semibold text-gray-800 mb-6">Order Summary</h2>
+          
+          <!-- Order Number -->
+          <div class="mb-6">
+            <span class="text-gray-600">Order Number</span>
+            <p class="text-2xl font-bold text-blue-600 order-number" id="orderNumber">#ORD-20241201-001</p>
+          </div>
+
+          <!-- Order Items Preview -->
+          <div class="mb-6">
+            <h3 class="text-lg font-medium text-gray-800 mb-4">Items Ordered</h3>
+            <div id="orderItemsPreview" class="space-y-3 order-items-container">
+              <!-- Items will be populated by JavaScript -->
+            </div>
+          </div>
+
+          <!-- Order Total -->
+          <div class="border-t border-gray-200 pt-4">
+            <div class="flex justify-between text-lg font-semibold">
+              <span>Total Amount</span>
+              <span id="orderTotal">$0.00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Next Steps -->
+        <div class="bg-blue-50 rounded-lg p-6 mb-8">
+          <h3 class="text-lg font-semibold text-blue-900 mb-4">What's Next?</h3>
+          <div class="space-y-3 text-left">
+            <div class="flex items-start">
+              <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-0.5 step-indicator">1</div>
+              <div>
+                <p class="font-medium text-blue-900">Order Confirmation</p>
+                <p class="text-blue-700 text-sm">You'll receive an email confirmation shortly</p>
+              </div>
+            </div>
+            <div class="flex items-start">
+              <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-0.5 step-indicator">2</div>
+              <div>
+                <p class="font-medium text-blue-900">Order Processing</p>
+                <p class="text-blue-700 text-sm">We'll prepare your order for shipping</p>
+              </div>
+            </div>
+            <div class="flex items-start">
+              <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-0.5 step-indicator">3</div>
+              <div>
+                <p class="font-medium text-blue-900">Delivery</p>
+                <p class="text-blue-700 text-sm">Your order will be delivered to your address</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="space-y-4">
+          <button onclick="goToOrders()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-8 rounded-lg transition-colors duration-200 flex items-center justify-center text-lg btn-primary">
+            <i class="fas fa-list mr-3"></i>
+            View All Orders
+          </button>
+          
+          <div class="flex space-x-4 button-group">
+            <button onclick="continueShopping()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-6 rounded-lg transition-colors duration-200">
+              <i class="fas fa-shopping-bag mr-2"></i>
+              Continue Shopping
+            </button>
+            <button onclick="downloadReceipt()" class="flex-1 bg-blue-100 hover:bg-blue-200 text-blue-700 font-medium py-3 px-6 rounded-lg transition-colors duration-200">
+              <i class="fas fa-download mr-2"></i>
+              Download Receipt
+            </button>
+          </div>
+        </div>
+
+        <!-- Support Information -->
+        <div class="mt-8 p-4 bg-gray-100 rounded-lg">
+          <p class="text-sm text-gray-600">
+            <i class="fas fa-info-circle mr-2"></i>
+            Need help? Contact our support team at 
+            <a href="mailto:support@jmedpharmacy.com" class="text-blue-600 hover:text-blue-800">support@jmedpharmacy.com</a>
+            or call <a href="tel:+1234567890" class="text-blue-600 hover:text-blue-800">+1 (234) 567-890</a>
+          </p>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <div id="footer"></div>
+
+  <script src="payment-complete.js"></script>
+</body>
+</html>

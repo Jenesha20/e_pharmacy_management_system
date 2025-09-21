@@ -1,37 +1,24 @@
-<!DOCTYPE html> 
-<html lang="en"> 
-    <head> 
-        <meta charset="UTF-8"> 
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-        <title>navbar</title>
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-        <script src="https://cdn.tailwindcss.com"></script>
-    </head> 
-    <body> 
-        <header class="w-full px-6 py-4 flex justify-between items-center bg-white shadow"> 
-            <div class="flex items-center space-x-8"> 
-                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center"> 
-                    <span class="text-blue-500 font-bold text-lg">J</span> 
-                </div> 
-                <nav class="hidden md:flex items-center space-x-8 text-gray-600"> 
-                    <a class="hover:text-gray-900" href="../../../customer/home/landing/landing.html">Home</a> 
-                    <a class="hover:text-gray-900" href="../../../customer/shop/browse/browse.html">Shop</a> 
-                    <a class="hover:text-gray-900" href="orders.html">Orders</a> 
-                    <a class="hover:text-gray-900" href="../../../customer/about/contact/contact.html">Contact us</a> 
-                </nav> 
-            </div> 
-            <div class="flex items-center space-x-4" id="auth-section">
-                <a href="../../../customer/shop/cart/cart.html" class="text-gray-600 hover:text-gray-900">
-                    <span class="material-icons">shopping_cart</span>
-                </a>
-              
-                <!-- This part will be replaced by JS -->
-                <a href="../../../customer/auth/login/login.html" 
-                   class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
-                  Login
-                </a>
-            </div>
-        </header> 
-        <script src="/frontend/src/core/components/navbar.js"></script>    
-    </body>
-</html>
+<header class="w-full px-6 py-4 flex justify-between items-center bg-white shadow"> 
+    <div class="flex items-center space-x-8"> 
+        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center"> 
+            <span class="text-blue-500 font-bold text-lg">J</span> 
+        </div> 
+        <nav class="hidden md:flex items-center space-x-8 text-gray-600"> 
+            <a class="hover:text-gray-900" href="../../../customer/home/landing/landing.html">Home</a> 
+            <a class="hover:text-gray-900" href="../../../customer/shop/browse/browse.html">Shop</a> 
+            <a class="hover:text-gray-900" href="../../../customer/shop/orders/orders.html">Orders</a> 
+            <a class="hover:text-gray-900" href="../../../customer/about/contact/contact.html">Contact us</a> 
+        </nav> 
+    </div> 
+    <div class="flex items-center space-x-4" id="auth-section">
+        <a href="../../../customer/shop/cart/cart.html" class="text-gray-600 hover:text-gray-900">
+            <span class="material-icons">shopping_cart</span>
+        </a>
+      
+        <!-- This part will be replaced by JS -->
+        <a href="../../../customer/auth/login/login.html" 
+           class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+          Login
+        </a>
+    </div>
+</header>

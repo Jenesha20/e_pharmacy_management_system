@@ -12,14 +12,14 @@
 /* Product image background - change green background to white */
 .bg-\[#A1E970\].bg-opacity-50 {
   background-color: white !important;
-  background-opacity: 1 !important;
+  opacity: 1 !important;
 }
 
 /* Additional rule to ensure all product image containers are white */
 #featured-products .bg-\[#A1E970\],
 #product-list .bg-\[#A1E970\] {
   background-color: white !important;
-  background-opacity: 1 !important;
+  opacity: 1 !important;
 }
 
 /* Increase shadow for product cards */
@@ -31,3 +31,4 @@
 .grid > div:hover {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
+

@@ -30,18 +30,33 @@ function loadComponent(id, filePath) {
 
 document.addEventListener("DOMContentLoaded", () => {
   // load header & footer after DOM is ready
-  loadComponent("header", "/frontend/src/core/components/navbar.html").then(() => {
-    // Initialize authentication after navbar is loaded
-    // Add a small delay to ensure navbar script has executed
-    setTimeout(() => {
+  loadComponent("header", "../../../../core/components/navbar.html").then(() => {
+    // Load the navbar script after HTML is loaded
+    const script = document.createElement('script');
+    script.src = '../../../../core/components/navbar.js';
+    script.onload = () => {
+      console.log('Navbar script loaded successfully on landing page');
+      // Initialize authentication after script loads
       if (window.initAuth) {
         window.initAuth();
-      } else if (window.refreshAuth) {
-        window.refreshAuth();
+        console.log('Navbar auth initialized from landing page');
+        // Also try to refresh auth after a short delay
+        setTimeout(() => {
+          if (window.refreshAuth) {
+            window.refreshAuth();
+            console.log('Navbar auth refreshed from landing page');
+          }
+        }, 200);
+      } else {
+        console.error('initAuth function not available on landing page');
       }
-    }, 100);
+    };
+    script.onerror = (error) => {
+      console.error('Error loading navbar script on landing page:', error);
+    };
+    document.head.appendChild(script);
   });
-  loadComponent("footer", "/frontend/src/core/components/footer.html");
+  loadComponent("footer", "../../../../core/components/footer.html");
 
   // Carousel logic
   const carousel = document.getElementById("carousel");
@@ -81,10 +96,61 @@ document.addEventListener("DOMContentLoaded", () => {
   }, 5000);
 });
 
+// Additional authentication check after page is fully loaded
+window.addEventListener('load', () => {
+  console.log('Window loaded - checking authentication state');
+  setTimeout(() => {
+    if (window.refreshAuth) {
+      window.refreshAuth();
+      console.log('Authentication refreshed after window load');
+    }
+  }, 500);
+});
+
+// Manual refresh function for debugging
+function refreshNavbarAuth() {
+  console.log('Manual navbar auth refresh triggered');
+  if (window.refreshAuth) {
+    window.refreshAuth();
+  } else {
+    console.error('refreshAuth function not available');
+  }
+}
+
+// Make it globally available for debugging
+window.refreshNavbarAuth = refreshNavbarAuth;
+
+// Add debug button for testing (temporary)
+setTimeout(() => {
+  const debugButton = document.createElement('button');
+  debugButton.textContent = 'Refresh Auth';
+  debugButton.style.position = 'fixed';
+  debugButton.style.top = '10px';
+  debugButton.style.right = '10px';
+  debugButton.style.zIndex = '9999';
+  debugButton.style.padding = '5px 10px';
+  debugButton.style.backgroundColor = '#3b82f6';
+  debugButton.style.color = 'white';
+  debugButton.style.border = 'none';
+  debugButton.style.borderRadius = '4px';
+  debugButton.style.cursor = 'pointer';
+  debugButton.onclick = refreshNavbarAuth;
+  document.body.appendChild(debugButton);
+  
+  // Remove debug button after 30 seconds
+  setTimeout(() => {
+    if (debugButton.parentNode) {
+      debugButton.parentNode.removeChild(debugButton);
+    }
+  }, 30000);
+}, 2000);
+
 // Handle Add to Cart functionality
 function handleAddToCart(productId) {
   // Check if user is logged in
   const currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
+  console.log('Landing page - currentUser:', currentUser);
+  console.log('Landing page - currentUser.email:', currentUser?.email);
   if (!currentUser || !currentUser.email) {
     showLoginRequiredModal();
     return;
