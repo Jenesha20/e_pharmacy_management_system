@@ -198,14 +198,44 @@
 
 
 function loadComponent(id, filePath) {
-  fetch(filePath)
-    .then(response => response.text())
+  const el = document.getElementById(id);
+  if (!el) {
+    console.warn(`Element with id="${id}" not found. Skipping load for ${filePath}`);
+    return Promise.resolve();
+  }
+
+  return fetch(filePath)
+    .then(response => {
+      if (!response.ok) throw new Error(`Failed to fetch ${filePath}`);
+      return response.text();
+    })
     .then(data => {
-      document.getElementById(id).innerHTML = data;
+      el.innerHTML = data;
+      // Execute any scripts in the loaded content
+      const scripts = el.querySelectorAll('script');
+      scripts.forEach(script => {
+        const newScript = document.createElement('script');
+        if (script.src) {
+          newScript.src = script.src;
+        } else {
+          newScript.textContent = script.textContent;
+        }
+        document.head.appendChild(newScript);
+      });
     })
     .catch(err => console.error("Error loading component:", err));
 }
-loadComponent("header", "/frontend/src/core/components/navbar.html");
+
+loadComponent("header", "/frontend/src/core/components/navbar.html").then(() => {
+  // Initialize authentication after navbar is loaded
+  setTimeout(() => {
+    if (window.initAuth) {
+      window.initAuth();
+    } else if (window.refreshAuth) {
+      window.refreshAuth();
+    }
+  }, 100);
+});
 loadComponent("footer", "/frontend/src/core/components/footer.html");
 
 async function fetchProduct() {
@@ -551,12 +581,93 @@ function getCurrentUser() {
   return JSON.parse(localStorage.getItem("currentUser"));
 }
 
+// Show login required modal
+function showLoginRequiredModal() {
+  // Create modal HTML
+  const modalHTML = `
+    <div id="loginRequiredModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+      <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4 shadow-xl">
+        <div class="text-center">
+          <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 mb-4">
+            <i class="fas fa-lock text-blue-600 text-xl"></i>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Login Required</h3>
+          <p class="text-gray-600 mb-6">
+            You need to be logged in to add items to your cart. Please log in to continue shopping.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-3">
+            <button 
+              onclick="closeLoginRequiredModal()" 
+              class="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+            >
+              Continue Shopping
+            </button>
+            <button 
+              onclick="goToLogin()" 
+              class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+              <i class="fas fa-sign-in-alt mr-2"></i>
+              Login Now
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  // Add modal to page
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+  
+  // Add animation
+  const modal = document.getElementById('loginRequiredModal');
+  if (modal) {
+    modal.style.opacity = '0';
+    modal.style.transform = 'scale(0.9)';
+    
+    setTimeout(() => {
+      modal.style.transition = 'all 0.3s ease';
+      modal.style.opacity = '1';
+      modal.style.transform = 'scale(1)';
+    }, 10);
+  }
+}
+
+// Close login required modal
+function closeLoginRequiredModal() {
+  const modal = document.getElementById('loginRequiredModal');
+  if (modal) {
+    modal.style.transition = 'all 0.3s ease';
+    modal.style.opacity = '0';
+    modal.style.transform = 'scale(0.9)';
+    
+    setTimeout(() => {
+      modal.remove();
+    }, 300);
+  }
+}
+
+// Go to login page
+function goToLogin() {
+  window.location.href = "/frontend/src/features/customer/auth/login/login.html";
+}
+
+// Make functions globally available
+window.showLoginRequiredModal = showLoginRequiredModal;
+window.closeLoginRequiredModal = closeLoginRequiredModal;
+window.goToLogin = goToLogin;
+
 // Add product to cart (same functionality as browse.js but with quantity support)
 async function addToCart(productId, quantity = 1, redirectToCheckout = false) {
+  // Check if user is logged in first
+  const currentUser = getCurrentUser();
+  if (!currentUser) {
+    showLoginRequiredModal();
+    return;
+  }
+  
   const now = new Date().toISOString();
   
-  // Case 1: User is logged in → save to backend
-  const currentUser = getCurrentUser();
+  // User is logged in → save to backend
   if (currentUser) {
       const userId = currentUser.id;
 

@@ -341,7 +341,7 @@ async function fetchData() {
         category_name: category.name || 'Uncategorized',
         low_stock_threshold: inventory.low_stock_threshold || 10,
         // Update image path
-        image_url: product.image_url ? `images/${product.image_url}` : '/images/placeholder-medicine.jpg'
+        image_url: product.image_url ? `images/${product.image_url}` : '../../../../core/api/images/placeholder-medicine.jpg'
       };
     });
 

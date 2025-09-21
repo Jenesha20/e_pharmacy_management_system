@@ -1,0 +1,177 @@
+/* Payment page styles */
+
+/* Payment method selection */
+.payment-method {
+  transition: all 0.3s ease;
+}
+
+.payment-method:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.payment-method input[type="radio"]:checked + span {
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+/* Payment details animation */
+.payment-details {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* QR Code styling */
+.qr-code-container {
+  position: relative;
+  display: inline-block;
+}
+
+.qr-code-container::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  background: linear-gradient(45deg, #3b82f6, #8b5cf6, #06b6d4, #10b981);
+  border-radius: 8px;
+  z-index: -1;
+  animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background: linear-gradient(45deg, #3b82f6, #8b5cf6, #06b6d4, #10b981);
+  }
+  25% {
+    background: linear-gradient(45deg, #8b5cf6, #06b6d4, #10b981, #3b82f6);
+  }
+  50% {
+    background: linear-gradient(45deg, #06b6d4, #10b981, #3b82f6, #8b5cf6);
+  }
+  75% {
+    background: linear-gradient(45deg, #10b981, #3b82f6, #8b5cf6, #06b6d4);
+  }
+}
+
+/* Form input focus states */
+input[type="text"]:focus,
+input[type="email"]:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Button hover effects */
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+/* Loading state */
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Order summary styling */
+.order-summary {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid #e2e8f0;
+}
+
+.order-item {
+  transition: all 0.2s ease;
+}
+
+.order-item:hover {
+  background-color: #f8fafc;
+  border-radius: 6px;
+  padding: 8px;
+  margin: -8px;
+}
+
+/* Notification styles */
+.notification {
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+  
+  .qr-code-container img {
+    width: 150px;
+    height: 150px;
+  }
+}
+
+/* Card number formatting */
+input[name="cardNumber"] {
+  letter-spacing: 1px;
+}
+
+input[name="cardNumber"]:focus {
+  letter-spacing: 2px;
+}
+
+/* UPI ID validation styling */
+input[name="upiId"]:invalid {
+  border-color: #ef4444;
+}
+
+input[name="upiId"]:valid {
+  border-color: #10b981;
+}
+
+/* Payment method icons */
+.payment-method-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+}
+
+/* Success animation */
+@keyframes successPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.success-animation {
+  animation: successPulse 0.6s ease-in-out;
+}

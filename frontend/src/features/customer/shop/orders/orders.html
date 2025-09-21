@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Orders - J-Med J-Pharmacy</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="orders.css">
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+  
+  <div id="header"></div>
+  
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1">
+    <main class="mt-8">
+      <!-- Breadcrumbs -->
+      <nav class="flex mb-6" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+          <li class="inline-flex items-center">
+            <a href="../home/landing/landing.html" class="text-gray-700 hover:text-blue-600">
+              <i class="fas fa-home w-4 h-4 mr-2"></i>
+              Home
+            </a>
+          </li>
+          <li>
+            <div class="flex items-center">
+              <i class="fas fa-chevron-right text-gray-400 mx-1"></i>
+              <span class="text-gray-500">My Orders</span>
+            </div>
+          </li>
+        </ol>
+      </nav>
+
+      <!-- Page Header -->
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">My Orders</h1>
+        <p class="text-gray-600">Track and manage your orders</p>
+      </div>
+
+      <!-- Order Tabs -->
+      <div class="mb-8">
+        <div class="border-b border-gray-200">
+          <nav class="-mb-px flex space-x-8">
+            <button id="currentOrdersTab" onclick="switchTab('current')" 
+                    class="py-2 px-1 border-b-2 font-medium text-sm tab-button active">
+              Current Orders
+            </button>
+            <button id="pastOrdersTab" onclick="switchTab('past')" 
+                    class="py-2 px-1 border-b-2 font-medium text-sm tab-button">
+              Past Orders
+            </button>
+          </nav>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loadingState" class="text-center py-12">
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <p class="mt-2 text-gray-600">Loading orders...</p>
+      </div>
+
+      <!-- Current Orders Section -->
+      <div id="currentOrdersSection" class="tab-content">
+        <h2 class="text-xl font-semibold text-gray-800 mb-6">Current Orders</h2>
+        <div id="currentOrdersList" class="space-y-4">
+          <!-- Current orders will be loaded dynamically -->
+        </div>
+      </div>
+
+      <!-- Past Orders Section -->
+      <div id="pastOrdersSection" class="tab-content hidden">
+        <h2 class="text-xl font-semibold text-gray-800 mb-6">Past Orders</h2>
+        <div id="pastOrdersList" class="space-y-4">
+          <!-- Past orders will be loaded dynamically -->
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="text-center py-12 hidden">
+        <div class="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+          <i class="fas fa-shopping-bag text-gray-400 text-3xl"></i>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">No orders found</h3>
+        <p class="text-gray-500 mb-6">You haven't placed any orders yet.</p>
+        <a href="../shop/browse/browse.html" 
+           class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          <i class="fas fa-shopping-cart mr-2"></i>
+          Start Shopping
+        </a>
+      </div>
+    </main>
+  </div>
+  
+  <div id="footer"></div>
+
+  <script type="module" src="orders.js"></script>
+</body>
+</html>

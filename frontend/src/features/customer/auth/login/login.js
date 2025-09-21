@@ -122,16 +122,13 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!response.ok) throw new Error("Failed to fetch users");
 
       const users = await response.json();
-      console.log("All users:", users); // Debug: Check what users are returned
       
       // Find user by email
       const user = users.find(u => u.email === email);
-      console.log("Found user:", user); // Debug: Check if user is found
       
       if (user) {
         // Decode the stored password hash
         const decodedPassword = decodePasswordHash(user.password_hash);
-        console.log("Decoded password:", decodedPassword); // Debug: Check decoded password
         
         // Compare the entered password with the decoded password
         if (decodedPassword && password === decodedPassword) {

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Order Details - J-Med J-Pharmacy</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="orders.css">
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+  
+  <div id="header"></div>
+  
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1">
+    <main class="mt-8">
+      <!-- Breadcrumbs -->
+      <nav class="flex mb-6" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+          <li class="inline-flex items-center">
+            <a href="../home/landing/landing.html" class="text-gray-700 hover:text-blue-600">
+              <i class="fas fa-home w-4 h-4 mr-2"></i>
+              Home
+            </a>
+          </li>
+          <li>
+            <div class="flex items-center">
+              <i class="fas fa-chevron-right text-gray-400 mx-1"></i>
+              <a href="orders.html" class="text-gray-700 hover:text-blue-600">My Orders</a>
+            </div>
+          </li>
+          <li>
+            <div class="flex items-center">
+              <i class="fas fa-chevron-right text-gray-400 mx-1"></i>
+              <span class="text-gray-500">Order Details</span>
+            </div>
+          </li>
+        </ol>
+      </nav>
+
+      <!-- Order Header -->
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Order Details</h1>
+        <p class="text-gray-600" id="orderNumber">Order #9876543210</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Left Column: Order Status & Items -->
+        <div class="lg:col-span-2 space-y-8">
+          <!-- Order Status Timeline -->
+          <div class="bg-white rounded-lg shadow-sm p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-6">Order Status</h2>
+            <div id="orderStatusTimeline" class="space-y-4">
+              <!-- Order status steps will be loaded dynamically -->
+            </div>
+          </div>
+
+          <!-- Order Items -->
+          <div class="bg-white rounded-lg shadow-sm p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-6">Items</h2>
+            <div id="orderItems" class="space-y-4">
+              <!-- Order items will be loaded dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Order Information & Summary -->
+        <div class="space-y-6">
+          <!-- Order Information -->
+          <div class="bg-white rounded-lg shadow-sm p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-6">Order Information</h2>
+            <div class="space-y-4">
+              <div class="flex justify-between">
+                <span class="text-gray-600">Subtotal</span>
+                <span class="font-medium" id="orderSubtotal">$0.00</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Shipping</span>
+                <span class="font-medium" id="orderShipping">$0.00</span>
+              </div>
+              <div class="flex justify-between text-lg font-bold pt-2 border-t border-gray-200">
+                <span>Total</span>
+                <span id="orderTotal">$0.00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Order Summary -->
+          <div class="bg-white rounded-lg shadow-sm p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-6">Order Summary</h2>
+            <div class="space-y-4">
+              <div>
+                <span class="text-gray-600">Order Date</span>
+                <p class="font-medium" id="orderDate">-</p>
+              </div>
+              <div>
+                <span class="text-gray-600">Shipping Address</span>
+                <p class="font-medium" id="shippingAddress">-</p>
+              </div>
+              <div>
+                <span class="text-gray-600">Payment Method</span>
+                <p class="font-medium" id="paymentMethod">-</p>
+              </div>
+              <div>
+                <span class="text-gray-600">Order ID</span>
+                <p class="font-medium text-blue-600" id="orderId">-</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="space-y-3">
+            <button onclick="reorderItems()" class="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+              <i class="fas fa-redo mr-2"></i>
+              Reorder Items
+            </button>
+            <button onclick="downloadInvoice()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors">
+              <i class="fas fa-download mr-2"></i>
+              Download Invoice
+            </button>
+            <button onclick="contactSupport()" class="w-full bg-blue-100 hover:bg-blue-200 text-blue-700 font-medium py-2 px-4 rounded-lg transition-colors">
+              <i class="fas fa-headset mr-2"></i>
+              Contact Support
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <div id="footer"></div>
+
+  <script src="order-details.js"></script>
+</body>
+</html>

@@ -260,7 +260,7 @@
                         <span class="text-xs text-gray-500 ml-1">(42)</span>
                     </div>
                     <p class="text-lg font-bold text-gray-900 mb-4">$17.59</p>
-                    <button class="mt-auto w-full bg-green-500 text-white rounded-lg py-2 hover:bg-green-600 transition flex items-center justify-center">
+                    <button onclick="handleAddToCart(1)" class="mt-auto w-full bg-green-500 text-white rounded-lg py-2 hover:bg-green-600 transition flex items-center justify-center">
                         <span class="material-icons mr-2 text-sm">add_shopping_cart</span> Add to cart
                     </button>
                 </div>
@@ -459,8 +459,11 @@
             });
 
             // Add to cart animation
-            const addToCartButtons = document.querySelectorAll('button:contains("Add to cart")');
-            addToCartButtons.forEach(button => {
+            const addToCartButtons = document.querySelectorAll('button');
+            const addToCartButtonsFiltered = Array.from(addToCartButtons).filter(button => 
+                button.textContent.includes('Add to cart')
+            );
+            addToCartButtonsFiltered.forEach(button => {
                 button.addEventListener('click', function() {
                     this.innerHTML = '<span class="material-icons text-sm mr-2">check</span> Added to cart';
                     this.classList.remove('bg-green-500', 'hover:bg-green-600');

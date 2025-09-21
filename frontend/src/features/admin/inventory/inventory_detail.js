@@ -199,7 +199,7 @@ function populateProductDetails(product, inventory, categoryName) {
   // Set product image - update path to use images/ format
   const imageUrl = product.image_url ? 
     (product.image_url.startsWith('images/') ? product.image_url : `images/${product.image_url}`) : 
-    '/images/placeholder-medicine.jpg';
+    '../../../../core/api/images/placeholder-medicine.jpg';
   document.getElementById('product-image').src = imageUrl;
   
   // Set basic info
