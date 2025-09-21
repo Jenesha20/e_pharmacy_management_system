@@ -274,7 +274,7 @@ loadComponent("footer", "/frontend/src/core/components/footer.html");
             }
   
             <a href="../../shop/product/product.html?id=${product.id}">
-                <div class="bg-[#A1E970] bg-opacity-50 p-4 flex justify-center items-center">
+                <div class="p-4 flex justify-center items-center">
                     ${product.image_url ? 
                       `<img src="${product.image_url}" alt="${product.name}" class="h-32 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                        <div class="placeholder-icon" style="display: none;"><i class="fas fa-pills text-gray-400 text-4xl"></i></div>` :
@@ -607,7 +607,7 @@ async function addToCart(productId) {
             }
   
             <a href="../../shop/product/product.html?id=${product.id}">
-                <div class="bg-[#A1E970] bg-opacity-50 p-4 flex justify-center items-center">
+                <div class="p-4 flex justify-center items-center">
                     ${product.image_url ? 
                       `<img src="${product.image_url}" alt="${product.name}" class="h-32 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                        <div class="placeholder-icon" style="display: none;"><i class="fas fa-pills text-gray-400 text-4xl"></i></div>` :
@@ -910,14 +910,44 @@ async function addToCart(productId) {
     });
   }
   
-  // Initialize everything when DOM is loaded
+  // // Initialize everything when DOM is loaded
+  // document.addEventListener("DOMContentLoaded", function() {
+  //   fetchData().then(() => {
+  //     setupSearch();
+  //     setupFilters();
+  //     setupMobileFilters();
+  //   });
+  // });
+
+  function getQueryParam(param) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param);
+  }
+  
   document.addEventListener("DOMContentLoaded", function() {
+    const categoryParam = getQueryParam('category'); // e.g., "Pain relief"
+    
     fetchData().then(() => {
       setupSearch();
       setupFilters();
       setupMobileFilters();
+  
+      // Apply category filter if query param exists
+      if (categoryParam) {
+        const categoryObj = categories.find(c => c.name.toLowerCase() === categoryParam.toLowerCase());
+        if (categoryObj) {
+          filterState.selectedCategories = [categoryObj.category_id];
+  
+          // Check the corresponding checkbox
+          const checkbox = document.getElementById(`category-${categoryObj.category_id}`);
+          if (checkbox) checkbox.checked = true;
+  
+          applyFilters();
+        }
+      }
     });
   });
+  
   
   // Make changePage function available globally
   window.changePage = changePage;

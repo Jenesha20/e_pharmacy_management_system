@@ -87,13 +87,13 @@ document.addEventListener('DOMContentLoaded', function() {
 // Load header and footer
 async function loadHeader() {
   try {
-    const response = await fetch('../../core/components/navbar.html');
+    const response = await fetch('/frontend/src/core/components/navbar.html');
     const html = await response.text();
     document.getElementById('header').innerHTML = html;
     
     // Load navbar script
     const script = document.createElement('script');
-    script.src = '../../core/components/navbar.js';
+    script.src = '/frontend/src/core/components/navbar.js';
     document.head.appendChild(script);
   } catch (error) {
     console.error('Error loading header:', error);
@@ -102,7 +102,7 @@ async function loadHeader() {
 
 async function loadFooter() {
   try {
-    const response = await fetch('../../core/components/footer.html');
+    const response = await fetch('/frontend/src/core/components/footer.html');
     const html = await response.text();
     document.getElementById('footer').innerHTML = html;
   } catch (error) {
@@ -152,35 +152,35 @@ function loadFallbackData() {
 }
 
 // Create test data for demo
-function createTestData() {
-  cartItems = [
-    {
-      id: '1',
-      name: 'Paracetamol 500mg',
-      price: 5.99,
-      quantity: 2,
-      image_url: '../../../core/api/images/azithral.jpeg',
-      composition: 'Paracetamol (500mg)',
-      requires_prescription: true
-    },
-    {
-      id: '2',
-      name: 'Cough Syrup',
-      price: 8.99,
-      quantity: 1,
-      image_url: '../../../core/api/images/alcof.jpg',
-      composition: 'Dextromethorphan HBr',
-      requires_prescription: false
-    }
-  ];
+// function createTestData() {
+//   cartItems = [
+//     {
+//       id: '1',
+//       name: 'Paracetamol 500mg',
+//       price: 5.99,
+//       quantity: 2,
+//       image_url: '../../../core/api/images/azithral.jpeg',
+//       composition: 'Paracetamol (500mg)',
+//       requires_prescription: true
+//     },
+//     {
+//       id: '2',
+//       name: 'Cough Syrup',
+//       price: 8.99,
+//       quantity: 1,
+//       image_url: '../../../core/api/images/alcof.jpg',
+//       composition: 'Dextromethorphan HBr',
+//       requires_prescription: false
+//     }
+//   ];
   
-  selectedAddress = {
-    label: 'Home',
-    address: '123 Main Street, Springfield, IL 62701'
-  };
+//   selectedAddress = {
+//     label: 'Home',
+//     address: '123 Main Street, Springfield, IL 62701'
+//   };
   
-  console.log('Test data created:', { cartItems, selectedAddress });
-}
+//   console.log('Test data created:', { cartItems, selectedAddress });
+// }
 
 // Display order summary
 function displayOrderSummary() {
@@ -395,8 +395,8 @@ function isValidCVV(cvv) {
 // Complete order
 async function completeOrder(paymentMethod) {
   try {
-    const customerId = parseInt(localStorage.getItem('currentUserId')) || 1; // Default to customer 1 for demo
-    
+    const customerId = localStorage.getItem('currentUserId') || 1; // Default to customer 1 for demo
+    console.log(customerId);
     // Calculate order totals
     const totals = calculateOrderTotals(cartItems.map(item => ({
       unit_price: item.price,
@@ -421,6 +421,7 @@ async function completeOrder(paymentMethod) {
     
     // Create order in backend
     const createdOrder = await createOrder(orderData);
+    console.log('Order created:', createdOrder)
     
     // Create order items
     const orderItems = cartItems.map(item => ({
@@ -468,7 +469,7 @@ async function completeOrder(paymentMethod) {
     
     // Redirect to orders page
     setTimeout(() => {
-      window.location.href = '../orders/orders.html';
+      window.location.href = 'frontend/src/features/customer/shop/orders/order-details.html';
     }, 2000);
     
   } catch (error) {

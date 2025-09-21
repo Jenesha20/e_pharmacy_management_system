@@ -323,21 +323,25 @@ async function fetchData() {
 
 // Process and enrich customer data with additional information
 function processCustomerData() {
-  customersData.forEach(customer => {
-      // Add address information
-      const address = customerAddresses.find(addr => addr.customer_id == customer.customer_id);
-      customer.city = address ? address.city : "N/A";
-      customer.state = address ? address.state : "N/A";
-      
-      // Add order information
-      customer.orders = ordersData.filter(order => order.customer_id == customer.customer_id);
-      customer.orderCount = customer.orders.length;
-      customer.totalSpent = customer.orders.reduce((total, order) => total + parseFloat(order.total_amount || 0), 0);
-      
-      // Add prescription information
-      customer.prescriptions = prescriptionsData.filter(pres => pres.customer_id == customer.customer_id);
-      customer.prescriptionCount = customer.prescriptions.length;
-  });
+    customersData.forEach(customer => {
+        // Get default or first valid address
+        const address = customerAddresses.find(addr => 
+            addr.customer_id == customer.customer_id && addr.is_default
+        ) || customerAddresses.find(addr => addr.customer_id == customer.customer_id);
+    
+        customer.city = address && address.city ? address.city : "N/A";
+        customer.state = address && address.state ? address.state : "N/A";
+    
+        // Orders
+        customer.orders = ordersData.filter(order => order.customer_id == customer.customer_id);
+        customer.orderCount = customer.orders.length;
+        customer.totalSpent = customer.orders.reduce((total, order) => total + parseFloat(order.total_amount || 0), 0);
+    
+        // Prescriptions
+        customer.prescriptions = prescriptionsData.filter(pres => pres.customer_id == customer.customer_id);
+        customer.prescriptionCount = customer.prescriptions.length;
+    });
+    
 }
 
 // Render customer table
@@ -363,13 +367,9 @@ function renderTable(data) {
               <td class="p-3 font-medium">${customer.first_name} ${customer.last_name}</td>
               <td class="p-3">${customer.email}</td>
               <td class="p-3">${customer.phone_number}</td>
-              <td class="p-3">${customer.city}, ${customer.state}</td>
+             <td class="p-3">${customer.city}, ${customer.state}</td>
               <td class="p-3">${customer.orderCount} ($${customer.totalSpent.toFixed(2)})</td>
-              <td class="p-3">
-                  <span class="px-2 py-1 rounded-full text-xs ${customer.is_verified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
-                      ${customer.is_verified ? 'Verified' : 'Unverified'}
-                  </span>
-              </td>
+              
               <td class="p-3">
                   <a href="customer_detail.html?customerId=${customer.customer_id}" 
                      class="text-blue-600 hover:text-blue-800 font-medium">
@@ -424,9 +424,9 @@ document.getElementById("locationFilter").addEventListener("change", (e) => {
 });
 
 // Status filter
-document.getElementById("statusFilter").addEventListener("change", (e) => {
-  applyFilters();
-});
+// document.getElementById("statusFilter").addEventListener("change", (e) => {
+//   applyFilters();
+// });
 
 // Apply all filters
 function applyFilters(searchTerm = "") {
@@ -445,15 +445,15 @@ function applyFilters(searchTerm = "") {
       const matchesLocation = locationValue == "" || customer.city == locationValue;
       
       // Status filter
-      const statusValue = document.getElementById("statusFilter").value;
-      let matchesStatus = true;
-      if (statusValue == "verified") {
-          matchesStatus = customer.is_verified == true;
-      } else if (statusValue == "unverified") {
-          matchesStatus = customer.is_verified == false;
-      }
+    //   const statusValue = document.getElementById("statusFilter").value;
+    //   let matchesStatus = true;
+    //   if (statusValue == "verified") {
+    //       matchesStatus = customer.is_verified == true;
+    //   } else if (statusValue == "unverified") {
+    //       matchesStatus = customer.is_verified == false;
+    //   }
       
-      return matchesSearch && matchesLocation && matchesStatus;
+      return matchesSearch && matchesLocation;
   });
   
   renderTable(filteredData);
@@ -464,7 +464,7 @@ function applyFilters(searchTerm = "") {
 document.getElementById("resetBtn").addEventListener("click", () => {
   document.getElementById("searchInput").value = "";
   document.getElementById("locationFilter").value = "";
-  document.getElementById("statusFilter").value = "";
+//   document.getElementById("statusFilter").value = "";
   filteredData = [...customersData];
   currentPage = 1;
   renderTable(filteredData);

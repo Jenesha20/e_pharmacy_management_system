@@ -210,6 +210,51 @@ function showNotification(message, type = 'info') {
     }, 300);
   }, 3000);
 }
+const slider = document.getElementById("testimonial-slider");
+  const prevBtn = document.getElementById("prev");
+  const nextBtn = document.getElementById("next");
+
+  let index = 0;
+  const totalSlides = slider.children.length;
+
+  function showSlide() {
+    slider.style.transform = `translateX(-${index * 100}%)`;
+  }
+
+  nextBtn.addEventListener("click", () => {
+    index = (index + 1) % totalSlides;
+    showSlide();
+  });
+
+  prevBtn.addEventListener("click", () => {
+    index = (index - 1 + totalSlides) % totalSlides;
+    showSlide();
+  });
+
+  // Auto-slide every 5 seconds
+  setInterval(() => {
+    index = (index + 1) % totalSlides;
+    showSlide();
+  }, 5000);
+  // function openBlog(type) {
+  //   const modal = document.getElementById("blog-modal");
+  //   const title = document.getElementById("blog-title");
+  //   const content = document.getElementById("blog-content");
+
+  //   if(type === "winter") {
+  //     title.textContent = "5 Tips for a Healthier Winter Season";
+  //     content.textContent = "Here you can write or fetch the full blog content...";
+  //   }
+
+  //   modal.classList.remove("hidden");
+  // }
+
+  // function closeBlog() {
+  //   document.getElementById("blog-modal").classList.add("hidden");
+  // }
+
+
+  
 
 // Make functions globally available
 window.handleAddToCart = handleAddToCart;

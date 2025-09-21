@@ -141,6 +141,10 @@ document.addEventListener("DOMContentLoaded", () => {
           
           // Store user data in localStorage
           localStorage.setItem("currentUser", JSON.stringify(user));
+//           // After successful login
+ const id=localStorage.getItem("currentUser");
+ console.log(localStorage.getItem(id));
+
           
           // Show success message
           showNotification('Login successful! Redirecting...', 'success');

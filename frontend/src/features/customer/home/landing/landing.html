@@ -95,8 +95,14 @@
                 <div class="mt-4 w-full max-w-lg search-container">
                     <div class="relative">
                         <span class="material-icons absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">search</span>
-                        <input class="w-full bg-white text-gray-900 rounded-full py-3 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-green-400" placeholder="Search for medicines or health products" type="text"/>
-                        <div class="search-suggestions p-4">
+                        <input
+                          id="zipInput"
+                          class="w-full bg-white text-gray-900 rounded-full py-3 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-green-400"
+                          placeholder="Enter zip code"
+                          type="text"
+                        />
+                        <div id="toast" class="fixed bottom-5 right-5 p-4 rounded-lg text-white hidden"></div>
+                        <!-- <div class="search-suggestions p-4">
                             <p class="text-gray-500 text-sm">Popular searches:</p>
                             <ul class="mt-2 space-y-1">
                                 <li><a href="#" class="text-gray-700 hover:text-green-600">Paracetamol</a></li>
@@ -104,7 +110,7 @@
                                 <li><a href="#" class="text-gray-700 hover:text-green-600">Blood Pressure Monitor</a></li>
                                 <li><a href="#" class="text-gray-700 hover:text-green-600">Diabetes Strips</a></li>
                             </ul>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -145,6 +151,79 @@
         </section>
 
         <!-- How It Works Section -->
+        
+
+        <!-- Shop by Category Section -->
+        <section class="mb-12">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-semibold text-gray-800">Shop by Category</h3>
+                <a class="text-green-600 hover:text-green-800 font-medium flex items-center" href="../../shop/browse/browse.html">
+                    View All <span class="material-icons">chevron_right</span>
+                </a>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-6 text-center">
+                <!-- Categories remain the same but with hover effects -->
+                <div class="category-card flex flex-col items-center" data-category="Cold & Flu">
+                    <div class="w-24 h-24 rounded-full overflow-hidden mb-2 shadow-md">
+                        <img alt="Cold and Flu remedies" class="w-full h-full object-cover" src="https://png.pngtree.com/png-clipart/20240619/original/pngtree-drug-capsule-pill-from-prescription-in-drugstore-pharmacy-for-treatment-health-png-image_15366552.png"/>
+                    </div>
+                    <p class="text-gray-700">Cold & Flu</p>
+                </div>
+                <div class="category-card flex flex-col items-center" data-category="Vitamins & Supplements">
+                    <div class="w-24 h-24 rounded-full overflow-hidden mb-2 shadow-md">
+                        <img alt="Vitamins and Supplements" class="w-full h-full object-cover" src="https://www.news-medical.net/image-handler/picture/2020/3/shutterstock_791810890.jpg"/>
+                    </div>
+                    <p class="text-gray-700">Vitamins & Supplements</p>
+                </div>
+                <div class="category-card flex flex-col items-center" data-category="Dermalogy">
+                    <div class="w-24 h-24 rounded-full overflow-hidden mb-2 shadow-md">
+                        <img alt="Dermatology products" class="w-full h-full object-cover" src="https://www.foxfacialsurgery.com/wp-content/uploads/2019/07/skinceuticals.png"/>
+                    </div>
+                    <p class="text-gray-700">Dermatology</p>
+                </div>
+                <div class="category-card flex flex-col items-center" data-category="First Aid">
+                    <div class="w-24 h-24 rounded-full overflow-hidden mb-2 shadow-md">
+                        <img alt="Respiratory care products" class="w-full h-full object-cover" src="https://c8.alamy.com/comp/2AE32FY/medical-bottles-syringe-and-pills-isolated-on-white-background-2AE32FY.jpg"/>
+                    </div>
+                    <p class="text-gray-700">First Aid</p>
+                </div>
+                <div class="category-card flex flex-col items-center" data-category="Diabetics">
+                    <div class="w-24 h-24 rounded-full overflow-hidden mb-2 shadow-md">
+                        <img alt="Diabetics care products" class="w-full h-full object-cover" src="https://www.genengnews.com/wp-content/uploads/2018/10/Nov6_2014_Fotolia_64363496_InsulinSyringeAndDrugs_Top20DiabetesDrugs1551522171.jpg"/>
+                    </div>
+                    <p class="text-gray-700">Diabetics</p>
+                </div>
+                <div class="category-card flex flex-col items-center" data-category="Cardiac">
+                    <div class="w-24 h-24 rounded-full overflow-hidden mb-2 shadow-md">
+                        <img alt="Cardiac care products" class="w-full h-full object-cover" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAdTgsfiMwq_PSLZM6cI3baACqnjgYeloAic7QCzu2dGOE-gZgZYkg5jMxBaoOTz9PVpE&usqp=CAU"/>
+                    </div>
+                    <p class="text-gray-700">Cardiac</p>
+                </div>
+                <div class="category-card flex flex-col items-center" data-category="Gasterointestinal">
+                    <div class="w-24 h-24 rounded-full overflow-hidden mb-2 shadow-md">
+                        <img alt="Gastrointestinal products" class="w-full h-full object-cover" src="https://www.shutterstock.com/image-vector/stomach-treatment-concept-human-medicine-260nw-1285805710.jpg"/>
+                    </div>
+                    <p class="text-gray-700">Gasterointestinal</p>
+                </div>
+                <div class="category-card flex flex-col items-center" data-category="Pain relief">
+                    <div class="w-24 h-24 rounded-full overflow-hidden mb-2 shadow-md">
+                        <img alt="Pain relief products" class="w-full h-full object-cover" src="https://images.squarespace-cdn.com/content/v1/5bccaac292441b8fc8df83ac/1548600074260-N3RY83ZBSY82SYQS3MGR/Pain+Doctors+Asheville%2C+pain+management+Asheville+NC%2C+Asheville+Pain+Relief+Center%2C+Suboxone+Doctors+Asheville"/>
+                    </div>
+                    <p class="text-gray-700">Pain relief</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Products Section -->
+        <section class="mb-12">
+            <h3 class="text-xl font-semibold mb-4">Featured Product</h3>
+            <div id="featured-product" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              <!-- JS will insert product card here -->
+            </div>
+          </section>
+
+
+
         <section class="mb-12 bg-green-50 rounded-xl p-8">
             <h3 class="text-2xl font-semibold text-gray-800 mb-8 text-center">How It Works</h3>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -179,97 +258,8 @@
             </div>
         </section>
 
-        <!-- Shop by Category Section -->
-        <section class="mb-12">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-semibold text-gray-800">Shop by Category</h3>
-                <a class="text-green-600 hover:text-green-800 font-medium flex items-center" href="#">
-                    View All <span class="material-icons">chevron_right</span>
-                </a>
-            </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-6 text-center">
-                <!-- Categories remain the same but with hover effects -->
-                <div class="category-card flex flex-col items-center">
-                    <div class="w-24 h-24 rounded-full overflow-hidden mb-2 shadow-md">
-                        <img alt="Cold and Flu remedies" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9CTE01EiY_-mpDCu92449BHehELj-zV1xhqYERIld8n9TDhaO_NtimXCnP_k9j0dzGH-W9RwZm3xt0eIzkfXr-3QPN565FIzZ2Z8-QS6K8L6yLZ_Lps3ZgPl40A0271QsgcFenOp5e10n1YTLSir95LFPQtIfrWvplaXfuWoZ2bH7kDZDIXnwxf6VvJ2wTcM9vnbHe17HvrM5Rlcc_TCWAtvT3Uy8vN1wvklT4VrLquRxQ77Mc9KwGjnRY5SQ_kx1zmGv_zYFipes"/>
-                    </div>
-                    <p class="text-gray-700">Cold and Flu</p>
-                </div>
-                <div class="category-card flex flex-col items-center">
-                    <div class="w-24 h-24 rounded-full overflow-hidden mb-2 shadow-md">
-                        <img alt="Vitamins and Supplements" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuADAhlEE3qsoCHTOKAzszozNwfcVghkVVZL0N621sSt9vQlA5bl22KuiFuy_SzmG7wRdFv47DuTNb0UisWHYmu3MMXHTY9jq5Xiu30_F3OMrPk7zFkbFK2hP3XVvxdOAm8BOKn4juse6Tlo8cb1chor14msYaS1uuV5Gx9d1s2m7jRmhjCry3UqlrrfcrUPTfki1akcrtQinqsWwVFMrRMrHEShTXdTH-ejP9S7D9M65xWGg-9gQ0q4cgb6hgnMkZepjVcjCML_N6zR"/>
-                    </div>
-                    <p class="text-gray-700">Vitamins & Supplements</p>
-                </div>
-                <div class="category-card flex flex-col items-center">
-                    <div class="w-24 h-24 rounded-full overflow-hidden mb-2 shadow-md">
-                        <img alt="Dermatology products" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjHJW3jII4o34gKST-R5Up3isxDxasyWjPesJcrRNgTfWil770DABAdMdddp_fB-hs4VSUQDW8JvDmlAa7Fft5gFqxpwEip8mDHrecDH2uO-wLLFEZPVax2ST4XTpLeqTJfkTiTRCbm5TpRFRVsnNxYtY5ioivWqAAqXVZMWbzeXDolynLqIwnAm9X1kBewFtF_lOY6o87OYxhNfNkYAEOG2Ajaqijz9Tj8gbS3qQ1OREKNVyIHOsY8zgyc5-EYo_BXi_64v7aYlBy"/>
-                    </div>
-                    <p class="text-gray-700">Dermatology</p>
-                </div>
-                <div class="category-card flex flex-col items-center">
-                    <div class="w-24 h-24 rounded-full overflow-hidden mb-2 shadow-md">
-                        <img alt="Respiratory care products" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWKRSdkRdP0sK7hxJPbkdWHiGuEdvjggEhVjlh8n8zRk1MXeN__GLhzC5ul-mjMNKxrj7p0tDLCrgV9f8xrv6ct1rpuASc1Z-Yhvk_drGnuccsbrHBjy_OvccQiI3Kh_Cg53tKx86k5MBkK-7FqhIFdJ3UwLPrNSPfs8uMht-MzkGwZkaoU8iuThfj6m-R2bp4C2TAUjFO1IDplwH73pJJzPqz-i2SozTaDXF-6aLSFugie_3518W5f0UvlsqsU31OtdnYYvr8nnO6"/>
-                    </div>
-                    <p class="text-gray-700">Respiratory</p>
-                </div>
-                <div class="category-card flex flex-col items-center">
-                    <div class="w-24 h-24 rounded-full overflow-hidden mb-2 shadow-md">
-                        <img alt="Diabetics care products" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlZ_nVDJMXUqpTsC-WsBaRTH3cU56SpTApgw8SWVSEKFk3ppgPSIjDfRXWC0Tmm4PbjW3T9mMPMXZPS2wD0dVWzPIXNaDi630_98vH8njJYLWIw7QdwhqtXwuFquli4eMXuE6I3qdrNSee26x3X_uYLFAFyFBCuA0xLUF7JuM2tgCO4K7NOU7IVd-NeehodG5NmKOb0qSVRZVi5te68o3j3MZ_6UHUd-s69pw5VM3rzYFQAftYo0yPyfgMBYbnRXCVgjx0gnB6cyQ4"/>
-                    </div>
-                    <p class="text-gray-700">Diabetics</p>
-                </div>
-                <div class="category-card flex flex-col items-center">
-                    <div class="w-24 h-24 rounded-full overflow-hidden mb-2 shadow-md">
-                        <img alt="Cardiac care products" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLsFsSpo0kMgfRLVmVBq5fVNTNgE_z8szTX4fwSG8ytE-sU1eoCN1FG0u7Pw4I4Q04Jvf8rP7g0q96E_2qtbQBo00PVdAj8Rzbci-lkQSqunZoXYGyed7i1VT27tQWnpTW2CWHDjqoLoceSoolk2LZss8lNKltKvXEKtDAWekn8QXq-srvvqvwU5MPbE3F8yOVsSRKQZfmAcUTyptiahvoJckqW1n0i0gejFtuDm3sYPMngovRD_BrP2siMWdkfrzGDIvy3KhQHyRb"/>
-                    </div>
-                    <p class="text-gray-700">Cardiac</p>
-                </div>
-                <div class="category-card flex flex-col items-center">
-                    <div class="w-24 h-24 rounded-full overflow-hidden mb-2 shadow-md">
-                        <img alt="Gastrointestinal products" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAzmAIJQme87PupEkdEw83vbKsb6XKpO7DwmUYdaAIAiNLAO9vxy27mt_SJZSQZSyYOXWwphbyqcLoy7lRCkKgqQtIdNurgKnUTkJkgnjizGn_oHFljmQXTkv7boPI7L_tpL-X_1yxxl_TWiZ3EaoJWlajQVnSyc9K2drkMlvipMYr3Jjg_1yCHrtOIzWHXRT5QnY851dpPvaSpVZ6RuFzefkuQzu48-fBv_v7CEPrn8wCOx9CLhfB4AoYdRIWjs1qH9DCKx9c7erI"/>
-                    </div>
-                    <p class="text-gray-700">Gastrointestinal</p>
-                </div>
-                <div class="category-card flex flex-col items-center">
-                    <div class="w-24 h-24 rounded-full overflow-hidden mb-2 shadow-md">
-                        <img alt="Pain relief products" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrL22iP562lZ8thzawm7bYlcRoCl2FWpC4AXysX4Mow0zt3LDSwU0avpn94nDAi9_1Pblo1hGVNygWCWYb44wicd4SX1SXD0ygX9X7z4T6jhVJjdV2O7idYJUzktgPYYfwADn13FlLetfAdOQo48CRrRn55ZgpH5Z1BIi8-MAhQ_m1IQAFmjaQM2QWGP2eXBwbCZofcCoNXT16ZFYm-9kdGc_EV7MzDJO0_PLydA0hh_K49sjQ_A0Fw5EVIG7JlDKBhSxTy57TVgLY"/>
-                    </div>
-                    <p class="text-gray-700">Pain relief</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Featured Products Section -->
-        <section class="mb-12">
-            <h3 class="text-2xl font-semibold text-gray-800 mb-6">Featured Products</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-                <!-- Products remain the same but with hover effects -->
-                <div class="product-card bg-white rounded-lg shadow-md p-4 flex flex-col">
-                    <img alt="Medicine F bottle" class="h-40 object-contain mx-auto mb-4" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBm36zhxRRax--FiFT5oaJr6MSnQ9Ki1lg0r17CmlZYKuSO_AS37eaTS_ueD2OeWZt2A5x99UOrqENbTzUubYkrFVwHksTLjPPNPn_veBaxX_8yFpsgqgHaA3YIAKg8TWBau3BqubhDMqO8FsI_sHUZn6Ntu6Cr29-7QiQywFIU6a-GnhUwj9l6-rxBX8COueombKRFB3QVGBFMpbPfoyEHrjfv8z8reHlbu5Jo-YM0JcqpSbiXfo0cXWpsK3iA3lY9Uxgg1uy9ppdC"/>
-                    <h4 class="font-semibold text-gray-800">Medicine F</h4>
-                    <p class="text-sm text-gray-500 mb-2">30 Tablets</p>
-                    <div class="flex items-center mb-2">
-                        <div class="flex text-yellow-400">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
-                        </div>
-                        <span class="text-xs text-gray-500 ml-1">(42)</span>
-                    </div>
-                    <p class="text-lg font-bold text-gray-900 mb-4">$17.59</p>
-                    <button onclick="handleAddToCart(1)" class="mt-auto w-full bg-green-500 text-white rounded-lg py-2 hover:bg-green-600 transition flex items-center justify-center">
-                        <span class="material-icons mr-2 text-sm">add_shopping_cart</span> Add to cart
-                    </button>
-                </div>
-                <!-- Repeat for other products -->
-            </div>
-        </section>
-
         <!-- Special Offers Section -->
-        <section class="mb-12">
+        <!-- <section class="mb-12">
             <h3 class="text-2xl font-semibold text-gray-800 mb-6">Special Offers</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div class="bg-green-100 rounded-lg p-8 flex items-center justify-between shadow-lg relative overflow-hidden">
@@ -298,31 +288,77 @@
                     </div>
                 </div>
             </div>
-        </section>
+        </section> -->
 
         <!-- Customer Testimonials Section -->
         <section class="mb-12">
-            <h3 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Customer Testimonials</h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="bg-white rounded-lg shadow-md p-6 text-center">
-            <img alt="Portrait of Sophia Clark" class="w-24 h-24 rounded-full mx-auto mb-4 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUF86K3kYWYI3iNBqpeoze0vPC_yBOpl5a1M3TKEMToiyXqKYeeZ2axwPugztvu70cH_BoZrwG49aKWSfUPzPF4LK0JDweDXjW1oCXYyDCFnDgSNrmAi53pmGqp4gdZ6e2duHzZVjYewQtHZz3xHMOW4D2VO2zzJDyo8HFLPmG-4XrV5HIw9QMfM86LSmPSYnxjc_4PMpZkuxHZKP8kpocsaWUc2_RMA9_XlinsID0rGNuDusjyqMmEOxfhJz3SrwV5GoIF_htc8M-"/>
-            <h4 class="font-semibold text-lg text-gray-800">Sophia Clark</h4>
-            <p class="text-gray-600 mt-2">"J-Med has made managing my prescriptions so easy. I get my medications on time, every time, and the customer service is excellent."</p>
+            <h3 class="text-2xl font-semibold text-gray-800 mb-6 text-center">
+              Customer Testimonials
+            </h3>
+          
+            <div class="relative w-full max-w-3xl mx-auto overflow-hidden">
+              <!-- Slider wrapper -->
+              <div id="testimonial-slider" class="flex transition-transform duration-700">
+                <!-- Card 1 -->
+                <div class="min-w-full bg-white rounded-lg shadow-md p-6 text-center">
+                  <img
+                    alt="Portrait of Sophia Clark"
+                    class="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUF86K3kYWYI3iNBqpeoze0vPC_yBOpl5a1M3TKEMToiyXqKYeeZ2axwPugztvu70cH_BoZrwG49aKWSfUPzPF4LK0JDweDXjW1oCXYyDCFnDgSNrmAi53pmGqp4gdZ6e2duHzZVjYewQtHZz3xHMOW4D2VO2zzJDyo8HFLPmG-4XrV5HIw9QMfM86LSmPSYnxjc_4PMpZkuxHZKP8kpocsaWUc2_RMA9_XlinsID0rGNuDusjyqMmEOxfhJz3SrwV5GoIF_htc8M-"
+                  />
+                  <h4 class="font-semibold text-lg text-gray-800">Sophia Clark</h4>
+                  <p class="text-gray-600 mt-2">
+                    "J-Med has made managing my prescriptions so easy. I get my medications
+                    on time, every time, and the customer service is excellent."
+                  </p>
+                </div>
+          
+                <!-- Card 2 -->
+                <div class="min-w-full bg-white rounded-lg shadow-md p-6 text-center">
+                  <img
+                    alt="Portrait of Emma Bennett"
+                    class="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWJds4GahKYMTwg2vWchDO2kaGrXQFOQnGfol_RJ9XBXXDz-EbflY9bxVdB6gHd6I8OJdK6_FRNOlTP6bgwZnUtvwiC7L8MIuNWpwgEVUxsWX131MsvAPmDTOBt0gcu6XVfJ4oqXiiaWEUwv3s5CVUW3KR3bpaFeT4ivd2-8SnLltTfu2_4EPxNEe8YcLLkFm9cGBkXsHyGjoVH3HflnLdil2CVZeYGr1lkoglsbn3awFzS0MgNy_V0p7U9hEKHnEcXuI2OfhAPwaA"
+                  />
+                  <h4 class="font-semibold text-lg text-gray-800">Emma Bennett</h4>
+                  <p class="text-gray-600 mt-2">
+                    "I love the convenience of ordering my health products online. The
+                    website is user-friendly, and I always find what I need."
+                  </p>
+                </div>
+          
+                <!-- Card 3 -->
+                <div class="min-w-full bg-white rounded-lg shadow-md p-6 text-center">
+                  <img
+                    alt="Portrait of Olivia Carter"
+                    class="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3wx9H7YgawZlQWTxTS4vG-mda9HgYb2pAspmfGH5lVhSZTZzYUBdEbPkUMgkbVGbQF2Lym-g2ccj-qqM5VFzeC7F09SKZoPLYQ5lIE2XcGTk2EIkrbjWgNy2Ru7Dk9ZdtGq6x-hHQvgrZW5_AZHjmqfXiYTOZSafm9OrlQCDOEtNajt1lcjvCvv5Vd1DVJza_8MTHtzuAnjLrZ9WNENM66x3emA9dwqltZn4oaKI6XNG5M-0tpi0FLEkak-I4Zh0Uml0QYM4ye1mf"
+                  />
+                  <h4 class="font-semibold text-lg text-gray-800">Olivia Carter</h4>
+                  <p class="text-gray-600 mt-2">
+                    "Great service and reliable delivery. I highly recommend J-Med for all
+                    your pharmacy needs."
+                  </p>
+                </div>
+              </div>
+          
+              <!-- Navigation buttons -->
+              <button
+                id="prev"
+                class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-200 p-2 rounded-full shadow"
+              >
+                ◀
+              </button>
+              <button
+                id="next"
+                class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-200 p-2 rounded-full shadow"
+              >
+                ▶
+              </button>
             </div>
-            <div class="bg-white rounded-lg shadow-md p-6 text-center">
-            <img alt="Portrait of Emma Bennett" class="w-24 h-24 rounded-full mx-auto mb-4 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWJds4GahKYMTwg2vWchDO2kaGrXQFOQnGfol_RJ9XBXXDz-EbflY9bxVdB6gHd6I8OJdK6_FRNOlTP6bgwZnUtvwiC7L8MIuNWpwgEVUxsWX131MsvAPmDTOBt0gcu6XVfJ4oqXiiaWEUwv3s5CVUW3KR3bpaFeT4ivd2-8SnLltTfu2_4EPxNEe8YcLLkFm9cGBkXsHyGjoVH3HflnLdil2CVZeYGr1lkoglsbn3awFzS0MgNy_V0p7U9hEKHnEcXuI2OfhAPwaA"/>
-            <h4 class="font-semibold text-lg text-gray-800">Emma Bennett</h4>
-            <p class="text-gray-600 mt-2">"I love the convenience of ordering my health products online. The website is user-friendly, and I always find what I need."</p>
-            </div>
-            <div class="bg-white rounded-lg shadow-md p-6 text-center">
-            <img alt="Portrait of Olivia Carter" class="w-24 h-24 rounded-full mx-auto mb-4 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3wx9H7YgawZlQWTxTS4vG-mda9HgYb2pAspmfGH5lVhSZTZzYUBdEbPkUMgkbVGbQF2Lym-g2ccj-qqM5VFzeC7F09SKZoPLYQ5lIE2XcGTk2EIkrbjWgNy2Ru7Dk9ZdtGq6x-hHQvgrZW5_AZHjmqfXiYTOZSafm9OrlQCDOEtNajt1lcjvCvv5Vd1DVJza_8MTHtzuAnjLrZ9WNENM66x3emA9dwqltZn4oaKI6XNG5M-0tpi0FLEkak-I4Zh0Uml0QYM4ye1mf"/>
-            <h4 class="font-semibold text-lg text-gray-800">Olivia Carter</h4>
-            <p class="text-gray-600 mt-2">"Great service and reliable delivery. I highly recommend J-Med for all your pharmacy needs."</p>
-            </div>
-            </div>
-            </section>
+          </section>
         <!-- Health Blog Section -->
-        <section class="mb-12">
+        <!-- <section class="mb-12">
             <h3 class="text-2xl font-semibold text-gray-800 mb-6">From Our Health Blog</h3>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
@@ -330,7 +366,16 @@
             <div class="p-6">
             <p class="text-sm text-gray-500 mb-2">Wellness Tips</p>
             <h4 class="font-semibold text-lg text-gray-800 mb-3">5 Tips for a Healthier Winter Season</h4>
-            <a class="text-green-600 hover:text-green-800 font-medium flex items-center" href="#">Read More <span class="material-icons text-sm ml-1">arrow_forward</span></a>
+            <a href="#" onclick="openBlog('winter')" class="text-green-600 hover:text-green-800 font-medium flex items-center">
+                Read More <span class="material-icons text-sm ml-1">arrow_forward</span>
+              </a>
+              <div id="blog-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+                <div class="bg-white rounded-lg shadow-lg w-96 p-6">
+                  <h3 id="blog-title" class="text-xl font-semibold mb-4"></h3>
+                  <p id="blog-content" class="text-gray-600"></p>
+                  <button onclick="closeBlog()" class="mt-4 bg-green-600 text-white px-4 py-2 rounded">Close</button>
+                </div>
+              </div>
             </div>
             </div>
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
@@ -350,7 +395,7 @@
             </div>
             </div>
             </div>
-            </section>
+            </section> -->
 
         <!-- FAQs Section -->
         <section class="mb-12">
@@ -409,17 +454,17 @@
         <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
         <ul class="space-y-2">
         <li><a class="text-gray-400 hover:text-white" href="#">Home</a></li>
-        <li><a class="text-gray-400 hover:text-white" href="#">Shop</a></li>
-        <li><a class="text-gray-400 hover:text-white" href="#">About Us</a></li>
-        <li><a class="text-gray-400 hover:text-white" href="#">Contact</a></li>
+        <li><a class="text-gray-400 hover:text-white" href="../../shop/browse/browse.html">Shop</a></li>
+        <!-- <li><a class="text-gray-400 hover:text-white" href="#">About Us</a></li> -->
+        <li><a class="text-gray-400 hover:text-white" href="../../about/contact/contact.html">Contact</a></li>
         </ul>
         </div>
         <div>
         <h4 class="text-lg font-semibold mb-4">Support</h4>
         <ul class="space-y-2">
         <li><a class="text-gray-400 hover:text-white" href="#">FAQs</a></li>
-        <li><a class="text-gray-400 hover:text-white" href="#">Terms of Service</a></li>
-        <li><a class="text-gray-400 hover:text-white" href="#">Privacy Policy</a></li>
+        <li><a class="text-gray-400 hover:text-white" href="../../about/contact/terms.html">Terms of Service</a></li>
+        <li><a class="text-gray-400 hover:text-white" href="../../about/contact/policy.html">Privacy Policy</a></li>
         </ul>
         </div>
         <div>
@@ -478,5 +523,100 @@
             });
         });
     </script>
+    
+    <script>
+        const API_URL = "http://localhost:3000/products";
+      
+        async function loadFeaturedProduct() {
+          try {
+            const res = await fetch(API_URL);
+            const products = await res.json();
+      
+            // Filter featured product(s) (assuming backend returns `featured: true`)
+            const featured = products.filter(p => p.featured_product);
+      
+            const container = document.getElementById("featured-product");
+            container.innerHTML = "";
+      
+            featured.forEach(product => {
+              const card = `
+                <div class="product-card bg-white rounded-lg shadow-md p-4 flex flex-col">
+                  <img alt="${product.name}" 
+                       class="h-40 object-contain mx-auto mb-4" 
+                       src="${product.image_url}" />
+                  
+                  <h4 class="font-semibold text-gray-800">${product.name}</h4>
+                  <p class="text-sm text-gray-500 mb-2">${product.composition}</p>
+                  
+                  
+                  <p class="text-lg font-bold text-gray-900 mb-4">$${product.price}</p>
+                  
+                  <button onclick="handleAddToCart(${product.id})" 
+                          class="mt-auto w-full bg-green-500 text-white rounded-lg py-2 hover:bg-green-600 transition flex items-center justify-center">
+                    <span class="material-icons mr-2 text-sm">add_shopping_cart</span> Add to cart
+                  </button>
+                </div>
+              `;
+              container.innerHTML += card;
+            });
+          } catch (error) {
+            console.error("Error fetching featured products:", error);
+          }
+        }
+      
+        function renderStars(rating) {
+          let stars = "";
+          for (let i = 1; i <= 5; i++) {
+            stars += `<i class="fas fa-star${i <= Math.floor(rating) ? "" : "-half-alt"}"></i>`;
+          }
+          return stars;
+        }
+      
+        // Load on page load
+        loadFeaturedProduct();
+
+        document.querySelectorAll('.category-card').forEach(card => {
+  card.addEventListener('click', () => {
+    const categoryName = card.dataset.category;
+
+    // Navigate to browse.html with category query param
+    window.location.href = `../../shop/browse/browse.html?category=${encodeURIComponent(categoryName)}`;
+  });
+});
+const zipInput = document.getElementById("zipInput");
+  const toast = document.getElementById("toast");
+
+  // Example: available zip codes
+  const availableZipCodes = ["560001", "560002", "110001", "400001"];
+
+  function showToast(message, isSuccess = true) {
+    toast.textContent = message;
+    toast.className = `fixed bottom-5 right-5 p-4 rounded-lg text-white ${
+      isSuccess ? "bg-green-500" : "bg-red-500"
+    }`;
+    toast.classList.remove("hidden");
+
+    setTimeout(() => {
+      toast.classList.add("hidden");
+    }, 3000);
+  }
+
+  zipInput.addEventListener("keypress", function (e) {
+    if (e.key === "Enter") {
+      const zip = zipInput.value.trim();
+      if (zip.length === 6 && /^\d+$/.test(zip)) {
+        if (availableZipCodes.includes(zip)) {
+          showToast("Delivery is available in this area!", true);
+        } else {
+          showToast("Sorry, delivery is not available in this area.", false);
+        }
+      } else {
+        showToast("Please enter a valid 6-digit zip code.", false);
+      }
+    }
+  });
+
+      </script>
+      
 </body>
 </html>

@@ -541,16 +541,71 @@ try {
 }
 
 // Generate Invoice
-function generateInvoice(orderId) {
-// This would typically generate a PDF invoice
-// For now, we'll just show a success message
-const order = orders.find(o => o.order_id === orderId);
-showToast(`Invoice for order #${order.order_number} generated successfully`);
-// In a real implementation, you would:
-// 1. Fetch order details
-// 2. Use a PDF generation library like jsPDF
-// 3. Download the generated PDF
-}
+// async function generateInvoice(orderId) {
+//   const { jsPDF } = window.jspdf;
+
+//   try {
+//     // Fetch order details
+//     const orderRes = await fetch(`http://localhost:3000/orders/${orderId}`);
+//     if (!orderRes.ok) throw new Error('Order not found');
+//     const order = await orderRes.json();
+
+//     // Fetch order items
+//     const itemsRes = await fetch(`http://localhost:3000/order_items?order_id=${orderId}`);
+//     const items = await itemsRes.json();
+
+//     const doc = new jsPDF();
+
+//     // Invoice Header
+//     doc.setFontSize(22);
+//     doc.text('Pharmacy Management System', 14, 20);
+//     doc.setFontSize(16);
+//     doc.text('Invoice', 14, 30);
+
+//     // Order Info
+//     doc.setFontSize(12);
+//     doc.text(`Order Number: ${order.order_number}`, 14, 40);
+//     doc.text(`Order Date: ${new Date(order.order_date).toLocaleDateString()}`, 14, 48);
+//     doc.text(`Payment Method: ${order.payment_method}`, 14, 56);
+//     doc.text(`Payment Status: ${order.payment_status}`, 14, 64);
+//     doc.text(`Shipping Notes: ${order.notes}`, 14, 72);
+
+//     // Table Header
+//     const tableY = 90;
+//     let yPosition = tableY + 16;
+//     items.forEach(item => {
+//       const productId = item.product_id ?? 'N/A';
+//       const quantity = item.quantity ?? 0;
+//       const unitPrice = item.unit_price ?? 0;
+//       const subtotal = item.subtotal ?? 0;
+    
+//       doc.text(productId.toString(), 14, yPosition);
+//       doc.text(quantity.toString(), 60, yPosition);
+//       doc.text(`₹${unitPrice.toFixed(2)}`, 90, yPosition);
+//       doc.text(`₹${subtotal.toFixed(2)}`, 140, yPosition);
+    
+//       yPosition += 8;
+//       if (yPosition > 250) {
+//         doc.addPage();
+//         yPosition = 20;
+//       }
+//     });
+
+//     // Total Amount
+//     doc.setFontSize(14);
+//     doc.text(`Total Amount: ₹${order.total_amount.toFixed(2)}`, 14, yPosition + 10);
+
+//     // Save PDF
+//     doc.save(`Invoice_${order.order_number}.pdf`);
+
+//     showToast(`Invoice for order #${order.order_number} generated successfully`);
+
+//   } catch (error) {
+//     console.error(error);
+//     showToast('Failed to generate invoice');
+//   }
+// }
+
 
 // Filter orders by status
 function filterByStatus(status) {

@@ -112,7 +112,10 @@
   let customerAddresses = [];
   let customerOrders = [];
   let customerPrescriptions = [];
-  
+// Fix: define urlParams first
+const urlParams = new URLSearchParams(window.location.search);
+const customerId = Number(urlParams.get('customerId')); // also convert to number for JSON Server
+
   // Fetch customer data from API
   async function fetchCustomerData(customerId) {
     try {
@@ -175,9 +178,9 @@
     document.getElementById("custDob").textContent = formatDate(customerData.date_of_birth);
     document.getElementById("custAge").textContent = calculateAge(customerData.date_of_birth);
     document.getElementById("custGender").textContent = customerData.gender ? customerData.gender.charAt(0).toUpperCase() + customerData.gender.slice(1) : "N/A";
-    document.getElementById("custStatus").innerHTML = customerData.is_verified ? 
-      '<span class="text-green-600 font-medium">Verified</span>' : 
-      '<span class="text-yellow-600 font-medium">Unverified</span>';
+    // document.getElementById("custStatus").innerHTML = customerData.is_verified ? 
+    //   '<span class="text-green-600 font-medium">Verified</span>' : 
+    //   '<span class="text-yellow-600 font-medium">Unverified</span>';
     document.getElementById("custCreated").textContent = formatDate(customerData.created_at);
   }
   
@@ -238,11 +241,7 @@
           <td class="border px-4 py-2">
             <span class="px-2 py-1 rounded-full text-xs ${getPaymentStatusClass(order.payment_status)}">${formatPaymentStatus(order.payment_status)}</span>
           </td>
-          <td class="border px-4 py-2">
-            <button class="text-blue-600 hover:text-blue-800 text-sm view-order" data-order-id="${order.order_id}">
-              View Details
-            </button>
-          </td>
+       
         </tr>
       `;
       ordersTable.insertAdjacentHTML('beforeend', orderRow);
@@ -281,11 +280,7 @@
             <span class="px-2 py-1 rounded-full text-xs ${getPrescriptionStatusClass(prescription.status)}">${formatPrescriptionStatus(prescription.status)}</span>
           </td>
           <td class="border px-4 py-2">${prescription.verified_by || 'N/A'}</td>
-          <td class="border px-4 py-2">
-            <button class="text-blue-600 hover:text-blue-800 text-sm view-prescription" data-prescription-id="${prescription.prescription_id}">
-              View Details
-            </button>
-          </td>
+          
         </tr>
       `;
       prescriptionsTable.insertAdjacentHTML('beforeend', prescriptionRow);

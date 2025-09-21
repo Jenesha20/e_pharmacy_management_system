@@ -277,7 +277,7 @@ async function fetchProduct() {
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start">
           <!-- Left Side (Image) -->
           <div class="flex flex-col">
-              <div class="image-zoom-container bg-[#A1E970] bg-opacity-50 rounded-lg flex items-center justify-center p-4 md:p-6">
+              <div class="image-zoom-container rounded-lg flex items-center justify-center p-4 md:p-6">
                   <img src="${product.image_url}" alt="${product.name}" 
                        class="w-full max-h-[350px] md:max-h-[450px] object-contain rounded-lg cursor-zoom-in" />
               </div>
