@@ -6,10 +6,12 @@
             return;
         }
 
-        // Keep cart button
-        const cartButton = authSection.querySelector('button:first-child');
+        // Keep cart link
+        const cartLink = authSection.querySelector('a:first-child');
         authSection.innerHTML = '';
-        if (cartButton) authSection.appendChild(cartButton);
+        if (cartLink) {
+            authSection.appendChild(cartLink);
+        }
 
         // Get current user from localStorage (consistent with auth.js)
         const currentUser = JSON.parse(localStorage.getItem("currentUser") || "null");
