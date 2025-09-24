@@ -241,38 +241,50 @@
       </div>
       <form id="address-form">
         <div class="mb-4">
-          <label for="address-label" class="block text-sm font-medium text-gray-700 mb-1">Address Label</label>
-          <input type="text" id="address-label" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="Home, Office, etc.">
+          <label for="address-label" class="block text-sm font-medium text-gray-700 mb-1">Address Label <span class="text-red-500">*</span></label>
+          <input type="text" id="address-label" name="address-label" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="Home, Office, etc." required>
+          <div id="address-label-error" class="text-red-500 text-sm mt-1 hidden"></div>
         </div>
         <div class="mb-4">
-          <label for="address-line1" class="block text-sm font-medium text-gray-700 mb-1">Address Line 1</label>
-          <input type="text" id="address-line1" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+          <label for="address-line1" class="block text-sm font-medium text-gray-700 mb-1">Address Line 1 <span class="text-red-500">*</span></label>
+          <input type="text" id="address-line1" name="address-line1" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="Street address, building number" required>
+          <div id="address-line1-error" class="text-red-500 text-sm mt-1 hidden"></div>
         </div>
         <div class="mb-4">
           <label for="address-line2" class="block text-sm font-medium text-gray-700 mb-1">Address Line 2 (Optional)</label>
-          <input type="text" id="address-line2" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+          <input type="text" id="address-line2" name="address-line2" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="Apartment, suite, unit, etc.">
+          <div id="address-line2-error" class="text-red-500 text-sm mt-1 hidden"></div>
         </div>
         <div class="grid grid-cols-2 gap-4 mb-4">
           <div>
-            <label for="city" class="block text-sm font-medium text-gray-700 mb-1">City</label>
-            <input type="text" id="city" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+            <label for="city" class="block text-sm font-medium text-gray-700 mb-1">City <span class="text-red-500">*</span></label>
+            <input type="text" id="city" name="city" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="City name" required>
+            <div id="city-error" class="text-red-500 text-sm mt-1 hidden"></div>
           </div>
           <div>
-            <label for="state" class="block text-sm font-medium text-gray-700 mb-1">State</label>
-            <input type="text" id="state" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+            <label for="state" class="block text-sm font-medium text-gray-700 mb-1">State <span class="text-red-500">*</span></label>
+            <input type="text" id="state" name="state" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="State/Province" required>
+            <div id="state-error" class="text-red-500 text-sm mt-1 hidden"></div>
           </div>
         </div>
         <div class="grid grid-cols-2 gap-4 mb-4">
           <div>
-            <label for="zip-code" class="block text-sm font-medium text-gray-700 mb-1">ZIP Code</label>
-            <input type="text" id="zip-code" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+            <label for="zip-code" class="block text-sm font-medium text-gray-700 mb-1">ZIP Code <span class="text-red-500">*</span></label>
+            <input type="text" id="zip-code" name="zip-code" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="600001, 600002, 600003, or 600004" required>
+            <div id="zip-code-error" class="text-red-500 text-sm mt-1 hidden"></div>
           </div>
           <div>
-            <label for="country" class="block text-sm font-medium text-gray-700 mb-1">Country</label>
-            <select id="country" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
-              <option value="USA" selected>USA</option>
+            <label for="country" class="block text-sm font-medium text-gray-700 mb-1">Country <span class="text-red-500">*</span></label>
+            <select id="country" name="country" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" required>
+              <option value="">Select Country</option>
+              <option value="USA">United States</option>
+              <option value="Canada">Canada</option>
+              <option value="UK">United Kingdom</option>
+              <option value="India">India</option>
+              <option value="Australia">Australia</option>
               <option value="Other">Other</option>
             </select>
+            <div id="country-error" class="text-red-500 text-sm mt-1 hidden"></div>
           </div>
         </div>
         <div class="mb-6">
@@ -303,7 +315,7 @@
       const user = localStorage.getItem('currentUser');
       if (!user) {
         // Redirect to login if no user is found
-        window.location.href = '/frontend/src/features/customer/home/landing/landing.html';
+        window.location.href = '../../../home/landing/landing.html';
         return null;
       }
       return JSON.parse(user);
@@ -341,16 +353,43 @@
       if (!currentUser) return;
       
       // Load header and footer
-      loadComponent("header", "/frontend/src/core/components/navbar.html").then(() => {
+      loadComponent("header", "../../../../core/components/navbar.html").then(() => {
+        // Load navbar script
+        const script = document.createElement('script');
+        script.src = '../../../../core/components/navbar.js';
+        script.onload = () => {
+          console.log('Navbar script loaded successfully in profile page');
         setTimeout(() => {
-          if (window.initAuth) window.initAuth();
-          else if (window.refreshAuth) window.refreshAuth();
+            if (window.initAuth) {
+              window.initAuth();
+              console.log('Navbar auth initialized from profile page');
+            } else if (window.refreshAuth) {
+              window.refreshAuth();
+              console.log('Navbar auth refreshed from profile page');
+            } else {
+              console.warn('Auth functions not available yet, retrying...');
+              setTimeout(() => {
+                if (window.initAuth) {
+                  window.initAuth();
+                } else if (window.refreshAuth) {
+                  window.refreshAuth();
+                }
+              }, 500);
+            }
         }, 100);
+        };
+        script.onerror = (error) => {
+          console.error('Error loading navbar script in profile page:', error);
+        };
+        document.head.appendChild(script);
       });
-      loadComponent("footer", "/frontend/src/core/components/footer.html");
+      loadComponent("footer", "../../../../core/components/footer.html");
       
       // Initialize tab navigation
       initTabNavigation();
+      
+      // Initialize address form validation
+      addRealTimeValidation();
       
       // Load user data
       loadUserData(currentUser.id);
@@ -375,7 +414,7 @@
           if (this.id === 'logout-btn') {
             if (confirm('Are you sure you want to logout?')) {
               localStorage.removeItem('currentUser');
-              window.location.href = '/frontend/src/features/customer/home/landing/landing.html';
+              window.location.href = '../../../home/landing/landing.html';
             }
             return;
           }
@@ -511,6 +550,7 @@
     // Add new address
     document.getElementById('add-address-btn').addEventListener('click', function() {
       document.getElementById('address-form').reset();
+      clearAllErrors(); // Clear any previous validation errors
       document.getElementById('address-modal').style.display = 'flex';
       document.getElementById('address-modal').dataset.mode = 'add';
     });
@@ -529,6 +569,7 @@
           document.getElementById('country').value = address.country || 'India';
           document.getElementById('is-default').checked = address.is_default || false;
           
+          clearAllErrors(); // Clear any previous validation errors
           document.getElementById('address-modal').style.display = 'flex';
           document.getElementById('address-modal').dataset.mode = 'edit';
           document.getElementById('address-modal').dataset.addressId = addressId;
@@ -557,21 +598,276 @@
       }
     }
     
-    // Save address (add or edit)
+    // Address validation functions
+    function validateAddressLabel(value) {
+      if (!value || value.trim().length === 0) {
+        return 'Address label is required';
+      }
+      if (value.trim().length < 2) {
+        return 'Address label must be at least 2 characters';
+      }
+      if (value.trim().length > 50) {
+        return 'Address label must be less than 50 characters';
+      }
+      return null;
+    }
+
+    function validateAddressLine1(value) {
+      if (!value || value.trim().length === 0) {
+        return 'Address line 1 is required';
+      }
+      if (value.trim().length < 5) {
+        return 'Address must be at least 5 characters';
+      }
+      if (value.trim().length > 100) {
+        return 'Address must be less than 100 characters';
+      }
+      return null;
+    }
+
+    function validateAddressLine2(value) {
+      if (value && value.trim().length > 100) {
+        return 'Address line 2 must be less than 100 characters';
+      }
+      return null;
+    }
+
+    function validateCity(value) {
+      if (!value || value.trim().length === 0) {
+        return 'City is required';
+      }
+      if (value.trim().length < 2) {
+        return 'City must be at least 2 characters';
+      }
+      if (value.trim().length > 50) {
+        return 'City must be less than 50 characters';
+      }
+      // Check for valid city name (letters, spaces, hyphens, apostrophes)
+      if (!/^[a-zA-Z\s\-']+$/.test(value.trim())) {
+        return 'City can only contain letters, spaces, hyphens, and apostrophes';
+      }
+      return null;
+    }
+
+    function validateState(value) {
+      if (!value || value.trim().length === 0) {
+        return 'State is required';
+      }
+      if (value.trim().length < 2) {
+        return 'State must be at least 2 characters';
+      }
+      if (value.trim().length > 50) {
+        return 'State must be less than 50 characters';
+      }
+      // Check for valid state name (letters, spaces, hyphens, apostrophes)
+      if (!/^[a-zA-Z\s\-']+$/.test(value.trim())) {
+        return 'State can only contain letters, spaces, hyphens, and apostrophes';
+      }
+      return null;
+    }
+
+    function validateZipCode(value) {
+      if (!value || value.trim().length === 0) {
+        return 'ZIP code is required';
+      }
+      const zipCode = value.trim();
+      
+      // Define available ZIP codes
+      const availableZipCodes = ["600001", "600002", "600003", "600004"];
+      
+      // Check if ZIP code is in the allowed list
+      if (!availableZipCodes.includes(zipCode)) {
+        return `ZIP code must be one of: ${availableZipCodes.join(', ')}`;
+      }
+      
+      return null;
+    }
+
+    function validateCountry(value) {
+      if (!value || value.trim().length === 0) {
+        return 'Country is required';
+      }
+      return null;
+    }
+
+    function showFieldError(fieldId, message) {
+      const errorElement = document.getElementById(`${fieldId}-error`);
+      const inputElement = document.getElementById(fieldId);
+      
+      if (errorElement) {
+        errorElement.textContent = message;
+        errorElement.classList.remove('hidden');
+      }
+      
+      if (inputElement) {
+        inputElement.classList.add('border-red-500');
+        inputElement.classList.remove('border-gray-300');
+      }
+    }
+
+    function clearFieldError(fieldId) {
+      const errorElement = document.getElementById(`${fieldId}-error`);
+      const inputElement = document.getElementById(fieldId);
+      
+      if (errorElement) {
+        errorElement.classList.add('hidden');
+        errorElement.textContent = '';
+      }
+      
+      if (inputElement) {
+        inputElement.classList.remove('border-red-500');
+        inputElement.classList.add('border-gray-300');
+      }
+    }
+
+    function clearAllErrors() {
+      const fields = ['address-label', 'address-line1', 'address-line2', 'city', 'state', 'zip-code', 'country'];
+      fields.forEach(field => clearFieldError(field));
+    }
+
+    function validateAddressForm() {
+      let isValid = true;
+      
+      // Clear previous errors
+      clearAllErrors();
+      
+      // Validate each field
+      const addressLabel = document.getElementById('address-label').value;
+      const addressLine1 = document.getElementById('address-line1').value;
+      const addressLine2 = document.getElementById('address-line2').value;
+      const city = document.getElementById('city').value;
+      const state = document.getElementById('state').value;
+      const zipCode = document.getElementById('zip-code').value;
+      const country = document.getElementById('country').value;
+      
+      // Validate address label
+      const labelError = validateAddressLabel(addressLabel);
+      if (labelError) {
+        showFieldError('address-label', labelError);
+        isValid = false;
+      }
+      
+      // Validate address line 1
+      const line1Error = validateAddressLine1(addressLine1);
+      if (line1Error) {
+        showFieldError('address-line1', line1Error);
+        isValid = false;
+      }
+      
+      // Validate address line 2 (optional)
+      const line2Error = validateAddressLine2(addressLine2);
+      if (line2Error) {
+        showFieldError('address-line2', line2Error);
+        isValid = false;
+      }
+      
+      // Validate city
+      const cityError = validateCity(city);
+      if (cityError) {
+        showFieldError('city', cityError);
+        isValid = false;
+      }
+      
+      // Validate state
+      const stateError = validateState(state);
+      if (stateError) {
+        showFieldError('state', stateError);
+        isValid = false;
+      }
+      
+      // Validate ZIP code
+      const zipError = validateZipCode(zipCode);
+      if (zipError) {
+        showFieldError('zip-code', zipError);
+        isValid = false;
+      }
+      
+      // Validate country
+      const countryError = validateCountry(country);
+      if (countryError) {
+        showFieldError('country', countryError);
+        isValid = false;
+      }
+      
+      return isValid;
+    }
+
+    // Add real-time validation
+    function addRealTimeValidation() {
+      const fields = ['address-label', 'address-line1', 'address-line2', 'city', 'state', 'zip-code', 'country'];
+      
+      fields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+          field.addEventListener('blur', function() {
+            const value = this.value;
+            let error = null;
+            
+            switch(fieldId) {
+              case 'address-label':
+                error = validateAddressLabel(value);
+                break;
+              case 'address-line1':
+                error = validateAddressLine1(value);
+                break;
+              case 'address-line2':
+                error = validateAddressLine2(value);
+                break;
+              case 'city':
+                error = validateCity(value);
+                break;
+              case 'state':
+                error = validateState(value);
+                break;
+              case 'zip-code':
+                error = validateZipCode(value);
+                break;
+              case 'country':
+                error = validateCountry(value);
+                break;
+            }
+            
+            if (error) {
+              showFieldError(fieldId, error);
+            } else {
+              clearFieldError(fieldId);
+            }
+          });
+          
+          // Clear error on focus
+          field.addEventListener('focus', function() {
+            clearFieldError(fieldId);
+          });
+        }
+      });
+    }
+
+    // Save address (add or edit) with validation
     document.getElementById('address-form').addEventListener('submit', function(e) {
       e.preventDefault();
+      
+      // Validate form
+      if (!validateAddressForm()) {
+        // Scroll to first error
+        const firstError = document.querySelector('.border-red-500');
+        if (firstError) {
+          firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          firstError.focus();
+        }
+        return;
+      }
       
       const currentUser = getCurrentUser();
       if (!currentUser) return;
       
       const formData = {
         customer_id: currentUser.id,
-        label: document.getElementById('address-label').value,
-        address_line1: document.getElementById('address-line1').value,
-        address_line2: document.getElementById('address-line2').value,
-        city: document.getElementById('city').value,
-        state: document.getElementById('state').value,
-        zip_code: document.getElementById('zip-code').value,
+        label: document.getElementById('address-label').value.trim(),
+        address_line1: document.getElementById('address-line1').value.trim(),
+        address_line2: document.getElementById('address-line2').value.trim(),
+        city: document.getElementById('city').value.trim(),
+        state: document.getElementById('state').value.trim(),
+        zip_code: document.getElementById('zip-code').value.trim(),
         country: document.getElementById('country').value,
         is_default: document.getElementById('is-default').checked
       };
@@ -582,6 +878,12 @@
       const url = mode === 'edit' ? `${API_ADDRESSES}/${addressId}` : API_ADDRESSES;
       const method = mode === 'edit' ? 'PATCH' : 'POST';
       
+      // Show loading state
+      const submitBtn = document.querySelector('#address-form button[type="submit"]');
+      const originalText = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Saving...';
+      
       fetch(url, {
         method: method,
         headers: {
@@ -589,15 +891,28 @@
         },
         body: JSON.stringify(formData)
       })
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
       .then(() => {
         alert(`Address ${mode === 'edit' ? 'updated' : 'added'} successfully`);
         document.getElementById('address-modal').style.display = 'none';
         loadAddresses(currentUser.id);
+        // Clear form
+        document.getElementById('address-form').reset();
+        clearAllErrors();
       })
       .catch(error => {
         console.error(`Error ${mode === 'edit' ? 'updating' : 'adding'} address:`, error);
-        alert(`Error ${mode === 'edit' ? 'updating' : 'adding'} address`);
+        alert(`Error ${mode === 'edit' ? 'updating' : 'adding'} address. Please try again.`);
+      })
+      .finally(() => {
+        // Reset button state
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
       });
     });
     

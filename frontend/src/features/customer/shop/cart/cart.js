@@ -640,7 +640,7 @@ function renderPrescriptionSelectionPanel(cartItems) {
     const verificationStatus = selectedPrescription?.status;
     const statusDisplay = verificationStatus ?
       `<span class="prescription-status-above verification-status status-${verificationStatus}">${verificationStatus}</span>` : '';
-    selectid=item.it;
+    selectid=item.id;
     const dropdownItems = prescriptions.map((p, i) => `
       <div class="prescription-dropdown-item" 
            data-item-id="${item.id}" 

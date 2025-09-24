@@ -293,24 +293,90 @@ async function fetchInventoryData(productId) {
   }
 }
 
+// Convert image file to base64
+async function convertToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+      const base64 = e.target.result;
+      resolve(base64);
+    };
+    
+    reader.onerror = function() {
+      reject(new Error('Failed to read file'));
+    };
+    
+    // Read as data URL to get base64
+    reader.readAsDataURL(file);
+  });
+}
+
+// Show notification to user
+function showNotification(message, type = 'info') {
+  // Create notification element
+  const notification = document.createElement('div');
+  notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 max-w-md ${
+    type === 'info' ? 'bg-blue-100 text-blue-800 border border-blue-200' :
+    type === 'success' ? 'bg-green-100 text-green-800 border border-green-200' :
+    type === 'error' ? 'bg-red-100 text-red-800 border border-red-200' :
+    'bg-gray-100 text-gray-800 border border-gray-200'
+  }`;
+  
+  notification.innerHTML = `
+    <div class="flex items-start">
+      <div class="flex-shrink-0">
+        ${type === 'info' ? 'ℹ️' : type === 'success' ? '✅' : type === 'error' ? '❌' : '📝'}
+      </div>
+      <div class="ml-3">
+        <div class="text-sm font-medium">Image Upload</div>
+        <div class="text-sm mt-1 whitespace-pre-line">${message}</div>
+        <button onclick="this.parentElement.parentElement.parentElement.remove()" 
+                class="mt-2 text-xs underline hover:no-underline">
+          Dismiss
+        </button>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(notification);
+  
+  // Auto-remove after 10 seconds
+  setTimeout(() => {
+    if (notification.parentElement) {
+      notification.remove();
+    }
+  }, 10000);
+}
+
 // Setup event listeners
 function setupEventListeners() {
   // Photo Upload Preview
   const photoInput = document.getElementById("medicine-photos");
   const previewContainer = document.getElementById("photo-preview");
 
-  photoInput.addEventListener("change", () => {
+  photoInput.addEventListener("change", async () => {
     previewContainer.innerHTML = "";
     const file = photoInput.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
+      try {
+        // Convert to base64 and show preview
+        const base64Image = await convertToBase64(file);
         const img = document.createElement("img");
-        img.src = e.target.result;
+        img.src = base64Image;
         img.classList.add("w-20", "h-20", "object-cover", "rounded-md", "border");
+        img.alt = "Image preview";
         previewContainer.appendChild(img);
-      };
-      reader.readAsDataURL(file);
+        
+        // Show file info
+        const info = document.createElement("div");
+        info.className = "text-xs text-gray-500 mt-1";
+        info.textContent = `Base64 ready (${Math.round(base64Image.length / 1024)}KB)`;
+        previewContainer.appendChild(info);
+      } catch (error) {
+        console.error('Error previewing image:', error);
+        previewContainer.innerHTML = '<div class="text-red-500 text-sm">Error loading image preview</div>';
+      }
     }
   });
 
@@ -331,6 +397,27 @@ function setupEventListeners() {
 async function handleFormSubmit(e) {
   e.preventDefault();
 
+  // Handle image upload - convert to base64
+  const photoInput = document.getElementById("medicine-photos");
+  let imageUrl = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="; // Default base64 image
+  
+  if (photoInput.files && photoInput.files[0]) {
+    try {
+      // Convert uploaded image to base64
+      const base64Image = await convertToBase64(photoInput.files[0]);
+      imageUrl = base64Image;
+      
+      console.log('Image converted to base64 successfully');
+      console.log('Base64 length:', base64Image.length);
+      
+      // Show success notification
+      showNotification('✅ Image converted to base64 and ready to save!', 'success');
+    } catch (error) {
+      console.error('Error converting image to base64:', error);
+      showNotification('❌ Error processing image. Using default image.', 'error');
+    }
+  }
+
   // Get form data
   const formData = {
     name: document.getElementById("medicine-name").value.trim(),
@@ -344,7 +431,7 @@ async function handleFormSubmit(e) {
     requires_prescription: document.getElementById("requires-prescription").value === "true",
     featured_product: document.getElementById("featured-product").checked,
     side_effects: document.getElementById("side-effects").value.trim(),
-    image_url: "images/azithral.jpeg" // Default image
+    image_url: imageUrl
   };
 
   // Handle category - if it's a string (new category), use it as is

@@ -824,13 +824,40 @@ document.addEventListener('DOMContentLoaded', function() {
 // Load header and footer
 async function loadHeader() {
   try {
+    console.log('Loading navbar...');
     const response = await fetch('../../../../core/components/navbar.html');
     const html = await response.text();
     document.getElementById('header').innerHTML = html;
+    console.log('Navbar HTML loaded');
     
     // Load navbar script
     const script = document.createElement('script');
     script.src = '../../../../core/components/navbar.js';
+    script.onload = () => {
+      console.log('Navbar script loaded successfully');
+      // Initialize auth after script loads
+      setTimeout(() => {
+        if (window.initAuth) {
+          window.initAuth();
+          console.log('Navbar auth initialized from order details page');
+        } else if (window.refreshAuth) {
+          window.refreshAuth();
+          console.log('Navbar auth refreshed from order details page');
+        } else {
+          console.warn('Auth functions not available yet, retrying...');
+          setTimeout(() => {
+            if (window.initAuth) {
+              window.initAuth();
+            } else if (window.refreshAuth) {
+              window.refreshAuth();
+            }
+          }, 500);
+        }
+      }, 100);
+    };
+    script.onerror = (error) => {
+      console.error('Error loading navbar script:', error);
+    };
     document.head.appendChild(script);
   } catch (error) {
     console.error('Error loading header:', error);
@@ -1297,7 +1324,7 @@ async function reorderItems() {
     
     // Navigate to cart
     setTimeout(() => {
-      window.location.href = '/frontend/src/features/customer/shop/cart/cart.html';
+      window.location.href = '../cart/cart.html';
     }, 1500);
   } catch (error) {
     console.error('Error reordering items:', error);
@@ -1314,7 +1341,7 @@ function downloadInvoice() {
 function contactSupport() {
   showNotification('Redirecting to support...', 'success');
   setTimeout(() => {
-    window.location.href = '/frontend/src/features/customer/about/contact/contact.html';
+    window.location.href = '../../../about/contact/contact.html';
   }, 1500);
 }
 

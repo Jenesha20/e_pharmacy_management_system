@@ -311,146 +311,6 @@ function setupPaymentMethodHandlers() {
   });
 }
 
-
-
-// Complete order
-// async function completeOrder(paymentMethod) {
-//   console.log('=== COMPLETE ORDER FUNCTION CALLED ===');
-//   console.log('Payment method:', paymentMethod);
-//   console.log('Cart items:', cartItems);
-//   console.log('Selected address:', selectedAddress);
-  
-//   try {
-//     // Get customer ID from currentUser object
-//     const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-//     const customerId = currentUser && currentUser.customer_id ? currentUser.customer_id.toString() : '6'; // Default to customer 6 as string for consistency
-//     console.log('Processing order for customer:', customerId, 'Type:', typeof customerId);
-//     // Calculate order totals
-//     const totals = calculateOrderTotals(cartItems.map(item => ({
-//       unit_price: item.price,
-//       quantity: item.quantity
-//     })));
-    
-//     // Create order data for backend - match db.json structure
-//     const orderData = {
-//       order_id: Date.now(),
-//       order_number: generateOrderNumber(),
-//       customer_id: customerId.toString(), // Convert to string to match db.json
-//       order_date: new Date().toISOString(),
-//       total_amount: totals.total,
-//       status: 'confirmed',
-//       shipping_address_id: selectedAddress?.id || 'default_address', // Use address ID or default
-//       prescription_id: null, // Will be handled separately if needed
-//       payment_method: paymentMethod,
-//       payment_status: 'completed',
-//       tracking_number: null,
-//       notes: null
-//     };
-    
-//     // Create order in backend (with fallback)
-//     let createdOrder;
-//     try {
-//       createdOrder = await createOrder(orderData);
-//       console.log('Order created in backend:', createdOrder);
-      
-//       // Create order items (send each item individually)
-//       for (const item of cartItems) {
-//         const orderItem = {
-//           order_item_id: Math.floor(Date.now() + Math.random() * 1000), // Generate unique ID
-//           order_id: createdOrder.order_id, // Use order_id field to match db.json
-//           product_id: parseInt(item.id),
-//           quantity: item.quantity,
-//           unit_price: item.price,
-//           subtotal: item.price * item.quantity
-//         };
-        
-//         // Save each order item individually to backend
-//         await createOrderItems(orderItem);
-//       }
-//       console.log('Order items created in backend');
-//     } catch (backendError) {
-//       console.warn('Backend API failed, using fallback:', backendError);
-//       // Fallback: create order with generated ID
-//       createdOrder = {
-//         id: orderData.order_id,
-//         ...orderData
-//       };
-//     }
-    
-//     // Also save to localStorage for immediate access
-//     const order = {
-//       id: createdOrder.id || createdOrder.order_id, // Use order_id as fallback
-//       order_id: createdOrder.order_id,
-//       order_number: createdOrder.order_number,
-//       items: cartItems,
-//       address: selectedAddress,
-//       subtotal: totals.subtotal,
-//       shipping: totals.shipping,
-//       total: totals.total,
-//       status: 'confirmed',
-//       payment_method: paymentMethod,
-//       payment_status: 'completed',
-//       customer_id: customerId.toString(), // Convert to string
-//       order_date: createdOrder.order_date,
-//       created_at: new Date().toISOString()
-//     };
-    
-//     const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-//     orders.push(order);
-//     localStorage.setItem('orders', JSON.stringify(orders));
-    
-//     // Set the selected order ID for the order details pag
-        
-//     // Show success message
-//     showNotification('Payment successful! Order confirmed.', 'success');
-//     console.log('Payment completed successfully, preparing redirect...');
-    
-//     // Redirect to payment completion page
-//     console.log('Setting up redirect timeout...');
-//     setTimeout(() => {
-//       console.log('=== REDIRECT TIMEOUT EXECUTED ===');
-//       console.log('Redirecting to payment completion page...');
-//       console.log('Current URL:', window.location.href);
-//       console.log('Target URL:', new URL('payment-complete.html', window.location.href).href);
-      
-//       try {
-//         // Try relative path first
-//         console.log('Attempting redirect to payment-complete.html...');
-//         window.location.href = 'payment-complete.html';
-//         console.log('Redirect initiated successfully');
-//       } catch (redirectError) {
-//         console.error('Redirect failed:', redirectError);
-//         // Try alternative redirect method
-//         try {
-//           console.log('Trying window.location.assign...');
-//           window.location.assign('payment-complete.html');
-//         } catch (assignError) {
-//           console.error('Location assign also failed:', assignError);
-//           // Try absolute path
-//           const baseUrl = window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-//           const targetUrl = baseUrl + '/payment-complete.html';
-//           console.log('Trying absolute path:', targetUrl);
-//           window.location.href = targetUrl;
-//         }
-//       }
-//     }, 2000);
-    
-//   } catch (error) {
-//     console.error('Error completing order:', error);
-//     showNotification('Failed to complete order. Please try again.', 'error');
-    
-//     // Reset button state - DO NOT clear cart data on error
-//     const button = document.querySelector('button[onclick="processPayment()"]');
-//     if (button) {
-//       button.disabled = false;
-//       button.innerHTML = '<i class="fas fa-credit-card mr-2"></i>Pay Now';
-//     }
-    
-//     // Cart data is preserved so user can retry payment
-//     console.log('Cart data preserved due to payment error');
-//   }
-// }
-
 // Complete order
 async function completeOrder(paymentMethod) {
   console.log('=== COMPLETE ORDER FUNCTION CALLED ===');
@@ -498,22 +358,9 @@ async function completeOrder(paymentMethod) {
       // FIX: Use the numeric order_id that was returned from API
       const finalOrderId = createdOrder.order_id || numericOrderId;
       
-      // FIX: Only create order items once - remove any duplicate creation
-      // Create order items (send each item individually)
-      for (const item of cartItems) {
-        const orderItem = {
-          order_item_id: Math.floor(Date.now() + Math.random() * 1000),
-          order_id: finalOrderId,
-          product_id: parseInt(item.id),
-          quantity: item.quantity,
-          unit_price: item.price,
-          subtotal: item.price * item.quantity
-        };
-        
-        // Save each order item individually to backend
-        await createOrderItems(orderItem);
-      }
-      console.log('Order items created in backend');
+      // NOTE: Order items are now created in processPayment function
+      // This function only handles the order creation, not order items
+      console.log('Order created successfully, order items will be created in processPayment function');
     } catch (backendError) {
       console.warn('Backend API failed, using fallback:', backendError);
       // Fallback: create order with generated ID
@@ -746,9 +593,12 @@ function showNotification(message, type = 'success', duration = 3000) {
 
 // Process payment - Direct redirect without validation
 // Process payment - Direct redirect without validation
-function processPayment() {
+async function processPayment() {
+  console.log('🚀🚀🚀 PAYMENT PROCESS STARTED 🚀🚀🚀');
   console.log('=== PAYMENT PROCESS STARTED ===');
   console.log('Skipping validation, creating order and redirecting to payment complete page...');
+  console.log('=== DEBUGGING ORDER ITEMS ISSUE ===');
+  console.log('🚀🚀🚀 FUNCTION IS BEING CALLED 🚀🚀🚀');
   
   // Get selected payment method (default to UPI if none selected)
   const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked');
@@ -766,6 +616,39 @@ function processPayment() {
   const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
   const customerId = currentUser && currentUser.customer_id ? currentUser.customer_id.toString() : '6';
   console.log('Processing order for customer:', customerId);
+  console.log('=== CART ITEMS DEBUG ===');
+  console.log('Cart items count:', cartItems.length);
+  console.log('Cart items details:', cartItems);
+  console.log('Selected address:', selectedAddress);
+  
+  // Debug localStorage
+  console.log('=== LOCALSTORAGE DEBUG ===');
+  console.log('checkoutData:', localStorage.getItem('checkoutData'));
+  console.log('cart:', localStorage.getItem('cart'));
+  console.log('checkoutCart:', localStorage.getItem('checkoutCart'));
+  console.log('cartItems:', localStorage.getItem('cartItems'));
+  console.log('All localStorage keys:', Object.keys(localStorage));
+  
+  // Check if cart is empty
+  if (cartItems.length === 0) {
+    console.log('❌❌❌ CART IS EMPTY - THIS IS THE PROBLEM! ❌❌❌');
+    console.log('❌ No cart items found, trying to reload cart data...');
+    
+    // Try to reload cart data
+    loadOrderData();
+    
+    // Check again after reload
+    if (cartItems.length === 0) {
+      console.log('❌ Still no cart items after reload, redirecting immediately');
+      showNotification('Your cart is empty', 'error');
+      window.location.href = 'payment-complete.html';
+      return;
+    } else {
+      console.log('✅ Cart items loaded after reload:', cartItems.length);
+    }
+  }
+  
+  console.log('✅ Cart has items, proceeding with order creation');
   
   // Calculate totals
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -826,72 +709,173 @@ function processPayment() {
   };
   
   console.log('Created order:', order);
+  console.log('=== ORDER CREATION DEBUG ===');
+  console.log('Order data being sent to API:', JSON.stringify(order, null, 2));
   
-  // Save to API (async, don't wait)
-  fetch('http://localhost:3000/orders', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(order)
-  }).then(response => {
-    if (response.ok) {
-      return response.json();
-    } else {
-      throw new Error('Failed to save order to API');
-    }
-  }).then(createdOrder => {
-    console.log('Order saved to API successfully:', createdOrder);
-    
-    // FIX: Use the numeric order_id that was returned from API
-    const finalOrderId = createdOrder.order_id || numericOrderId;
-    console.log('Using order_id for order items:', finalOrderId);
-    
-    // FIX: REMOVED DUPLICATE ORDER ITEM CREATION
-    // Only create order items once here
-    
-    // Create order items for each cart item
-    const orderItemsPromises = cartItems.map((item, index) => {
-      const orderItem = {
-        id: 'item_' + Date.now() + '_' + index,
-        order_item_id: Date.now() + index,
-        order_id: finalOrderId,
-        product_id: parseInt(item.id),
-        quantity: item.quantity,
-        unit_price: item.price,
-        subtotal: item.price * item.quantity
-      };
-      
-      console.log('Saving order item:', orderItem);
-      
-      // Save order item to API
-      return fetch('http://localhost:3000/order_items', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(orderItem)
-      }).then(itemResponse => {
-        if (itemResponse.ok) {
-          console.log('Order item saved to API:', orderItem);
-          return itemResponse.json();
-        } else {
-          console.warn('Failed to save order item to API:', orderItem);
-          throw new Error('Failed to save order item');
-        }
-      });
+  // Save to API and create order items
+  console.log('=== STEP 1: CREATING ORDER ===');
+  console.log('Making API call to create order...');
+  
+  let createdOrder;
+  try {
+    const orderResponse = await fetch('http://localhost:3000/orders', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(order)
     });
     
-    return Promise.all(orderItemsPromises);
-  }).then(() => {
-    console.log('All order items saved successfully');
-  }).catch(error => {
-    console.warn('API not available or error:', error);
-  });
+    console.log('Order API response status:', orderResponse.status);
+    console.log('Order API response ok:', orderResponse.ok);
+    
+    if (!orderResponse.ok) {
+      const errorText = await orderResponse.text();
+      console.error('Order API error response:', errorText);
+      throw new Error('Failed to save order to API');
+    }
+    
+    createdOrder = await orderResponse.json();
+    console.log('✅ Order saved to API successfully:', createdOrder);
+    console.log('✅ Created order ID:', createdOrder.order_id);
+    console.log('✅ Order creation successful - proceeding to order_items creation');
+  } catch (orderError) {
+    console.error('❌ Error creating order:', orderError);
+    console.error('❌ Order error details:', orderError.message);
+    console.error('❌ Order error stack:', orderError.stack);
+    console.log('❌ This is why the function is redirecting immediately - order creation failed!');
+    
+    // Still save to localStorage even if API fails
+    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+    orders.push(orderForLocalStorage);
+    localStorage.setItem('orders', JSON.stringify(orders));
+    localStorage.setItem('selectedOrderId', orderForLocalStorage.id);
+    showNotification('Payment successful! Redirecting...', 'success');
+    window.location.href = 'payment-complete.html';
+    return;
+  }
   
-  // FIX: REMOVED THE DUPLICATE forEach LOOP THAT WAS CREATING EXTRA ITEMS
+  // FIX: Use the numeric order_id that was returned from API
+  const finalOrderId = createdOrder.order_id || numericOrderId;
+  console.log('Using order_id for order items:', finalOrderId);
+  console.log('Cart items to process:', cartItems);
+  console.log('Number of cart items:', cartItems.length);
+  
+  // Create order items for each cart item - FIX: Use async/await to ensure proper creation
+  console.log('=== STEP 2: CREATING ORDER ITEMS ===');
+  console.log('Creating order items for cart items:', cartItems);
+  console.log('Final order ID to use:', finalOrderId);
+  
+  // Create order items sequentially to ensure proper creation
+  const orderItemPromises = [];
+  
+  for (let index = 0; index < cartItems.length; index++) {
+    const item = cartItems[index];
+    console.log(`=== PROCESSING CART ITEM ${index + 1}/${cartItems.length} ===`);
+    console.log('Cart item details:', item);
+    console.log('Item ID:', item.id, 'Type:', typeof item.id);
+    console.log('Item price:', item.price, 'Type:', typeof item.price);
+    console.log('Item quantity:', item.quantity, 'Type:', typeof item.quantity);
+    
+    const orderItem = {
+      id: `item_${Date.now()}_${index}`,
+      order_item_id: Date.now() + index + Math.random() * 1000, // Ensure unique ID
+      order_id: finalOrderId,
+      product_id: parseInt(item.id),
+      quantity: item.quantity,
+      unit_price: item.price,
+      subtotal: item.price * item.quantity
+    };
+    
+    console.log(`Creating order item ${index + 1}/${cartItems.length}:`, orderItem);
+    console.log('Order item data being sent to API:', JSON.stringify(orderItem, null, 2));
+    
+    // Create a promise for each order item
+    const orderItemPromise = (async () => {
+      try {
+        console.log(`=== ATTEMPTING TO SAVE ORDER ITEM ${index + 1} ===`);
+        console.log(`Attempting to save order item ${index + 1}:`, orderItem);
+        console.log('Making API call to order_items endpoint...');
+        
+        const itemResponse = await fetch('http://localhost:3000/order_items', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(orderItem)
+        });
+        
+        console.log('Order item API response status:', itemResponse.status);
+        console.log('Order item API response ok:', itemResponse.ok);
+        
+        if (itemResponse.ok) {
+          const savedItem = await itemResponse.json();
+          console.log('✅ Order item saved successfully to database:', savedItem);
+          console.log('✅ Order item ID:', savedItem.id);
+          console.log('✅ Order item order_id:', savedItem.order_id);
+          return savedItem;
+        } else {
+          console.error('❌ Failed to save order item to API:', orderItem);
+          const errorText = await itemResponse.text();
+          console.error('❌ API Error response:', errorText);
+          
+          // Try the improved saveOrderItemToDatabase function
+          console.log('🔄 Trying fallback saveOrderItemToDatabase function...');
+          return await saveOrderItemToDatabase(orderItem);
+        }
+      } catch (error) {
+        console.error('❌ Error creating order item:', error);
+        console.error('❌ Error details:', error.message);
+        console.error('❌ Error stack:', error.stack);
+        
+        // Try the improved saveOrderItemToDatabase function
+        console.log('🔄 Trying fallback saveOrderItemToDatabase function...');
+        return await saveOrderItemToDatabase(orderItem);
+      }
+    })();
+    
+    orderItemPromises.push(orderItemPromise);
+  }
+  
+  // Wait for all order items to be created
+  try {
+    console.log('=== STEP 3: WAITING FOR ALL ORDER ITEMS ===');
+    console.log('Waiting for all order items to be created...');
+    console.log('Number of order item promises:', orderItemPromises.length);
+    
+    const results = await Promise.all(orderItemPromises);
+    console.log('✅ All order items created successfully:', results);
+    console.log('✅ Number of order items created:', results.length);
+    console.log('✅ Results details:', results.map((result, index) => ({
+      index: index + 1,
+      id: result?.id,
+      order_id: result?.order_id,
+      product_id: result?.product_id,
+      quantity: result?.quantity
+    })));
+    
+    // Show success notification
+    if (typeof showNotification === 'function') {
+      showNotification(`Order items created successfully! ${cartItems.length} items added to order.`, 'success');
+    }
+  } catch (error) {
+    console.error('❌ Error creating some order items:', error);
+    console.error('❌ Error details:', error.message);
+    console.error('❌ Error stack:', error.stack);
+    
+    // Show error notification
+    if (typeof showNotification === 'function') {
+      showNotification('Some order items failed to create. Check console for details.', 'error');
+    }
+  }
+  
+  console.log('=== STEP 4: ORDER ITEMS CREATION COMPLETED ===');
+  console.log('All order items creation completed');
+  console.log('Final order_id used:', finalOrderId);
+  console.log('Total cart items processed:', cartItems.length);
   
   // Save to localStorage
+  console.log('=== STEP 5: SAVING TO LOCALSTORAGE ===');
   const orders = JSON.parse(localStorage.getItem('orders') || '[]');
   orders.push(orderForLocalStorage);
   localStorage.setItem('orders', JSON.stringify(orders));
@@ -901,10 +885,26 @@ function processPayment() {
   localStorage.setItem('selectedOrderId', orderForLocalStorage.id);
   console.log('Selected order ID set to:', orderForLocalStorage.id);
   
+  // Verify order_items were created in database
+  console.log('=== STEP 6: VERIFYING ORDER ITEMS IN DATABASE ===');
+  try {
+    const verifyResponse = await fetch(`http://localhost:3000/order_items?order_id=${finalOrderId}`);
+    if (verifyResponse.ok) {
+      const orderItems = await verifyResponse.json();
+      console.log('✅ Verification: Found order items in database:', orderItems.length);
+      console.log('✅ Order items details:', orderItems);
+    } else {
+      console.log('⚠️ Could not verify order items in database');
+    }
+  } catch (verifyError) {
+    console.log('⚠️ Verification failed:', verifyError);
+  }
+  
   // Show success notification
   showNotification('Payment successful! Redirecting...', 'success');
   
-  // Redirect immediately
+  // Redirect after order_items are created
+  console.log('=== STEP 7: REDIRECTING ===');
   console.log('Redirecting to payment complete page...');
   window.location.href = 'payment-complete.html';
 }
@@ -1127,11 +1127,247 @@ function testPaymentCompleteRedirect() {
   }
 }
 
+// Function to save order item directly to database JSON file
+async function saveOrderItemToDatabase(orderItem) {
+  try {
+    console.log('Attempting to save order item to database:', orderItem);
+    
+    // Create a server endpoint to handle this, or use a different approach
+    // For now, we'll use a more robust API call with retry logic
+    let retryCount = 0;
+    const maxRetries = 3;
+    
+    while (retryCount < maxRetries) {
+      try {
+        const response = await fetch('http://localhost:3000/order_items', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: `item_${Date.now()}_${retryCount}`,
+            order_item_id: orderItem.order_item_id,
+            order_id: orderItem.order_id,
+            product_id: orderItem.product_id,
+            quantity: orderItem.quantity,
+            unit_price: orderItem.unit_price,
+            subtotal: orderItem.subtotal
+          })
+        });
+        
+        if (response.ok) {
+          const savedItem = await response.json();
+          console.log('Order item saved to database successfully:', savedItem);
+          return savedItem;
+        } else {
+          throw new Error(`API returned status: ${response.status}`);
+        }
+      } catch (error) {
+        retryCount++;
+        console.log(`Retry ${retryCount}/${maxRetries} for order item:`, error.message);
+        
+        if (retryCount >= maxRetries) {
+          console.error('All retries failed for order item:', orderItem);
+          // Final fallback: save to localStorage
+          const fallbackItems = JSON.parse(localStorage.getItem('order_items') || '[]');
+          fallbackItems.push(orderItem);
+          localStorage.setItem('order_items', JSON.stringify(fallbackItems));
+          console.log('Order item saved to localStorage as final fallback:', orderItem);
+          break;
+        }
+        
+        // Wait before retry
+        await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+      }
+    }
+  } catch (error) {
+    console.error('Error saving order item to database:', error);
+  }
+}
+
+// Notification function
+function showNotification(message, type = 'info') {
+  // Create notification element
+  const notification = document.createElement('div');
+  notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+    type === 'success' ? 'bg-green-500 text-white' :
+    type === 'error' ? 'bg-red-500 text-white' :
+    'bg-blue-500 text-white'
+  }`;
+  notification.textContent = message;
+  
+  // Add to page
+  document.body.appendChild(notification);
+  
+  // Remove after 3 seconds
+  setTimeout(() => {
+    if (notification.parentNode) {
+      notification.parentNode.removeChild(notification);
+    }
+  }, 3000);
+}
+
+// Test function to check cart items
+function testCartItems() {
+  console.log('=== TESTING CART ITEMS ===');
+  
+  const cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
+  console.log('Cart items from localStorage:', cartItems);
+  console.log('Number of cart items:', cartItems.length);
+  
+  if (cartItems.length > 0) {
+    console.log('First cart item:', cartItems[0]);
+    console.log('Cart item structure:', {
+      id: cartItems[0].id,
+      name: cartItems[0].name,
+      price: cartItems[0].price,
+      quantity: cartItems[0].quantity
+    });
+  } else {
+    console.log('Cart is empty!');
+  }
+  
+  return cartItems;
+}
+
+// Test function to manually create order items
+async function testOrderItemCreation() {
+  console.log('=== TESTING ORDER ITEM CREATION ===');
+  
+  // First check cart items
+  const cartItems = testCartItems();
+  
+  if (cartItems.length === 0) {
+    console.log('No cart items to test with');
+    return;
+  }
+  
+  // Get the latest order from the database
+  try {
+    const response = await fetch('http://localhost:3000/orders');
+    if (response.ok) {
+      const orders = await response.json();
+      const latestOrder = orders[orders.length - 1];
+      console.log('Latest order:', latestOrder);
+      
+      if (latestOrder) {
+        // Create order items for each cart item
+        for (let index = 0; index < cartItems.length; index++) {
+          const item = cartItems[index];
+          const testOrderItem = {
+            id: `test_js_item_${Date.now()}_${index}`,
+            order_item_id: Date.now() + index,
+            order_id: latestOrder.order_id,
+            product_id: parseInt(item.id),
+            quantity: item.quantity,
+            unit_price: item.price,
+            subtotal: item.price * item.quantity
+          };
+          
+          console.log(`Creating test order item ${index + 1}:`, testOrderItem);
+          
+          const itemResponse = await fetch('http://localhost:3000/order_items', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(testOrderItem)
+          });
+          
+          if (itemResponse.ok) {
+            const savedItem = await itemResponse.json();
+            console.log('Test order item created successfully:', savedItem);
+          } else {
+            console.error('Failed to create test order item:', itemResponse.status);
+            const errorText = await itemResponse.text();
+            console.error('Error response:', errorText);
+          }
+        }
+        
+        showNotification('Test order items creation completed!', 'success');
+      }
+    } else {
+      console.error('Failed to fetch orders');
+    }
+  } catch (error) {
+    console.error('Error in test function:', error);
+  }
+}
+
+// Test function to manually test order_items creation
+async function testOrderItemsCreation() {
+  console.log('=== MANUAL TEST: ORDER ITEMS CREATION ===');
+  
+  // Get current cart items
+  const testCartItems = JSON.parse(localStorage.getItem('checkoutCart') || '[]');
+  console.log('Test cart items:', testCartItems);
+  
+  if (testCartItems.length === 0) {
+    console.log('No cart items found. Please add items to cart first.');
+    return;
+  }
+  
+  // Create a test order
+  const testOrderId = Date.now();
+  console.log('Test order ID:', testOrderId);
+  
+  // Create order_items for each cart item
+  for (let index = 0; index < testCartItems.length; index++) {
+    const item = testCartItems[index];
+    const orderItem = {
+      id: `test_manual_${Date.now()}_${index}`,
+      order_item_id: Date.now() + index,
+      order_id: testOrderId,
+      product_id: parseInt(item.id),
+      quantity: item.quantity,
+      unit_price: item.price,
+      subtotal: item.price * item.quantity
+    };
+    
+    console.log(`Creating test order item ${index + 1}:`, orderItem);
+    
+    try {
+      const response = await fetch('http://localhost:3000/order_items', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderItem)
+      });
+      
+      if (response.ok) {
+        const savedItem = await response.json();
+        console.log('✅ Test order item created:', savedItem);
+      } else {
+        console.error('❌ Failed to create test order item:', response.status);
+      }
+    } catch (error) {
+      console.error('❌ Error creating test order item:', error);
+    }
+  }
+  
+  // Verify the order_items were created
+  try {
+    const verifyResponse = await fetch(`http://localhost:3000/order_items?order_id=${testOrderId}`);
+    if (verifyResponse.ok) {
+      const orderItems = await verifyResponse.json();
+      console.log('✅ Verification: Found test order items:', orderItems.length);
+      console.log('✅ Test order items:', orderItems);
+    }
+  } catch (error) {
+    console.error('❌ Verification failed:', error);
+  }
+}
+
 // Make functions globally available
 window.processPayment = processPayment;
 window.refreshPaymentPage = refreshPaymentPage;
 window.testRedirect = testRedirect;
+window.showNotification = showNotification;
 window.testLatestOrder = testLatestOrder;
 window.testPaymentProcess = testPaymentProcess;
 window.testPaymentCompleteRedirect = testPaymentCompleteRedirect;
 window.checkCartStatus = checkCartStatus;
+window.testOrderItemCreation = testOrderItemCreation;
+window.testCartItems = testCartItems;
+window.testOrderItemsCreation = testOrderItemsCreation;

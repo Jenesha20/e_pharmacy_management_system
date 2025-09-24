@@ -16,8 +16,11 @@
         console.log('Navbar auth check - currentUser:', currentUser);
         console.log('Navbar auth check - currentUser.email:', currentUser?.email);
         console.log('Navbar auth check - currentUser.first_name:', currentUser?.first_name);
+        console.log('Navbar auth check - currentUser type:', typeof currentUser);
+        console.log('Navbar auth check - currentUser is null?', currentUser === null);
 
         if (currentUser && currentUser.email) {
+            console.log('User is authenticated, showing profile dropdown');
             // Create profile dropdown container
             const profileContainer = document.createElement('div');
             profileContainer.className = 'relative';
@@ -45,7 +48,7 @@
             const logoutBtn = dropdown.querySelector('#logoutBtn');
             logoutBtn.addEventListener('click', () => {
                 localStorage.removeItem("currentUser");
-                window.location.href = '/frontend/src/features/customer/home/landing/landing.html';
+                window.location.href = '../../../customer/home/landing/landing.html';
             });
 
             profileContainer.appendChild(profileButton);
@@ -60,6 +63,7 @@
             });
 
         } else {
+            console.log('No user found, showing login button');
             // No user → show login
             const loginLink = document.createElement('a');
             loginLink.href = "../../../customer/auth/login/login.html";

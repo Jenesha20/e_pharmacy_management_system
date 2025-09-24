@@ -253,6 +253,10 @@ document.addEventListener('DOMContentLoaded', function () {
     renderProducts(currentPage);
   }
   
+  // Featured Products Carousel Variables
+  let currentFeaturedIndex = 0;
+  const itemsPerView = 5; // Number of products to show at once
+
   // Render featured products
   function renderFeaturedProducts() {
     const container = document.getElementById("featured-products");
@@ -268,7 +272,9 @@ document.addEventListener('DOMContentLoaded', function () {
     featuredProducts.forEach(product => {
         const card = document.createElement("div");
         card.className = "bg-white rounded-lg overflow-hidden shadow-sm relative border border-[#A1E970]";
-
+        card.style.minWidth = '200px';
+        card.style.marginRight = '16px';
+        card.style.flex = '0 0 auto';
 
         card.innerHTML = `
             <!-- Prescription Badge -->
@@ -324,6 +330,51 @@ document.addEventListener('DOMContentLoaded', function () {
           }
         }
     });
+
+    // Setup carousel after rendering
+    setupFeaturedCarousel();
+  }
+
+  // Setup featured products carousel
+  function setupFeaturedCarousel() {
+    const prevBtn = document.getElementById('browse-featured-prev');
+    const nextBtn = document.getElementById('browse-featured-next');
+    const container = document.getElementById('featured-products');
+    
+    if (!prevBtn || !nextBtn || !container) return;
+
+    const totalProducts = featuredProducts.length;
+    const maxIndex = Math.max(0, totalProducts - itemsPerView);
+
+    function updateCarousel() {
+      const translateX = -(currentFeaturedIndex * (200 + 16)); // 200px card width + 16px margin
+      container.style.transform = `translateX(${translateX}px)`;
+    }
+
+    prevBtn.addEventListener('click', () => {
+      if (currentFeaturedIndex > 0) {
+        currentFeaturedIndex--;
+        updateCarousel();
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (currentFeaturedIndex < maxIndex) {
+        currentFeaturedIndex++;
+        updateCarousel();
+      }
+    });
+
+    // Auto-advance carousel every 6 seconds
+    setInterval(() => {
+      if (currentFeaturedIndex < maxIndex) {
+        currentFeaturedIndex++;
+        updateCarousel();
+      } else {
+        currentFeaturedIndex = 0;
+        updateCarousel();
+      }
+    }, 6000);
   }
   
   // Add product to cart

@@ -202,6 +202,33 @@ async function getCustomerOrdersWithDetails(customerId) {
             }
           }
           
+          // Method 3: Check localStorage as final fallback
+          if (orderItems.length === 0) {
+            console.log('API failed, checking localStorage for order items...');
+            const fallbackItems = JSON.parse(localStorage.getItem('order_items') || '[]');
+            orderItems = fallbackItems.filter(item => 
+              item.order_id === order.order_id || item.order_id === order.id
+            );
+            console.log('Found order items in localStorage:', orderItems);
+          }
+          
+          // Method 4: Check if order items exist in database but with different structure
+          if (orderItems.length === 0) {
+            console.log('Checking database for order items with different structure...');
+            try {
+              const allItemsResponse = await fetch(`${API_BASE_URL}/order_items`);
+              if (allItemsResponse.ok) {
+                const allItems = await allItemsResponse.json();
+                orderItems = allItems.filter(item => 
+                  item.order_id === order.order_id || item.order_id === order.id
+                );
+                console.log('Found order items in database:', orderItems);
+              }
+            } catch (error) {
+              console.error('Error fetching all order items:', error);
+            }
+          }
+          
           console.log('Final order items found:', orderItems);
           
           // Process the order items structure
@@ -244,7 +271,19 @@ async function getCustomerOrdersWithDetails(customerId) {
             })
           );
           
-          return { ...order, items: itemsWithProducts };
+          // Fetch customer data for the order
+          let customerData = null;
+          try {
+            const customerResponse = await fetch(`${API_BASE_URL}/customers/${order.customer_id}`);
+            if (customerResponse.ok) {
+              customerData = await customerResponse.json();
+              console.log(`Customer data for order ${order.order_id}:`, customerData);
+            }
+          } catch (error) {
+            console.error('Error fetching customer data:', error);
+          }
+          
+          return { ...order, items: itemsWithProducts, customer: customerData };
         } catch (error) {
           console.error('Error fetching order details:', error);
           return { ...order, items: [] };
@@ -295,19 +334,24 @@ async function loadHeader() {
     script.onload = () => {
       console.log('Navbar script loaded successfully');
       // Initialize auth after script loads
-      if (window.initAuth) {
-        window.initAuth();
-        console.log('Navbar auth initialized from orders page');
-        // Also try to refresh auth after a short delay
-        setTimeout(() => {
-          if (window.refreshAuth) {
-            window.refreshAuth();
-            console.log('Navbar auth refreshed from orders page');
-          }
-        }, 200);
-      } else {
-        console.error('initAuth function not available');
-      }
+      setTimeout(() => {
+        if (window.initAuth) {
+          window.initAuth();
+          console.log('Navbar auth initialized from orders page');
+        } else if (window.refreshAuth) {
+          window.refreshAuth();
+          console.log('Navbar auth refreshed from orders page');
+        } else {
+          console.warn('Auth functions not available yet, retrying...');
+          setTimeout(() => {
+            if (window.initAuth) {
+              window.initAuth();
+            } else if (window.refreshAuth) {
+              window.refreshAuth();
+            }
+          }, 500);
+        }
+      }, 100);
     };
     script.onerror = (error) => {
       console.error('Error loading navbar script:', error);

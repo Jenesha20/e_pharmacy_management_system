@@ -122,8 +122,8 @@ window.refreshNavbarAuth = refreshNavbarAuth;
 
 // Add debug button for testing (temporary)
 setTimeout(() => {
-  const debugButton = document.createElement('button');
-  debugButton.textContent = 'Refresh Auth';
+  // const debugButton = document.createElement('button');
+  // debugButton.textContent = 'Refresh Auth';
   debugButton.style.position = 'fixed';
   debugButton.style.top = '10px';
   debugButton.style.right = '10px';
@@ -302,6 +302,118 @@ const slider = document.getElementById("testimonial-slider");
     index = (index + 1) % totalSlides;
     showSlide();
   }, 5000);
+
+  // Featured Products Carousel
+  let featuredProducts = [];
+  let currentFeaturedIndex = 0;
+  const itemsPerView = 5; // Number of products to show at once
+
+  // Load featured products
+  async function loadFeaturedProducts() {
+    try {
+      const response = await fetch('../../../../core/api/db.json');
+      const data = await response.json();
+      featuredProducts = data.products.filter(product => product.featured_product === true);
+      
+      if (featuredProducts.length === 0) {
+        console.log('No featured products found');
+        return;
+      }
+
+      renderFeaturedProducts();
+      setupFeaturedCarousel();
+    } catch (error) {
+      console.error('Error loading featured products:', error);
+    }
+  }
+
+  // Render featured products
+  function renderFeaturedProducts() {
+    const container = document.getElementById('featured-product');
+    if (!container) return;
+
+    container.innerHTML = '';
+    
+    featuredProducts.forEach((product, index) => {
+      const productCard = createProductCard(product);
+      productCard.style.minWidth = '200px';
+      productCard.style.marginRight = '16px';
+      container.appendChild(productCard);
+    });
+  }
+
+  // Create product card
+  function createProductCard(product) {
+    const card = document.createElement('div');
+    card.className = 'bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300';
+    card.style.flex = '0 0 auto';
+    
+    card.innerHTML = `
+      <div class="relative">
+        <img src="${product.image_url}" alt="${product.name}" class="w-full h-32 object-cover">
+        <div class="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs">
+          Featured
+        </div>
+      </div>
+      <div class="p-4">
+        <h4 class="font-semibold text-sm mb-2 line-clamp-2">${product.name}</h4>
+        <p class="text-gray-600 text-xs mb-2 line-clamp-2">${product.description}</p>
+        <div class="flex justify-between items-center">
+          <span class="text-green-600 font-bold">$${product.price}</span>
+          <button onclick="handleAddToCart(${product.id})" class="bg-blue-500 text-white px-3 py-1 rounded text-xs hover:bg-blue-600 transition">
+            Add to Cart
+          </button>
+        </div>
+      </div>
+    `;
+    
+    return card;
+  }
+
+  // Setup featured products carousel
+  function setupFeaturedCarousel() {
+    const prevBtn = document.getElementById('featured-prev');
+    const nextBtn = document.getElementById('featured-next');
+    const container = document.getElementById('featured-product');
+    
+    if (!prevBtn || !nextBtn || !container) return;
+
+    const totalProducts = featuredProducts.length;
+    const maxIndex = Math.max(0, totalProducts - itemsPerView);
+
+    function updateCarousel() {
+      const translateX = -(currentFeaturedIndex * (200 + 16)); // 200px card width + 16px margin
+      container.style.transform = `translateX(${translateX}px)`;
+    }
+
+    prevBtn.addEventListener('click', () => {
+      if (currentFeaturedIndex > 0) {
+        currentFeaturedIndex--;
+        updateCarousel();
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (currentFeaturedIndex < maxIndex) {
+        currentFeaturedIndex++;
+        updateCarousel();
+      }
+    });
+
+    // Auto-advance carousel every 6 seconds
+    setInterval(() => {
+      if (currentFeaturedIndex < maxIndex) {
+        currentFeaturedIndex++;
+        updateCarousel();
+      } else {
+        currentFeaturedIndex = 0;
+        updateCarousel();
+      }
+    }, 6000);
+  }
+
+  // Load featured products when page loads
+  loadFeaturedProducts();
   // function openBlog(type) {
   //   const modal = document.getElementById("blog-modal");
   //   const title = document.getElementById("blog-title");

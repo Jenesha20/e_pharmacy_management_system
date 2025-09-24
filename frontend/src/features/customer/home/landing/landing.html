@@ -111,9 +111,21 @@
 
         <!-- Featured Products Section -->
         <section class="mb-12">
-            <h3 class="text-xl font-semibold mb-4">Featured Product</h3>
-            <div id="featured-product" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-              <!-- JS will insert product card here -->
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold">Featured Products</h3>
+                <div class="flex space-x-2">
+                    <button id="featured-prev" class="p-2 bg-gray-200 rounded-full hover:bg-gray-300 transition">
+                        <span class="material-icons">chevron_left</span>
+                    </button>
+                    <button id="featured-next" class="p-2 bg-gray-200 rounded-full hover:bg-gray-300 transition">
+                        <span class="material-icons">chevron_right</span>
+                    </button>
+                </div>
+            </div>
+            <div class="relative overflow-hidden">
+                <div id="featured-product" class="flex transition-transform duration-500 ease-in-out">
+                    <!-- JS will insert product cards here -->
+                </div>
             </div>
         </section>
 
@@ -613,7 +625,7 @@ const zipInput = document.getElementById("zipInput");
   const toast = document.getElementById("toast");
 
   // Example: available zip codes
-  const availableZipCodes = ["560001", "560002", "110001", "400001"];
+  const availableZipCodes = ["600001", "600002", "600003", "600004"];
 
   function showToast(message, isSuccess = true) {
     toast.textContent = message;

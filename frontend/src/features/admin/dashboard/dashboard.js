@@ -363,8 +363,16 @@ function renderProductsChart(orderItems, products) {
   const chart = new CanvasJS.Chart("productsChartContainer", {
     animationEnabled: true,
     theme: "light2",
-    axisX: { title: "Products" },
-    axisY: { title: "Quantity Sold" },
+    axisX: { 
+      title: "Products",
+      interval: 1,
+      intervalType: "number"
+    },
+    axisY: { 
+      title: "Quantity Sold",
+      interval: 1,
+      intervalType: "number"
+    },
     data: [{ type: "bar", indexLabel: "{y}", indexLabelPlacement: "outside", dataPoints: topProducts }]
   });
   chart.render();

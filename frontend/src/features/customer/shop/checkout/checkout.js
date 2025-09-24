@@ -272,6 +272,10 @@ function updateAddressSelection() {
 function addNewAddress() {
   const modal = document.getElementById('addressModal');
   if (modal) {
+    // Clear any previous errors
+    clearAllErrors();
+    // Initialize real-time validation
+    addRealTimeValidation();
     modal.classList.remove('hidden');
     modal.classList.add('modal-overlay');
   }
@@ -283,29 +287,268 @@ function closeAddressModal() {
   if (modal) {
     modal.classList.add('hidden');
     modal.classList.remove('modal-overlay');
-    // Reset form
+    // Clear errors and reset form
+    clearAllErrors();
     document.getElementById('addressForm').reset();
   }
 }
 
-// Handle add address form submission
+// Address validation functions
+function validateAddressLabel(value) {
+  if (!value || value.trim().length === 0) {
+    return 'Address label is required';
+  }
+  if (value.trim().length < 2) {
+    return 'Address label must be at least 2 characters';
+  }
+  if (value.trim().length > 50) {
+    return 'Address label must be less than 50 characters';
+  }
+  return null;
+}
+
+function validateStreetAddress(value) {
+  if (!value || value.trim().length === 0) {
+    return 'Street address is required';
+  }
+  if (value.trim().length < 5) {
+    return 'Street address must be at least 5 characters';
+  }
+  if (value.trim().length > 100) {
+    return 'Street address must be less than 100 characters';
+  }
+  return null;
+}
+
+function validateAddressLine2(value) {
+  if (value && value.trim().length > 100) {
+    return 'Address line 2 must be less than 100 characters';
+  }
+  return null;
+}
+
+function validateCity(value) {
+  if (!value || value.trim().length === 0) {
+    return 'City is required';
+  }
+  if (value.trim().length < 2) {
+    return 'City must be at least 2 characters';
+  }
+  if (value.trim().length > 50) {
+    return 'City must be less than 50 characters';
+  }
+  // Check for valid city name (letters, spaces, hyphens, apostrophes)
+  if (!/^[a-zA-Z\s\-']+$/.test(value.trim())) {
+    return 'City can only contain letters, spaces, hyphens, and apostrophes';
+  }
+  return null;
+}
+
+function validateState(value) {
+  if (!value || value.trim().length === 0) {
+    return 'State is required';
+  }
+  if (value.trim().length < 2) {
+    return 'State must be at least 2 characters';
+  }
+  if (value.trim().length > 50) {
+    return 'State must be less than 50 characters';
+  }
+  // Check for valid state name (letters, spaces, hyphens, apostrophes)
+  if (!/^[a-zA-Z\s\-']+$/.test(value.trim())) {
+    return 'State can only contain letters, spaces, hyphens, and apostrophes';
+  }
+  return null;
+}
+
+function validateZipCode(value) {
+  if (!value || value.trim().length === 0) {
+    return 'ZIP code is required';
+  }
+  const zipCode = value.trim();
+  
+  // Define available ZIP codes
+  const availableZipCodes = ["600001", "600002", "600003", "600004"];
+  
+  // Check if ZIP code is in the allowed list
+  if (!availableZipCodes.includes(zipCode)) {
+    return `ZIP code must be one of: ${availableZipCodes.join(', ')}`;
+  }
+  
+  return null;
+}
+
+function showFieldError(fieldId, message) {
+  const errorElement = document.getElementById(`${fieldId}-error`);
+  const inputElement = document.getElementById(fieldId);
+  
+  if (errorElement) {
+    errorElement.textContent = message;
+    errorElement.classList.remove('hidden');
+  }
+  
+  if (inputElement) {
+    inputElement.classList.add('border-red-500');
+    inputElement.classList.remove('border-gray-300');
+  }
+}
+
+function clearFieldError(fieldId) {
+  const errorElement = document.getElementById(`${fieldId}-error`);
+  const inputElement = document.getElementById(fieldId);
+  
+  if (errorElement) {
+    errorElement.classList.add('hidden');
+    errorElement.textContent = '';
+  }
+  
+  if (inputElement) {
+    inputElement.classList.remove('border-red-500');
+    inputElement.classList.add('border-gray-300');
+  }
+}
+
+function clearAllErrors() {
+  const fields = ['addressLabel', 'streetAddress', 'addressLine2', 'city', 'state', 'zipCode'];
+  fields.forEach(field => clearFieldError(field));
+}
+
+function validateAddressForm() {
+  let isValid = true;
+  
+  // Clear previous errors
+  clearAllErrors();
+  
+  // Get form values
+  const addressLabel = document.getElementById('addressLabel').value;
+  const streetAddress = document.getElementById('streetAddress').value;
+  const addressLine2 = document.getElementById('addressLine2').value;
+  const city = document.getElementById('city').value;
+  const state = document.getElementById('state').value;
+  const zipCode = document.getElementById('zipCode').value;
+  
+  // Validate each field
+  const labelError = validateAddressLabel(addressLabel);
+  if (labelError) {
+    showFieldError('addressLabel', labelError);
+    isValid = false;
+  }
+  
+  const streetError = validateStreetAddress(streetAddress);
+  if (streetError) {
+    showFieldError('streetAddress', streetError);
+    isValid = false;
+  }
+  
+  const line2Error = validateAddressLine2(addressLine2);
+  if (line2Error) {
+    showFieldError('addressLine2', line2Error);
+    isValid = false;
+  }
+  
+  const cityError = validateCity(city);
+  if (cityError) {
+    showFieldError('city', cityError);
+    isValid = false;
+  }
+  
+  const stateError = validateState(state);
+  if (stateError) {
+    showFieldError('state', stateError);
+    isValid = false;
+  }
+  
+  const zipError = validateZipCode(zipCode);
+  if (zipError) {
+    showFieldError('zipCode', zipError);
+    isValid = false;
+  }
+  
+  return isValid;
+}
+
+// Add real-time validation
+function addRealTimeValidation() {
+  const fields = ['addressLabel', 'streetAddress', 'addressLine2', 'city', 'state', 'zipCode'];
+  
+  fields.forEach(fieldId => {
+    const field = document.getElementById(fieldId);
+    if (field) {
+      field.addEventListener('blur', function() {
+        const value = this.value;
+        let error = null;
+        
+        switch(fieldId) {
+          case 'addressLabel':
+            error = validateAddressLabel(value);
+            break;
+          case 'streetAddress':
+            error = validateStreetAddress(value);
+            break;
+          case 'addressLine2':
+            error = validateAddressLine2(value);
+            break;
+          case 'city':
+            error = validateCity(value);
+            break;
+          case 'state':
+            error = validateState(value);
+            break;
+          case 'zipCode':
+            error = validateZipCode(value);
+            break;
+        }
+        
+        if (error) {
+          showFieldError(fieldId, error);
+        } else {
+          clearFieldError(fieldId);
+        }
+      });
+      
+      // Clear error on focus
+      field.addEventListener('focus', function() {
+        clearFieldError(fieldId);
+      });
+    }
+  });
+}
+
+// Handle add address form submission with validation
 async function handleAddAddress(event) {
   event.preventDefault();
+  
+  // Validate form
+  if (!validateAddressForm()) {
+    // Scroll to first error
+    const firstError = document.querySelector('#addressModal .border-red-500');
+    if (firstError) {
+      firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      firstError.focus();
+    }
+    return;
+  }
   
   const formData = new FormData(event.target);
   const newAddress = {
     address_id: Date.now(), // Generate unique address_id
     customer_id: isLoggedIn ? parseInt(currentUserId) : 0,
-    address_line1: formData.get('streetAddress'),
-    address_line2: formData.get('addressLine2') || '',
-    city: formData.get('city'),
-    state: formData.get('state'),
-    zip_code: formData.get('zipCode'),
+    address_line1: formData.get('streetAddress').trim(),
+    address_line2: formData.get('addressLine2') ? formData.get('addressLine2').trim() : '',
+    city: formData.get('city').trim(),
+    state: formData.get('state').trim(),
+    zip_code: formData.get('zipCode').trim(),
     country: 'USA',
     is_default: addresses.length === 0, // First address is default
     is_serviceable: true,
     created_at: new Date().toISOString()
   };
+  
+  // Show loading state
+  const submitBtn = event.target.querySelector('button[type="submit"]');
+  const originalText = submitBtn.textContent;
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Adding...';
   
   try {
     if (isLoggedIn) {
@@ -345,6 +588,10 @@ async function handleAddAddress(event) {
   } catch (error) {
     console.error('Error adding address:', error);
     showNotification('Failed to add address. Please try again.', 'error');
+  } finally {
+    // Reset button state
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalText;
   }
 }
 

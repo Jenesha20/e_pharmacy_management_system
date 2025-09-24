@@ -905,7 +905,9 @@ function renderMainChart(dataPoints, title, xTitle, yTitle, chartType, isDemo = 
       },
       axisY: {
         title: yTitle,
-        includeZero: true
+        includeZero: true,
+        interval: chartType === 'pie' ? undefined : (yTitle.includes('Revenue') || yTitle.includes('$') ? undefined : (dataPoints.some(point => point.y % 1 !== 0) ? undefined : 1)),
+        intervalType: chartType === 'pie' ? undefined : (yTitle.includes('Revenue') || yTitle.includes('$') ? undefined : (dataPoints.some(point => point.y % 1 !== 0) ? undefined : "number"))
       },
       data: [{
         type: chartType,
@@ -973,7 +975,9 @@ function renderSecondaryChart(dataPoints, title, xTitle, yTitle, chartType, isDe
       },
       axisY: {
         title: yTitle,
-        includeZero: true
+        includeZero: true,
+        interval: chartType === 'pie' ? undefined : (yTitle.includes('Revenue') || yTitle.includes('$') ? undefined : (dataPoints.some(point => point.y % 1 !== 0) ? undefined : 1)),
+        intervalType: chartType === 'pie' ? undefined : (yTitle.includes('Revenue') || yTitle.includes('$') ? undefined : (dataPoints.some(point => point.y % 1 !== 0) ? undefined : "number"))
       },
       data: [{
         type: chartType,
