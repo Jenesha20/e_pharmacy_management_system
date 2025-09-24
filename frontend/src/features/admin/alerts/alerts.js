@@ -315,7 +315,7 @@ function hideLoading() {
 function showError(message) {
     alertTable.innerHTML = `
         <tr>
-            <td colspan="5" class="p-4 text-center text-red-500">
+            <td colspan="5" class="p-4 text-center text-red-500 text-m">
                 <i class="fas fa-exclamation-circle mr-2"></i>${message}
             </td>
         </tr>

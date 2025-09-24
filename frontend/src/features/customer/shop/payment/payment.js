@@ -247,14 +247,14 @@ function displayOrderSummary() {
           <p class="text-xs text-gray-500">Qty: ${item.quantity}</p>
         </div>
       </div>
-      <span class="text-sm font-medium text-gray-800">$${(item.price * item.quantity).toFixed(2)}</span>
+      <span class="text-sm font-medium text-gray-800">Rs ${(item.price * item.quantity).toFixed(2)}</span>
     </div>
   `).join('');
   
   // Display totals
-  subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
-  shippingElement.textContent = `$${shipping.toFixed(2)}`;
-  totalElement.textContent = `$${total.toFixed(2)}`;
+  subtotalElement.textContent = `Rs ${subtotal.toFixed(2)}`;
+  shippingElement.textContent = `Rs ${shipping.toFixed(2)}`;
+  totalElement.textContent = `Rs ${total.toFixed(2)}`;
 }
 
 // Display delivery address
@@ -314,6 +314,144 @@ function setupPaymentMethodHandlers() {
 
 
 // Complete order
+// async function completeOrder(paymentMethod) {
+//   console.log('=== COMPLETE ORDER FUNCTION CALLED ===');
+//   console.log('Payment method:', paymentMethod);
+//   console.log('Cart items:', cartItems);
+//   console.log('Selected address:', selectedAddress);
+  
+//   try {
+//     // Get customer ID from currentUser object
+//     const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+//     const customerId = currentUser && currentUser.customer_id ? currentUser.customer_id.toString() : '6'; // Default to customer 6 as string for consistency
+//     console.log('Processing order for customer:', customerId, 'Type:', typeof customerId);
+//     // Calculate order totals
+//     const totals = calculateOrderTotals(cartItems.map(item => ({
+//       unit_price: item.price,
+//       quantity: item.quantity
+//     })));
+    
+//     // Create order data for backend - match db.json structure
+//     const orderData = {
+//       order_id: Date.now(),
+//       order_number: generateOrderNumber(),
+//       customer_id: customerId.toString(), // Convert to string to match db.json
+//       order_date: new Date().toISOString(),
+//       total_amount: totals.total,
+//       status: 'confirmed',
+//       shipping_address_id: selectedAddress?.id || 'default_address', // Use address ID or default
+//       prescription_id: null, // Will be handled separately if needed
+//       payment_method: paymentMethod,
+//       payment_status: 'completed',
+//       tracking_number: null,
+//       notes: null
+//     };
+    
+//     // Create order in backend (with fallback)
+//     let createdOrder;
+//     try {
+//       createdOrder = await createOrder(orderData);
+//       console.log('Order created in backend:', createdOrder);
+      
+//       // Create order items (send each item individually)
+//       for (const item of cartItems) {
+//         const orderItem = {
+//           order_item_id: Math.floor(Date.now() + Math.random() * 1000), // Generate unique ID
+//           order_id: createdOrder.order_id, // Use order_id field to match db.json
+//           product_id: parseInt(item.id),
+//           quantity: item.quantity,
+//           unit_price: item.price,
+//           subtotal: item.price * item.quantity
+//         };
+        
+//         // Save each order item individually to backend
+//         await createOrderItems(orderItem);
+//       }
+//       console.log('Order items created in backend');
+//     } catch (backendError) {
+//       console.warn('Backend API failed, using fallback:', backendError);
+//       // Fallback: create order with generated ID
+//       createdOrder = {
+//         id: orderData.order_id,
+//         ...orderData
+//       };
+//     }
+    
+//     // Also save to localStorage for immediate access
+//     const order = {
+//       id: createdOrder.id || createdOrder.order_id, // Use order_id as fallback
+//       order_id: createdOrder.order_id,
+//       order_number: createdOrder.order_number,
+//       items: cartItems,
+//       address: selectedAddress,
+//       subtotal: totals.subtotal,
+//       shipping: totals.shipping,
+//       total: totals.total,
+//       status: 'confirmed',
+//       payment_method: paymentMethod,
+//       payment_status: 'completed',
+//       customer_id: customerId.toString(), // Convert to string
+//       order_date: createdOrder.order_date,
+//       created_at: new Date().toISOString()
+//     };
+    
+//     const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+//     orders.push(order);
+//     localStorage.setItem('orders', JSON.stringify(orders));
+    
+//     // Set the selected order ID for the order details pag
+        
+//     // Show success message
+//     showNotification('Payment successful! Order confirmed.', 'success');
+//     console.log('Payment completed successfully, preparing redirect...');
+    
+//     // Redirect to payment completion page
+//     console.log('Setting up redirect timeout...');
+//     setTimeout(() => {
+//       console.log('=== REDIRECT TIMEOUT EXECUTED ===');
+//       console.log('Redirecting to payment completion page...');
+//       console.log('Current URL:', window.location.href);
+//       console.log('Target URL:', new URL('payment-complete.html', window.location.href).href);
+      
+//       try {
+//         // Try relative path first
+//         console.log('Attempting redirect to payment-complete.html...');
+//         window.location.href = 'payment-complete.html';
+//         console.log('Redirect initiated successfully');
+//       } catch (redirectError) {
+//         console.error('Redirect failed:', redirectError);
+//         // Try alternative redirect method
+//         try {
+//           console.log('Trying window.location.assign...');
+//           window.location.assign('payment-complete.html');
+//         } catch (assignError) {
+//           console.error('Location assign also failed:', assignError);
+//           // Try absolute path
+//           const baseUrl = window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+//           const targetUrl = baseUrl + '/payment-complete.html';
+//           console.log('Trying absolute path:', targetUrl);
+//           window.location.href = targetUrl;
+//         }
+//       }
+//     }, 2000);
+    
+//   } catch (error) {
+//     console.error('Error completing order:', error);
+//     showNotification('Failed to complete order. Please try again.', 'error');
+    
+//     // Reset button state - DO NOT clear cart data on error
+//     const button = document.querySelector('button[onclick="processPayment()"]');
+//     if (button) {
+//       button.disabled = false;
+//       button.innerHTML = '<i class="fas fa-credit-card mr-2"></i>Pay Now';
+//     }
+    
+//     // Cart data is preserved so user can retry payment
+//     console.log('Cart data preserved due to payment error');
+//   }
+// }
+
+// Complete order
 async function completeOrder(paymentMethod) {
   console.log('=== COMPLETE ORDER FUNCTION CALLED ===');
   console.log('Payment method:', paymentMethod);
@@ -323,24 +461,28 @@ async function completeOrder(paymentMethod) {
   try {
     // Get customer ID from currentUser object
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-    const customerId = currentUser && currentUser.customer_id ? currentUser.customer_id.toString() : '6'; // Default to customer 6 as string for consistency
+    const customerId = currentUser && currentUser.customer_id ? currentUser.customer_id.toString() : '6';
     console.log('Processing order for customer:', customerId, 'Type:', typeof customerId);
+    
     // Calculate order totals
     const totals = calculateOrderTotals(cartItems.map(item => ({
       unit_price: item.price,
       quantity: item.quantity
     })));
     
+    // Generate unique numeric order ID
+    const numericOrderId = Date.now();
+    
     // Create order data for backend - match db.json structure
     const orderData = {
-      order_id: Date.now(),
+      order_id: numericOrderId, // FIX: Use numeric ID
       order_number: generateOrderNumber(),
-      customer_id: customerId.toString(), // Convert to string to match db.json
+      customer_id: customerId.toString(),
       order_date: new Date().toISOString(),
       total_amount: totals.total,
       status: 'confirmed',
-      shipping_address_id: selectedAddress?.id || 'default_address', // Use address ID or default
-      prescription_id: null, // Will be handled separately if needed
+      shipping_address_id: selectedAddress?.id || 'default_address',
+      prescription_id: null,
       payment_method: paymentMethod,
       payment_status: 'completed',
       tracking_number: null,
@@ -353,11 +495,15 @@ async function completeOrder(paymentMethod) {
       createdOrder = await createOrder(orderData);
       console.log('Order created in backend:', createdOrder);
       
+      // FIX: Use the numeric order_id that was returned from API
+      const finalOrderId = createdOrder.order_id || numericOrderId;
+      
+      // FIX: Only create order items once - remove any duplicate creation
       // Create order items (send each item individually)
       for (const item of cartItems) {
         const orderItem = {
-          order_item_id: Math.floor(Date.now() + Math.random() * 1000), // Generate unique ID
-          order_id: createdOrder.order_id, // Use order_id field to match db.json
+          order_item_id: Math.floor(Date.now() + Math.random() * 1000),
+          order_id: finalOrderId,
           product_id: parseInt(item.id),
           quantity: item.quantity,
           unit_price: item.price,
@@ -372,15 +518,15 @@ async function completeOrder(paymentMethod) {
       console.warn('Backend API failed, using fallback:', backendError);
       // Fallback: create order with generated ID
       createdOrder = {
-        id: orderData.order_id,
+        id: 'order_' + numericOrderId,
         ...orderData
       };
     }
     
     // Also save to localStorage for immediate access
     const order = {
-      id: createdOrder.id || createdOrder.order_id, // Use order_id as fallback
-      order_id: createdOrder.order_id,
+      id: createdOrder.id || 'order_' + numericOrderId,
+      order_id: createdOrder.order_id || numericOrderId,
       order_number: createdOrder.order_number,
       items: cartItems,
       address: selectedAddress,
@@ -390,7 +536,7 @@ async function completeOrder(paymentMethod) {
       status: 'confirmed',
       payment_method: paymentMethod,
       payment_status: 'completed',
-      customer_id: customerId.toString(), // Convert to string
+      customer_id: customerId.toString(),
       order_date: createdOrder.order_date,
       created_at: new Date().toISOString()
     };
@@ -399,8 +545,10 @@ async function completeOrder(paymentMethod) {
     orders.push(order);
     localStorage.setItem('orders', JSON.stringify(orders));
     
-    // Set the selected order ID for the order details pag
-        
+    // Set the selected order ID for the order details page
+    localStorage.setItem('selectedOrderId', order.id);
+    console.log('Selected order ID set to:', order.id);
+    
     // Show success message
     showNotification('Payment successful! Order confirmed.', 'success');
     console.log('Payment completed successfully, preparing redirect...');
@@ -410,44 +558,19 @@ async function completeOrder(paymentMethod) {
     setTimeout(() => {
       console.log('=== REDIRECT TIMEOUT EXECUTED ===');
       console.log('Redirecting to payment completion page...');
-      console.log('Current URL:', window.location.href);
-      console.log('Target URL:', new URL('payment-complete.html', window.location.href).href);
-      
-      try {
-        // Try relative path first
-        console.log('Attempting redirect to payment-complete.html...');
-        window.location.href = 'payment-complete.html';
-        console.log('Redirect initiated successfully');
-      } catch (redirectError) {
-        console.error('Redirect failed:', redirectError);
-        // Try alternative redirect method
-        try {
-          console.log('Trying window.location.assign...');
-          window.location.assign('payment-complete.html');
-        } catch (assignError) {
-          console.error('Location assign also failed:', assignError);
-          // Try absolute path
-          const baseUrl = window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-          const targetUrl = baseUrl + '/payment-complete.html';
-          console.log('Trying absolute path:', targetUrl);
-          window.location.href = targetUrl;
-        }
-      }
+      window.location.href = 'payment-complete.html';
     }, 2000);
     
   } catch (error) {
     console.error('Error completing order:', error);
     showNotification('Failed to complete order. Please try again.', 'error');
     
-    // Reset button state - DO NOT clear cart data on error
+    // Reset button state
     const button = document.querySelector('button[onclick="processPayment()"]');
     if (button) {
       button.disabled = false;
       button.innerHTML = '<i class="fas fa-credit-card mr-2"></i>Pay Now';
     }
-    
-    // Cart data is preserved so user can retry payment
-    console.log('Cart data preserved due to payment error');
   }
 }
 
@@ -482,6 +605,147 @@ function showNotification(message, type = 'success', duration = 3000) {
 }
 
 // Process payment - Direct redirect without validation
+// function processPayment() {
+//   console.log('=== PAYMENT PROCESS STARTED ===');
+//   console.log('Skipping validation, creating order and redirecting to payment complete page...');
+  
+//   // Get selected payment method (default to UPI if none selected)
+//   const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked');
+//   const paymentMethod = selectedMethod ? selectedMethod.value : 'upi';
+//   console.log('Selected payment method:', paymentMethod);
+  
+//   // Show loading state
+//   const button = document.querySelector('button[onclick="processPayment()"]');
+//   if (button) {
+//     button.disabled = true;
+//     button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+//   }
+  
+//   // Get customer ID from currentUser object
+//   const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+//   const customerId = currentUser && currentUser.customer_id ? currentUser.customer_id.toString() : '6';
+//   console.log('Processing order for customer:', customerId);
+  
+//   // Calculate totals
+//   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+//   const shipping = subtotal > 30 ? 0 : 2.99; // Reduced shipping cost
+//   const total = subtotal + shipping;
+  
+//   console.log('Pricing calculation:', {
+//     cartItems: cartItems,
+//     subtotal: subtotal,
+//     shipping: shipping,
+//     total: total
+//   });
+  
+//   // Generate order number
+//   const now = new Date();
+//   const year = now.getFullYear();
+//   const month = String(now.getMonth() + 1).padStart(2, '0');
+//   const day = String(now.getDate()).padStart(2, '0');
+//   const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+//   const orderNumber = `ORD-${year}${month}${day}-${random}`;
+  
+//   // Create order object for API (matching db.json structure)
+//   const order = {
+//     id: 'order_' + Date.now(),
+//     order_id: Date.now(),
+//     order_number: orderNumber,
+//     customer_id: customerId,
+//     order_date: new Date().toISOString(),
+//     total_amount: total,
+//     status: 'confirmed',
+//     shipping_address_id: selectedAddress?.id || 'default_address',
+//     prescription_id: null,
+//     payment_method: paymentMethod,
+//     payment_status: 'completed',
+//     tracking_number: null,
+//     notes: null
+//   };
+  
+//   // Create order object for localStorage (with full details)
+//   const orderForLocalStorage = {
+//     id: 'order_' + Date.now(),
+//     order_id: Date.now(),
+//     order_number: orderNumber,
+//     items: cartItems,
+//     address: selectedAddress,
+//     subtotal: subtotal,
+//     shipping: shipping,
+//     total: total,
+//     status: 'confirmed',
+//     payment_method: paymentMethod,
+//     payment_status: 'completed',
+//     customer_id: customerId,
+//     order_date: new Date().toISOString(),
+//     created_at: new Date().toISOString()
+//   };
+  
+//   console.log('Created order:', order);
+  
+//   // Save to API (async, don't wait)
+//   fetch('http://localhost:3000/orders', {
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json',
+//     },
+//     body: JSON.stringify(order)
+//   }).then(response => {
+//     if (response.ok) {
+//       console.log('Order saved to API successfully');
+      
+//       // Create order items for each cart item
+//       cartItems.forEach((item, index) => {
+//         const orderItem = {
+//           id: 'item_' + Date.now() + '_' + index + '_' + Math.random().toString(36).substr(2, 9),
+//           order_item_id: Date.now() + index + Math.random(),
+//           order_id: order.order_id,
+//           product_id: item.id,
+//           quantity: item.quantity,
+//           unit_price: item.price,
+//           subtotal: item.price * item.quantity
+//         };
+        
+//         // Save order item to API
+//         fetch('http://localhost:3000/order_items', {
+//           method: 'POST',
+//           headers: {
+//             'Content-Type': 'application/json',
+//           },
+//           body: JSON.stringify(orderItem)
+//         }).then(itemResponse => {
+//           if (itemResponse.ok) {
+//             console.log('Order item saved to API:', orderItem);
+//           } else {
+//             console.warn('Failed to save order item to API:', orderItem);
+//           }
+//         }).catch(itemError => {
+//           console.warn('Failed to save order item to API:', itemError);
+//         });
+//       });
+//     } else {
+//       console.warn('Failed to save order to API');
+//     }
+//   }).catch(error => {
+//     console.warn('API not available:', error);
+//   });
+  
+//   // Save to localStorage
+//   const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+//   orders.push(orderForLocalStorage);
+//   localStorage.setItem('orders', JSON.stringify(orders));
+//   console.log('Order saved to localStorage:', orderForLocalStorage);
+  
+//   // Show success notification
+//   showNotification('Payment successful! Redirecting...', 'success');
+  
+//   // Redirect immediately
+//   console.log('Redirecting to payment complete page...');
+//   window.location.href = 'payment-complete.html';
+// }
+
+// Process payment - Direct redirect without validation
+// Process payment - Direct redirect without validation
 function processPayment() {
   console.log('=== PAYMENT PROCESS STARTED ===');
   console.log('Skipping validation, creating order and redirecting to payment complete page...');
@@ -505,7 +769,7 @@ function processPayment() {
   
   // Calculate totals
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const shipping = subtotal > 30 ? 0 : 2.99; // Reduced shipping cost
+  const shipping = subtotal > 30 ? 0 : 2.99;
   const total = subtotal + shipping;
   
   console.log('Pricing calculation:', {
@@ -523,10 +787,13 @@ function processPayment() {
   const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
   const orderNumber = `ORD-${year}${month}${day}-${random}`;
   
+  // Generate unique numeric order ID
+  const numericOrderId = Date.now();
+  
   // Create order object for API (matching db.json structure)
   const order = {
     id: 'order_' + Date.now(),
-    order_id: Date.now(),
+    order_id: numericOrderId,
     order_number: orderNumber,
     customer_id: customerId,
     order_date: new Date().toISOString(),
@@ -543,7 +810,7 @@ function processPayment() {
   // Create order object for localStorage (with full details)
   const orderForLocalStorage = {
     id: 'order_' + Date.now(),
-    order_id: Date.now(),
+    order_id: numericOrderId,
     order_number: orderNumber,
     items: cartItems,
     address: selectedAddress,
@@ -569,49 +836,70 @@ function processPayment() {
     body: JSON.stringify(order)
   }).then(response => {
     if (response.ok) {
-      console.log('Order saved to API successfully');
-      
-      // Create order items for each cart item
-      cartItems.forEach((item, index) => {
-        const orderItem = {
-          id: 'item_' + Date.now() + '_' + index + '_' + Math.random().toString(36).substr(2, 9),
-          order_item_id: Date.now() + index + Math.random(),
-          order_id: order.order_id,
-          product_id: item.id,
-          quantity: item.quantity,
-          unit_price: item.price,
-          subtotal: item.price * item.quantity
-        };
-        
-        // Save order item to API
-        fetch('http://localhost:3000/order_items', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(orderItem)
-        }).then(itemResponse => {
-          if (itemResponse.ok) {
-            console.log('Order item saved to API:', orderItem);
-          } else {
-            console.warn('Failed to save order item to API:', orderItem);
-          }
-        }).catch(itemError => {
-          console.warn('Failed to save order item to API:', itemError);
-        });
-      });
+      return response.json();
     } else {
-      console.warn('Failed to save order to API');
+      throw new Error('Failed to save order to API');
     }
+  }).then(createdOrder => {
+    console.log('Order saved to API successfully:', createdOrder);
+    
+    // FIX: Use the numeric order_id that was returned from API
+    const finalOrderId = createdOrder.order_id || numericOrderId;
+    console.log('Using order_id for order items:', finalOrderId);
+    
+    // FIX: REMOVED DUPLICATE ORDER ITEM CREATION
+    // Only create order items once here
+    
+    // Create order items for each cart item
+    const orderItemsPromises = cartItems.map((item, index) => {
+      const orderItem = {
+        id: 'item_' + Date.now() + '_' + index,
+        order_item_id: Date.now() + index,
+        order_id: finalOrderId,
+        product_id: parseInt(item.id),
+        quantity: item.quantity,
+        unit_price: item.price,
+        subtotal: item.price * item.quantity
+      };
+      
+      console.log('Saving order item:', orderItem);
+      
+      // Save order item to API
+      return fetch('http://localhost:3000/order_items', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderItem)
+      }).then(itemResponse => {
+        if (itemResponse.ok) {
+          console.log('Order item saved to API:', orderItem);
+          return itemResponse.json();
+        } else {
+          console.warn('Failed to save order item to API:', orderItem);
+          throw new Error('Failed to save order item');
+        }
+      });
+    });
+    
+    return Promise.all(orderItemsPromises);
+  }).then(() => {
+    console.log('All order items saved successfully');
   }).catch(error => {
-    console.warn('API not available:', error);
+    console.warn('API not available or error:', error);
   });
+  
+  // FIX: REMOVED THE DUPLICATE forEach LOOP THAT WAS CREATING EXTRA ITEMS
   
   // Save to localStorage
   const orders = JSON.parse(localStorage.getItem('orders') || '[]');
   orders.push(orderForLocalStorage);
   localStorage.setItem('orders', JSON.stringify(orders));
   console.log('Order saved to localStorage:', orderForLocalStorage);
+  
+  // Set the selected order ID for the order details page
+  localStorage.setItem('selectedOrderId', orderForLocalStorage.id);
+  console.log('Selected order ID set to:', orderForLocalStorage.id);
   
   // Show success notification
   showNotification('Payment successful! Redirecting...', 'success');

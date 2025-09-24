@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>J-Med</title>
+    <title>Shop</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
@@ -51,9 +51,9 @@
             </button>
         </div>
         
-        <div class="flex flex-col lg:flex-row gap-8">
+        <div class="flex flex-col lg:flex-row gap-8  ">
             <!-- Filters Sidebar -->
-            <aside id="filters-sidebar" class="lg:w-1/4 hidden lg:block bg-white p-6 rounded-lg shadow-sm">
+            <aside id="filters-sidebar" class="lg:w-1/4 hidden lg:block bg-white p-6 rounded-lg shadow-sm sticky">
                 <h3 class="text-lg font-semibold mb-4">Filters</h3>
                 
                 <!-- Search Filter -->
@@ -67,15 +67,15 @@
                 
                 <!-- Category Filter -->
                 <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Categories</label>
-                    <div id="category-filters" class="space-y-2 max-h-40 overflow-y-auto">
+                    <label class="block text-lg font-medium text-gray-700 mb-2">Categories</label>
+                    <div id="category-filters" class="space-y-2 ">
                         <!-- Categories will be loaded dynamically -->
                     </div>
                 </div>
                 
                 <!-- Price Filter -->
                 <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Price Range</label>
+                    <label class="block text-lg font-medium text-gray-700 mb-2">Price Range</label>
                     <div class="px-2">
                         <input id="price-range" type="range" min="0" max="100" value="100" class="w-full"/>
                         <div class="flex justify-between text-xs text-gray-500 mt-1">
@@ -98,17 +98,30 @@
                 
                 <!-- Prescription Filter -->
                 <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Prescription</label>
+                    <label class="block text-lg font-medium text-gray-700 mb-2">Prescription</label>
                     <div class="space-y-2">
-                        <label class="flex items-center">
-                            <input type="checkbox" id="filter-prescription" class="rounded text-blue-600 focus:ring-blue-500"/>
-                            <span class="ml-2 text-sm text-gray-700">Requires Prescription</span>
-                        </label>
+                        <label class="flex items-center space-x-2">
+                            <!-- Checkbox -->
+                            <input 
+                              type="checkbox" 
+                              id="filter-prescription" 
+                              class="rounded text-blue-600 focus:ring-blue-500"
+                            />
+                          
+                            <!-- Text with badge -->
+                            <span class="flex items-center text-sm text-gray-700">
+                              <span class="bg-red-500 text-white text-m px-1.5 py-0.5 rounded mr-1">
+                                Rx
+                              </span>
+                              Requires Prescription
+                            </span>
+                          </label>
+                          
                     </div>
                 </div>
                 
                 <!-- Clear Filters Button -->
-                <button id="clear-filters" class="w-full bg-gray-100 text-gray-700 py-2 rounded-lg text-sm hover:bg-gray-200">
+                <button id="clear-filters" class="w-full bg-gray-100 text-gray-700 py-2 rounded-lg text-m hover:bg-gray-200">
                     Clear All Filters
                 </button>
             </aside>

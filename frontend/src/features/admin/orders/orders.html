@@ -7,6 +7,7 @@
     <script src="https://kit.fontawesome.com/a2e0e6ad63.js" crossorigin="anonymous"></script>
     <!-- jsPDF library -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <title>Orders</title>
     <style>
@@ -66,6 +67,19 @@
             font-weight: bold;
             cursor: pointer;
         }
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .icon-container {
+            transition: transform 0.3s ease;
+        }
+        .card-hover:hover .icon-container {
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
@@ -118,78 +132,78 @@
         </div>
 
         <!-- Cards -->
-        <div class="grid grid-cols-4 gap-6 mb-8">
-            <!-- All orders Card -->
-            <div class="bg-white p-4 rounded-lg shadow">
-              <div class="flex items-center space-x-3">
-                <div class="bg-blue-100 p-3 rounded-full text-blue-500">
-                  <i class="fas fa-shopping-bag"></i>
-                </div>
-                <div>
-                  <h2 class="text-gray-600">All orders</h2>
-                  <p id="allOrdersCount" class="text-2xl font-bold">0</p>
-                </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <!-- All orders Card -->
+          <div class="bg-white p-6 rounded-xl shadow-md card-hover">
+              <div class="flex items-center space-x-4">
+                  <div class="bg-blue-100 p-4 rounded-full icon-container">
+                      <i class="fas fa-clipboard-list text-blue-500 text-xl"></i>
+                  </div>
+                  <div>
+                      <h2 class="text-gray-600 font-medium">All Orders</h2>
+                      <p id="allOrdersCount" class="text-3xl font-bold text-gray-800">0</p>
+                  </div>
               </div>
-              <button class="text-blue-500 text-sm mt-2 inline-block filter-btn" data-status="all">
-                Show Details
+              <button class="text-blue-500 hover:text-blue-700 font-medium text-sm mt-4 inline-block filter-btn transition-colors" data-status="all">
+                  View All Orders <i class="fas fa-arrow-right ml-1"></i>
               </button>
-            </div>
+          </div>
 
-            <!-- Processing Card -->
-            <div class="bg-white p-4 rounded-lg shadow">
-              <div class="flex items-center space-x-3">
-                <div class="bg-green-100 p-3 rounded-full text-green-500">
-                  <i class="fas fa-cog"></i>
-                </div>
-                <div>
-                  <h2 class="text-gray-600">Processing</h2>
-                  <p id="processingCount" class="text-2xl font-bold">0</p>
-                </div>
+          <!-- Processing Card -->
+          <div class="bg-white p-6 rounded-xl shadow-md card-hover">
+              <div class="flex items-center space-x-4">
+                  <div class="bg-yellow-100 p-4 rounded-full icon-container">
+                      <i class="fas fa-cogs text-yellow-500 text-xl"></i>
+                  </div>
+                  <div>
+                      <h2 class="text-gray-600 font-medium">Processing</h2>
+                      <p id="processingCount" class="text-3xl font-bold text-gray-800">0</p>
+                  </div>
               </div>
-              <button class="text-green-500 text-sm mt-2 inline-block filter-btn" data-status="processing">
-                Show Details
+              <button class="text-yellow-500 hover:text-green-700 font-medium text-sm mt-4 inline-block filter-btn transition-colors" data-status="processing">
+                  View Processing <i class="fas fa-arrow-right ml-1"></i>
               </button>
-            </div>
+          </div>
 
-            <!-- Packed Card -->
-            <div class="bg-white p-4 rounded-lg shadow">
-              <div class="flex items-center space-x-3">
-                <div class="bg-yellow-100 p-3 rounded-full text-yellow-500">
-                  <i class="fas fa-box"></i>
-                </div>
-                <div>
-                  <h2 class="text-gray-600">Packed</h2>
-                  <p id="packedCount" class="text-2xl font-bold">0</p>
-                </div>
+          <!-- Packed Card -->
+          <div class="bg-white p-6 rounded-xl shadow-md card-hover">
+              <div class="flex items-center space-x-4">
+                  <div class="bg-orange-200 p-4 rounded-full icon-container">
+                      <i class="fas fa-box-open text-amber-600 text-xl"></i>
+                  </div>
+                  <div>
+                      <h2 class="text-gray-600 font-medium">Packed</h2>
+                      <p id="packedCount" class="text-3xl font-bold text-gray-800">0</p>
+                  </div>
               </div>
-              <button class="text-yellow-500 text-sm mt-2 inline-block filter-btn" data-status="packed">
-                Show Details
+              <button class="text-amber-600 hover:text-yellow-700 font-medium text-sm mt-4 inline-block filter-btn transition-colors" data-status="packed">
+                  View Packed <i class="fas fa-arrow-right ml-1"></i>
               </button>
-            </div>
+          </div>
 
-            <!-- Delivered Card -->
-            <div class="bg-white p-4 rounded-lg shadow">
-              <div class="flex items-center space-x-3">
-                <div class="bg-red-100 p-3 rounded-full text-red-500">
-                  <i class="fas fa-truck"></i>
-                </div>
-                <div>
-                  <h2 class="text-gray-600">Delivered</h2>
-                  <p id="deliveredCount" class="text-2xl font-bold">0</p>
-                </div>
+          <!-- Delivered Card -->
+          <div class="bg-white p-6 rounded-xl shadow-md card-hover">
+              <div class="flex items-center space-x-4">
+                  <div class="bg-green-100 p-4 rounded-full icon-container">
+                      <i class="fas fa-check-circle text-green-500 text-xl"></i>
+                  </div>
+                  <div>
+                      <h2 class="text-gray-600 font-medium">Delivered</h2>
+                      <p id="deliveredCount" class="text-3xl font-bold text-gray-800">0</p>
+                  </div>
               </div>
-              <button class="text-red-500 text-sm mt-2 inline-block filter-btn" data-status="delivered">
-                Show Details
+              <button class="text-green-500 hover:text-green-700 font-medium text-sm mt-4 inline-block filter-btn transition-colors" data-status="delivered">
+                  View Delivered <i class="fas fa-arrow-right ml-1"></i>
               </button>
-            </div>
-        </div>
+          </div>
+      </div>
 
         <!-- Orders Table -->
         <div class="bg-white p-6 rounded-lg shadow">
           <h2 class="text-xl font-semibold mb-4">Orders</h2>
           <table class="w-full border-collapse border border-gray-300">
             <thead>
-              <tr class="bg-gray-100">
+              <tr class="bg-blue-300">
                 <th class="border border-gray-300 px-4 py-2">Order Number</th>
                 <th class="border border-gray-300 px-4 py-2">Customer</th>
                 <th class="border border-gray-300 px-4 py-2">Order Date</th>

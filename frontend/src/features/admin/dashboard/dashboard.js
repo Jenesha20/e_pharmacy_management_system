@@ -276,7 +276,7 @@ async function updateCounts() {
     document.getElementById('orderCount').textContent = orders.length;
 
     const totalSales = orders.reduce((sum, order) => sum + (order.total_amount || 0), 0);
-    document.getElementById('salesCount').textContent = `$${totalSales.toFixed(2)}`;
+    document.getElementById('salesCount').textContent = `Rs ${totalSales.toFixed(2)}`;
 
     const outOfStockCount = inventory.filter(item => item.quantity_in_stock === 0).length;
     document.getElementById('stockCount').textContent = outOfStockCount;

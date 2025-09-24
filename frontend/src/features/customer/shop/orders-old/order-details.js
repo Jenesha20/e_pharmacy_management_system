@@ -172,8 +172,8 @@ function displayOrderItems() {
       </div>
       
       <div class="text-right">
-        <p class="text-lg font-semibold text-gray-900">$${(item.price * item.quantity).toFixed(2)}</p>
-        <p class="text-sm text-gray-500">$${item.price.toFixed(2)} each</p>
+        <p class="text-lg font-semibold text-gray-900">Rs ${(item.price * item.quantity).toFixed(2)}</p>
+        <p class="text-sm text-gray-500">Rs ${item.price.toFixed(2)} each</p>
       </div>
     </div>
   `).join('');
@@ -181,9 +181,9 @@ function displayOrderItems() {
 
 // Display order information
 function displayOrderInformation() {
-  document.getElementById('orderSubtotal').textContent = `$${currentOrder.subtotal.toFixed(2)}`;
-  document.getElementById('orderShipping').textContent = `$${currentOrder.shipping.toFixed(2)}`;
-  document.getElementById('orderTotal').textContent = `$${currentOrder.total.toFixed(2)}`;
+  document.getElementById('orderSubtotal').textContent = `Rs ${currentOrder.subtotal.toFixed(2)}`;
+  document.getElementById('orderShipping').textContent = `Rs ${currentOrder.shipping.toFixed(2)}`;
+  document.getElementById('orderTotal').textContent = `Rs ${currentOrder.total.toFixed(2)}`;
 }
 
 // Display order summary
@@ -235,7 +235,7 @@ function reorderItems() {
   
   // Navigate to cart
   setTimeout(() => {
-    window.location.href = '../shop/cart/cart.html';
+    window.location.href = '/frontend/src/features/customer/shop/cart/cart.html';
   }, 1500);
 }
 
@@ -249,7 +249,7 @@ function downloadInvoice() {
 function contactSupport() {
   showNotification('Redirecting to support...', 'success');
   setTimeout(() => {
-    window.location.href = '../about/contact/contact.html';
+    window.location.href = '/frontend/src/features/customer/about/contact/contact.html';
   }, 1500);
 }
 

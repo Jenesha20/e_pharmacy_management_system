@@ -1,43 +1,51 @@
 function loadComponent(id, filePath) {
-  const el = document.getElementById(id);
-  if (!el) {
-    console.warn(`Element with id="${id}" not found. Skipping load for ${filePath}`);
-    return Promise.resolve();
-  }
-
-  return fetch(filePath)
-    .then(response => {
-      if (!response.ok) throw new Error(`Failed to fetch ${filePath}`);
-      return response.text();
+  fetch(filePath)
+    .then(res => {
+      if (!res.ok) throw new Error(`Failed to load ${filePath}`);
+      return res.text();
     })
     .then(data => {
-      el.innerHTML = data;
-      // Execute any scripts in the loaded content
-      const scripts = el.querySelectorAll('script');
-      scripts.forEach(script => {
-        const newScript = document.createElement('script');
-        if (script.src) {
-          newScript.src = script.src;
-        } else {
-          newScript.textContent = script.textContent;
+      const element = document.getElementById(id);
+      if (element) {
+        element.innerHTML = data;
+        
+        // If this is the header component, we need to load the navbar script
+        if (id === 'header') {
+          // Load the navbar script
+          const script = document.createElement('script');
+          script.src = '/frontend/src/core/components/navbar.js';
+          script.onload = () => {
+            console.log("Navbar script loaded successfully");
+            // Initialize auth after script is loaded
+            setTimeout(() => {
+              if (window.initAuth) {
+                console.log("Calling initAuth after script load");
+                window.initAuth();
+              } else if (window.refreshAuth) {
+                console.log("Calling refreshAuth after script load");
+                window.refreshAuth();
+              }
+            }, 100);
+          };
+          script.onerror = () => {
+            console.error("Failed to load navbar script");
+          };
+          document.head.appendChild(script);
         }
-        document.head.appendChild(newScript);
-      });
+        
+        // Reattach event listeners after loading
+        setTimeout(attachEventListeners, 100);
+      }
     })
     .catch(err => console.error("Error loading component:", err));
 }
 
-loadComponent("header", "/frontend/src/core/components/navbar.html").then(() => {
-  // Initialize authentication after navbar is loaded
-  setTimeout(() => {
-    if (window.initAuth) {
-      window.initAuth();
-    } else if (window.refreshAuth) {
-      window.refreshAuth();
-    }
-  }, 100);
+// Load components
+document.addEventListener('DOMContentLoaded', function () {
+  loadComponent("header", "/frontend/src/core/components/navbar.html");
+  loadComponent("footer", "/frontend/src/core/components/footer.html");
+  initPage();
 });
-loadComponent("footer", "/frontend/src/core/components/footer.html");
   
   let products = [];
   let categories = [];
@@ -127,7 +135,7 @@ loadComponent("footer", "/frontend/src/core/components/footer.html");
       const checkboxHTML = `
         <label class="flex items-center">
           <input type="checkbox" id="${checkboxId}" value="${category.category_id}" class="category-checkbox rounded text-blue-600 focus:ring-blue-500"/>
-          <span class="ml-2 text-sm text-gray-700">${category.name}</span>
+          <span class="ml-2 text-m text-gray-700">${category.name}</span>
         </label>
       `;
       
@@ -259,7 +267,8 @@ loadComponent("footer", "/frontend/src/core/components/footer.html");
   
     featuredProducts.forEach(product => {
         const card = document.createElement("div");
-        card.className = "bg-white rounded-lg overflow-hidden shadow-sm relative";
+        card.className = "bg-white rounded-lg overflow-hidden shadow-sm relative border border-[#A1E970]";
+
 
         card.innerHTML = `
             <!-- Prescription Badge -->
@@ -290,10 +299,10 @@ loadComponent("footer", "/frontend/src/core/components/footer.html");
                 </div>
             </a>
             <div class="p-4">
-                <h3 class="font-semibold text-sm">
+                <h3 class="font-semibold text-m">
                     <a href="../../shop/product/product.html?id=${product.id}">${product.name}</a>
                 </h3>
-                <p class="text-xs text-gray-500 truncate">${product.composition || 'No description available'}</p>
+                <p class="text-sm text-gray-500 truncate">${product.composition || 'No description available'}</p>
                 <p class="font-semibold mt-2 text-sm">$${product.price ? product.price.toFixed(2) : '0.00'}</p>
                 <button class="w-full bg-[#A1E970] bg-opacity-90 text-black font-semibold py-2 rounded-lg mt-4 hover:bg-[#A1E970] add-to-cart-btn text-sm ${!product.inStock ? 'opacity-50 cursor-not-allowed' : ''}" 
                   data-id="${product.id}" ${!product.inStock ? 'disabled' : ''}>
@@ -308,7 +317,8 @@ loadComponent("footer", "/frontend/src/core/components/footer.html");
         if (product.inStock) {
           const addButton = card.querySelector(".add-to-cart-btn");
           if (addButton) {
-            addButton.addEventListener("click", function() {
+            addButton.addEventListener("click", function(e) {
+              e.stopPropagation();
               addToCart(this.getAttribute("data-id"));
             });
           }
@@ -629,10 +639,10 @@ async function addToCart(productId) {
                     }
                 </div>
             </a>
-            <h3 class="font-semibold mt-2 text-sm">
+            <h3 class="font-semibold mt-2 text-m">
                 <a href="../../shop/product/product.html?id=${product.id}">${product.name}</a>
             </h3>
-            <p class="text-xs text-gray-500 truncate">${product.composition || 'No description available'}</p>
+            <p class="text-sm text-gray-500 truncate">${product.composition || 'No description available'}</p>
             <p class="font-semibold mt-2 text-sm">$${product.price ? product.price.toFixed(2) : '0.00'}</p>
             <button class="w-full bg-[#A1E970] bg-opacity-90 text-black font-semibold py-2 rounded-lg mt-4 hover:bg-[#A1E970] add-to-cart-btn text-sm ${!product.inStock ? 'opacity-50 cursor-not-allowed' : ''}" 
               data-id="${product.id}" ${!product.inStock ? 'disabled' : ''}>

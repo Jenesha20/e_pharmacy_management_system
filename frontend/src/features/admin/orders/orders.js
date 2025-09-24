@@ -238,231 +238,513 @@ prescriptions: `${API_BASE}/prescriptions`
 };
 
 // Fetch data from API
+// async function fetchData() {
+// try {
+//   const [
+//     ordersRes, 
+//     customersRes, 
+//     addressesRes, 
+//     orderItemsRes, 
+//     productsRes, 
+//     prescriptionsRes
+//   ] = await Promise.all([
+//     fetch(ENDPOINTS.orders),
+//     fetch(ENDPOINTS.customers),
+//     fetch(ENDPOINTS.customerAddresses),
+//     fetch(ENDPOINTS.orderItems),
+//     fetch(ENDPOINTS.products),
+//     fetch(ENDPOINTS.prescriptions)
+//   ]);
+
+//   orders = await ordersRes.json();
+//   customers = await customersRes.json();
+//   customerAddresses = await addressesRes.json();
+//   orderItems = await orderItemsRes.json();
+//   products = await productsRes.json();
+//   prescriptions = await prescriptionsRes.json();
+
+//   console.log('Orders data:', orders);
+//   console.log('Customers data:', customers);
+
+//   // Enrich orders with additional data
+//   orders = orders.map(order => {
+//     console.log('Processing order:', order.order_id, 'customer_id:', order.customer_id);
+    
+//     // Convert customer_id to number for comparison
+//     const customerId = parseInt(order.customer_id);
+//     const customer = customers.find(c => c.customer_id == customerId);
+//     console.log('Found customer:', customer);
+    
+//     const address = customerAddresses.find(a => a.id == order.shipping_address_id);
+//     const items = orderItems.filter(item => item.order_id == order.order_id);
+//     const prescription = order.prescription_id ? prescriptions.find(p => p.prescription_id == order.prescription_id) : null;
+    
+//     // Calculate total items quantity
+//     const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+    
+//     // Enrich items with product details
+//     const enrichedItems = items.map(item => {
+//       const product = products.find(p => p.product_id == item.product_id);
+//       return {
+//         ...item,
+//         product_name: product ? product.name : 'Unknown Product',
+//         product_sku: product ? product.sku : 'N/A',
+//         product_image: product ? product.image_url : null
+//       };
+//     });
+    
+//     return {
+//       ...order,
+//       customer_name: customer ? `${customer.first_name} ${customer.last_name}` : `Customer ID: ${order.customer_id}`,
+//       customer_email: customer ? customer.email : 'N/A',
+//       customer_phone: customer ? customer.phone_number : 'N/A',
+//       shipping_address: address ? `${address.address_line1}, ${address.city}, ${address.state} ${address.zip_code}` : 'Address not found',
+//       items: enrichedItems,
+//       total_items: totalItems,
+//       prescription: prescription || null
+//     };
+//   });
+
+//   filteredOrders = [...orders];
+//   tableOrders = [...filteredOrders];
+//   renderTable();
+//   updateCards();
+// } catch (error) {
+//   console.error('Error fetching data:', error);
+//   showToast('Error loading data. Please try again.');
+// }
+// }
+
+// Fetch data from API
+// Fetch data from API - UPDATED to properly handle order_items structure
+// Fetch data from API - FIXED order_id comparison issue
+// Fetch data from API - FIXED with proper ID matching
+// Fetch data from API - UPDATED with better debugging
 async function fetchData() {
-try {
-  const [
-    ordersRes, 
-    customersRes, 
-    addressesRes, 
-    orderItemsRes, 
-    productsRes, 
-    prescriptionsRes
-  ] = await Promise.all([
-    fetch(ENDPOINTS.orders),
-    fetch(ENDPOINTS.customers),
-    fetch(ENDPOINTS.customerAddresses),
-    fetch(ENDPOINTS.orderItems),
-    fetch(ENDPOINTS.products),
-    fetch(ENDPOINTS.prescriptions)
-  ]);
+  try {
+    const [
+      ordersRes, 
+      customersRes, 
+      addressesRes, 
+      orderItemsRes, 
+      productsRes, 
+      prescriptionsRes
+    ] = await Promise.all([
+      fetch(ENDPOINTS.orders),
+      fetch(ENDPOINTS.customers),
+      fetch(ENDPOINTS.customerAddresses),
+      fetch(ENDPOINTS.orderItems),
+      fetch(ENDPOINTS.products),
+      fetch(ENDPOINTS.prescriptions)
+    ]);
 
-  orders = await ordersRes.json();
-  customers = await customersRes.json();
-  customerAddresses = await addressesRes.json();
-  orderItems = await orderItemsRes.json();
-  products = await productsRes.json();
-  prescriptions = await prescriptionsRes.json();
+    orders = await ordersRes.json();
+    customers = await customersRes.json();
+    customerAddresses = await addressesRes.json();
+    orderItems = await orderItemsRes.json();
+    products = await productsRes.json();
+    prescriptions = await prescriptionsRes.json();
 
-  console.log('Orders data:', orders);
-  console.log('Customers data:', customers);
+    console.log('=== DEBUGGING ORDER ITEMS MATCHING ===');
+    console.log('All orders:', orders.map(o => ({ id: o.id, order_id: o.order_id, order_number: o.order_number })));
+    console.log('All order items entries:', orderItems);
 
-  // Enrich orders with additional data
-  orders = orders.map(order => {
-    console.log('Processing order:', order.order_id, 'customer_id:', order.customer_id);
-    
-    // Convert customer_id to number for comparison
-    const customerId = parseInt(order.customer_id);
-    const customer = customers.find(c => c.customer_id === customerId);
-    console.log('Found customer:', customer);
-    
-    const address = customerAddresses.find(a => a.address_id === order.shipping_address_id);
-    const items = orderItems.filter(item => item.order_id === order.order_id);
-    const prescription = order.prescription_id ? prescriptions.find(p => p.prescription_id === order.prescription_id) : null;
-    
-    // Calculate total items quantity
-    const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
-    
-    // Enrich items with product details
-    const enrichedItems = items.map(item => {
-      const product = products.find(p => p.product_id === item.product_id);
+    // Enrich orders with additional data
+    orders = orders.map(order => {
+      console.log(`\n=== PROCESSING ORDER: ${order.order_number} (id: ${order.id}, order_id: ${order.order_id}) ===`);
+      
+      // Find customer
+      const customer = customers.find(c => c.customer_id == order.customer_id || c.id == order.customer_id);
+      console.log('Found customer:', customer ? `${customer.first_name} ${customer.last_name}` : 'Not found');
+      
+      // Find address
+      const address = customerAddresses.find(a => a.id == order.shipping_address_id);
+      console.log('Found address:', address ? `${address.address_line1}, ${address.city}` : 'Not found');
+      
+      // FIX: Find order items for this order with multiple matching strategies
+      let items = [];
+      
+      // Loop through all order_items entries
+      orderItems.forEach((orderItemEntry, entryIndex) => {
+        console.log(`Checking orderItemEntry ${entryIndex}:`, orderItemEntry);
+        
+        // Check if this entry has numeric keys (nested structure)
+        const numericKeys = Object.keys(orderItemEntry).filter(key => !isNaN(key));
+        
+        if (numericKeys.length > 0) {
+          // This is a nested structure - extract items from numeric keys
+          numericKeys.forEach(key => {
+            const item = orderItemEntry[key];
+            if (item && item.order_id) {
+              console.log(`  Checking nested item ${key}: order_id=${item.order_id}, comparing with order.id=${order.id}, order.order_id=${order.order_id}`);
+              
+              // Try multiple matching strategies
+              if (item.order_id == order.id || 
+                  item.order_id == order.order_id ||
+                  item.order_id == order.id || // loose comparison
+                  item.order_id == order.order_id ||
+                  item.order_id.toString() == order.id.toString() ||
+                  item.order_id.toString() == order.order_id.toString()) {
+                console.log('  ✅ MATCH FOUND for nested item!');
+                items.push(item);
+              }
+            }
+          });
+        } else {
+          // This is a flat structure
+          if (orderItemEntry.order_id) {
+            console.log(`  Checking flat item: order_id=${orderItemEntry.order_id}, comparing with order.id=${order.id}, order.order_id=${order.order_id}`);
+            
+            // Try multiple matching strategies
+            if (orderItemEntry.order_id == order.id || 
+                orderItemEntry.order_id == order.order_id ||
+                orderItemEntry.order_id == order.id ||
+                orderItemEntry.order_id == order.order_id ||
+                orderItemEntry.order_id.toString() == order.id.toString() ||
+                orderItemEntry.order_id.toString() == order.order_id.toString()) {
+              console.log('  ✅ MATCH FOUND for flat item!');
+              items.push(orderItemEntry);
+            }
+          }
+        }
+      });
+      
+      console.log(`Total items found for order ${order.id}:`, items.length, items);
+      
+      // Find prescription if exists
+      const prescription = order.prescription_id ? prescriptions.find(p => p.prescription_id == order.prescription_id || p.id == order.prescription_id) : null;
+      
+      // Calculate total items quantity
+      const totalItems = items.reduce((sum, item) => sum + (parseInt(item.quantity) || 0), 0);
+      
+      // Enrich items with product details
+      const enrichedItems = items.map(item => {
+        const product = products.find(p => p.product_id == item.product_id || p.id == item.product_id);
+        console.log('Product for item', item.product_id, ':', product ? product.name : 'Not found');
+        return {
+          ...item,
+          product_name: product ? product.name : 'Unknown Product',
+          product_sku: product ? product.sku : 'N/A',
+          product_image: product ? product.image_url : null
+        };
+      });
+      
       return {
-        ...item,
-        product_name: product ? product.name : 'Unknown Product',
-        product_sku: product ? product.sku : 'N/A',
-        product_image: product ? product.image_url : null
+        ...order,
+        customer_name: customer ? `${customer.first_name} ${customer.last_name}` : `Customer ID: ${order.customer_id}`,
+        customer_email: customer ? customer.email : 'N/A',
+        customer_phone: customer ? customer.phone_number : 'N/A',
+        shipping_address: address ? `${address.address_line1}, ${address.city}, ${address.state} ${address.zip_code}` : 'Address not found',
+        items: enrichedItems,
+        total_items: totalItems,
+        prescription: prescription || null
       };
     });
+
+    filteredOrders = [...orders];
+    tableOrders = [...filteredOrders];
+    renderTable();
+    updateCards();
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    showToast('Error loading data. Please try again.');
+  }
+}
+// Render Table
+// function renderTable() {
+// let tbody = document.getElementById("ordersTable");
+// tbody.innerHTML = "";
+
+// let start = (currentPage - 1) * rowsPerPage;
+// let end = start + rowsPerPage;
+// let paginatedOrders = tableOrders.slice(start, end);
+
+// if (paginatedOrders.length == 0) {
+//   tbody.innerHTML = `
+//     <tr>
+//       <td colspan="8" class="p-4 text-center border">
+//         No orders found matching your criteria.
+//       </td>
+//     </tr>
+//   `;
+//   return;
+// }
+
+// paginatedOrders.forEach(order => {
+//   // Format order date
+//   const orderDate = new Date(order.order_date).toLocaleDateString();
+  
+//   // Create status badge
+//   const statusClass = `status-${order.status}`;
+//   const statusBadge = `<span class="status-badge ${statusClass}">${order.status}</span>`;
+  
+//   // Create payment status badge
+//   const paymentStatusClass = `payment-status-${order.payment_status}`;
+//   const paymentStatusBadge = `<span class="status-badge ${paymentStatusClass}">${order.payment_status}</span>`;
+  
+//   // Check if order has prescription
+//   const prescriptionThumb = order.prescription ? 
+//     `<img src="${order.prescription.image_url}" class="prescription-thumb" onclick="openModal('${order.prescription.image_url}')">` : 
+//     'N/A';
+  
+//   let row = `
+//     <tr class="expandable-row" data-order-id="${order.order_id}">
+//       <td class="p-3 border">${order.order_number}</td>
+//       <td class="p-3 border">${order.customer_name}</td>
+//       <td class="p-3 border">${orderDate}</td>
+//       <td class="p-3 border">${order.total_items} items</td>
+//       <td class="p-3 border">₹${order.total_amount}</td>
+//       <td class="p-3 border">${statusBadge}</td>
+//       <td class="p-3 border">${paymentStatusBadge}</td>
+//       <td class="p-3 border">
+//         <div class="flex space-x-2">
+//           <select class="border rounded-md px-2 py-1 focus:ring focus:ring-blue-300 status-dropdown"
+//             onchange="updateOrderStatus(${order.order_id}, this.value)"
+//             data-order-id="${order.order_id}">
+//             <option value="pending" ${order.status == 'pending' ? 'selected' : ''}>Pending</option>
+//             <option value="processing" ${order.status == 'processing' ? 'selected' : ''}>Processing</option>
+//             <option value="packed" ${order.status == 'packed' ? 'selected' : ''}>Packed</option>
+//             <option value="shipped" ${order.status == 'shipped' ? 'selected' : ''}>Shipped</option>
+//             <option value="delivered" ${order.status == 'delivered' ? 'selected' : ''}>Delivered</option>
+//             <option value="cancelled" ${order.status == 'cancelled' ? 'selected' : ''}>Cancelled</option>
+//           </select>
+//           <button onclick="event.stopPropagation(); generateInvoice(${order.order_id})" 
+//                   class="px-2 py-1 bg-blue-500 text-white rounded-md text-sm">
+//             <i class="fas fa-file-invoice"></i>
+//           </button>
+//         </div>
+//       </td>
+//     </tr>
+//     <tr class="order-details" id="details-${order.order_id}">
+//       <td colspan="8" class="p-4 border">
+//         <div class="grid grid-cols-2 gap-6">
+//           <div>
+//             <h3 class="font-semibold mb-2">Customer Information</h3>
+//             <p><strong>Name:</strong> ${order.customer_name}</p>
+//             <p><strong>Email:</strong> ${order.customer_email}</p>
+//             <p><strong>Phone:</strong> ${order.customer_phone}</p>
+            
+//             <h3 class="font-semibold mt-4 mb-2">Shipping Address</h3>
+//             <p>${order.shipping_address}</p>
+            
+//             <h3 class="font-semibold mt-4 mb-2">Payment Information</h3>
+//             <p><strong>Method:</strong> ${order.payment_method}</p>
+//             <p><strong>Status:</strong> ${paymentStatusBadge}</p>
+//           </div>
+          
+//           <div>
+//             <h3 class="font-semibold mb-2">Order Items</h3>
+//             <table class="w-full border-collapse border border-gray-300">
+//               <thead>
+//                 <tr class="bg-gray-100">
+//                   <th class="border border-gray-300 px-2 py-1">Product</th>
+//                   <th class="border border-gray-300 px-2 py-1">SKU</th>
+//                   <th class="border border-gray-300 px-2 py-1">Qty</th>
+//                   <th class="border border-gray-300 px-2 py-1">Price</th>
+//                   <th class="border border-gray-300 px-2 py-1">Subtotal</th>
+//                 </tr>
+//               </thead>
+//               <tbody>
+//                 ${order.items.map(item => `
+//                   <tr>
+//                     <td class="border border-gray-300 px-2 py-1">${item.product_name}</td>
+//                     <td class="border border-gray-300 px-2 py-1">${item.product_sku}</td>
+//                     <td class="border border-gray-300 px-2 py-1">${item.quantity}</td>
+//                     <td class="border border-gray-300 px-2 py-1">₹${item.unit_price}</td>
+//                     <td class="border border-gray-300 px-2 py-1">₹${item.subtotal}</td>
+//                   </tr>
+//                 `).join('')}
+//               </tbody>
+//             </table>
+            
+//             <h3 class="font-semibold mt-4 mb-2">Prescription</h3>
+//             ${prescriptionThumb}
+//           </div>
+//         </div>
+//       </td>
+//     </tr>`;
+//   tbody.innerHTML += row;
+// });
+
+// document.getElementById("pageInfo").innerText =
+//   `Page ${currentPage} of ${Math.ceil(tableOrders.length / rowsPerPage)}`;
+
+// // Add event listeners for expandable rows
+// document.querySelectorAll('.expandable-row').forEach(row => {
+//   row.addEventListener('click', function() {
+//     const orderId = this.getAttribute('data-order-id');
+//     const detailsRow = document.getElementById(`details-${orderId}`);
     
-    return {
-      ...order,
-      customer_name: customer ? `${customer.first_name} ${customer.last_name}` : `Customer ID: ${order.customer_id}`,
-      customer_email: customer ? customer.email : 'N/A',
-      customer_phone: customer ? customer.phone_number : 'N/A',
-      shipping_address: address ? `${address.address_line1}, ${address.city}, ${address.state} ${address.zip_code}` : 'Address not found',
-      items: enrichedItems,
-      total_items: totalItems,
-      prescription: prescription || null
-    };
-  });
-
-  filteredOrders = [...orders];
-  tableOrders = [...filteredOrders];
-  renderTable();
-  updateCards();
-} catch (error) {
-  console.error('Error fetching data:', error);
-  showToast('Error loading data. Please try again.');
-}
-}
-
+//     // Close all other open details
+//     document.querySelectorAll('.order-details').forEach(detail => {
+//       if (detail.id != `details-${orderId}`) {
+//         detail.style.display = 'none';
+//       }
+//     });
+    
+//     // Toggle current details
+//     if (detailsRow.style.display == 'table-row') {
+//       detailsRow.style.display = 'none';
+//     } else {
+//       detailsRow.style.display = 'table-row';
+//     }
+//   });
+// });
+// }
 // Render Table
 function renderTable() {
-let tbody = document.getElementById("ordersTable");
-tbody.innerHTML = "";
+  let tbody = document.getElementById("ordersTable");
+  tbody.innerHTML = "";
 
-let start = (currentPage - 1) * rowsPerPage;
-let end = start + rowsPerPage;
-let paginatedOrders = tableOrders.slice(start, end);
+  let start = (currentPage - 1) * rowsPerPage;
+  let end = start + rowsPerPage;
+  let paginatedOrders = tableOrders.slice(start, end);
 
-if (paginatedOrders.length === 0) {
-  tbody.innerHTML = `
-    <tr>
-      <td colspan="8" class="p-4 text-center border">
-        No orders found matching your criteria.
-      </td>
-    </tr>
-  `;
-  return;
-}
+  if (paginatedOrders.length == 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="8" class="p-4 text-center border">
+          No orders found matching your criteria.
+        </td>
+      </tr>
+    `;
+    return;
+  }
 
-paginatedOrders.forEach(order => {
-  // Format order date
-  const orderDate = new Date(order.order_date).toLocaleDateString();
-  
-  // Create status badge
-  const statusClass = `status-${order.status}`;
-  const statusBadge = `<span class="status-badge ${statusClass}">${order.status}</span>`;
-  
-  // Create payment status badge
-  const paymentStatusClass = `payment-status-${order.payment_status}`;
-  const paymentStatusBadge = `<span class="status-badge ${paymentStatusClass}">${order.payment_status}</span>`;
-  
-  // Check if order has prescription
-  const prescriptionThumb = order.prescription ? 
-    `<img src="${order.prescription.image_url}" class="prescription-thumb" onclick="openModal('${order.prescription.image_url}')">` : 
-    'N/A';
-  
-  let row = `
-    <tr class="expandable-row" data-order-id="${order.order_id}">
-      <td class="p-3 border">${order.order_number}</td>
-      <td class="p-3 border">${order.customer_name}</td>
-      <td class="p-3 border">${orderDate}</td>
-      <td class="p-3 border">${order.total_items} items</td>
-      <td class="p-3 border">₹${order.total_amount}</td>
-      <td class="p-3 border">${statusBadge}</td>
-      <td class="p-3 border">${paymentStatusBadge}</td>
-      <td class="p-3 border">
-        <div class="flex space-x-2">
-          <select class="border rounded-md px-2 py-1 focus:ring focus:ring-blue-300 status-dropdown"
-            onchange="updateOrderStatus(${order.order_id}, this.value)"
-            data-order-id="${order.order_id}">
-            <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
-            <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>Processing</option>
-            <option value="packed" ${order.status === 'packed' ? 'selected' : ''}>Packed</option>
-            <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>Shipped</option>
-            <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Delivered</option>
-            <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
-          </select>
-          <button onclick="event.stopPropagation(); generateInvoice(${order.order_id})" 
-                  class="px-2 py-1 bg-blue-500 text-white rounded-md text-sm">
-            <i class="fas fa-file-invoice"></i>
-          </button>
-        </div>
-      </td>
-    </tr>
-    <tr class="order-details" id="details-${order.order_id}">
-      <td colspan="8" class="p-4 border">
-        <div class="grid grid-cols-2 gap-6">
-          <div>
-            <h3 class="font-semibold mb-2">Customer Information</h3>
-            <p><strong>Name:</strong> ${order.customer_name}</p>
-            <p><strong>Email:</strong> ${order.customer_email}</p>
-            <p><strong>Phone:</strong> ${order.customer_phone}</p>
-            
-            <h3 class="font-semibold mt-4 mb-2">Shipping Address</h3>
-            <p>${order.shipping_address}</p>
-            
-            <h3 class="font-semibold mt-4 mb-2">Payment Information</h3>
-            <p><strong>Method:</strong> ${order.payment_method}</p>
-            <p><strong>Status:</strong> ${paymentStatusBadge}</p>
-          </div>
-          
-          <div>
-            <h3 class="font-semibold mb-2">Order Items</h3>
-            <table class="w-full border-collapse border border-gray-300">
-              <thead>
-                <tr class="bg-gray-100">
-                  <th class="border border-gray-300 px-2 py-1">Product</th>
-                  <th class="border border-gray-300 px-2 py-1">SKU</th>
-                  <th class="border border-gray-300 px-2 py-1">Qty</th>
-                  <th class="border border-gray-300 px-2 py-1">Price</th>
-                  <th class="border border-gray-300 px-2 py-1">Subtotal</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${order.items.map(item => `
-                  <tr>
-                    <td class="border border-gray-300 px-2 py-1">${item.product_name}</td>
-                    <td class="border border-gray-300 px-2 py-1">${item.product_sku}</td>
-                    <td class="border border-gray-300 px-2 py-1">${item.quantity}</td>
-                    <td class="border border-gray-300 px-2 py-1">₹${item.unit_price}</td>
-                    <td class="border border-gray-300 px-2 py-1">₹${item.subtotal}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-            
-            <h3 class="font-semibold mt-4 mb-2">Prescription</h3>
-            ${prescriptionThumb}
-          </div>
-        </div>
-      </td>
-    </tr>`;
-  tbody.innerHTML += row;
-});
-
-document.getElementById("pageInfo").innerText =
-  `Page ${currentPage} of ${Math.ceil(tableOrders.length / rowsPerPage)}`;
-
-// Add event listeners for expandable rows
-document.querySelectorAll('.expandable-row').forEach(row => {
-  row.addEventListener('click', function() {
-    const orderId = this.getAttribute('data-order-id');
-    const detailsRow = document.getElementById(`details-${orderId}`);
+  paginatedOrders.forEach(order => {
+    // Format order date
+    const orderDate = new Date(order.order_date).toLocaleDateString();
     
-    // Close all other open details
-    document.querySelectorAll('.order-details').forEach(detail => {
-      if (detail.id !== `details-${orderId}`) {
-        detail.style.display = 'none';
+    // Create status badge
+    const statusClass = `status-${order.status}`;
+    const statusBadge = `<span class="status-badge ${statusClass}">${order.status}</span>`;
+    
+    // Create payment status badge
+    const paymentStatusClass = `payment-status-${order.payment_status}`;
+    const paymentStatusBadge = `<span class="status-badge ${paymentStatusClass}">${order.payment_status}</span>`;
+    
+    // Check if order has prescription
+    const prescriptionThumb = order.prescription ? 
+      `<img src="${order.prescription.image_url}" class="prescription-thumb" onclick="openModal('${order.prescription.image_url}')">` : 
+      'N/A';
+    
+    // FIX: Proper item count calculation
+    const itemCount = order.items ? order.items.reduce((total, item) => total + (parseInt(item.quantity) || 0), 0) : 0;
+    
+    let row = `
+      <tr class="expandable-row text-lg" data-order-id="${order.order_id}">
+        <td class="p-3 border">${order.order_number}</td>
+        <td class="p-3 border">${order.customer_name}</td>
+        <td class="p-3 border">${orderDate}</td>
+        <td class="p-3 border">${itemCount} items</td> <!-- FIXED: Use calculated count -->
+        <td class="p-3 border">₹${order.total_amount}</td>
+        <td class="p-3 border text-lg">${statusBadge}</td>
+        <td class="p-3 border text-lg">${paymentStatusBadge}</td>
+        <td class="p-3 border">
+          <div class="flex space-x-2">
+            <select class="border rounded-md px-2 py-1 focus:ring focus:ring-blue-300 status-dropdown"
+              onchange="updateOrderStatus(${order.order_id}, this.value)"
+              data-order-id="${order.order_id}">
+              <option value="pending" ${order.status == 'pending' ? 'selected' : ''}>Pending</option>
+              <option value="processing" ${order.status == 'processing' ? 'selected' : ''}>Processing</option>
+              <option value="packed" ${order.status == 'packed' ? 'selected' : ''}>Packed</option>
+              <option value="shipped" ${order.status == 'shipped' ? 'selected' : ''}>Shipped</option>
+              <option value="delivered" ${order.status == 'delivered' ? 'selected' : ''}>Delivered</option>
+              <option value="cancelled" ${order.status == 'cancelled' ? 'selected' : ''}>Cancelled</option>
+            </select>
+            <button onclick="event.stopPropagation(); generateInvoice(${order.order_id})" 
+                    class="px-2 py-1 bg-blue-500 text-white rounded-md text-lg">
+              <i class="fas fa-file-invoice"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+      <tr class="order-details" id="details-${order.order_id}">
+        <td colspan="8" class="p-4 border">
+          <div class="grid grid-cols-2 gap-6">
+            <div class="text-lg">
+              <h3 class="font-semibold mb-2">Customer Information</h3>
+              <p><strong>Name:</strong> ${order.customer_name}</p>
+              <p><strong>Email:</strong> ${order.customer_email}</p>
+              <p><strong>Phone:</strong> ${order.customer_phone}</p>
+              
+              <h3 class="font-semibold mt-4 mb-2">Shipping Address</h3>
+              <p>${order.shipping_address}</p>
+              
+              <h3 class="font-semibold mt-4 mb-2">Payment Information</h3>
+              <p><strong>Method:</strong> ${order.payment_method}</p>
+              <p><strong>Status:</strong> ${paymentStatusBadge}</p>
+            </div>
+            
+            <div>
+              <h3 class="font-semibold mb-2">Order Items (${itemCount} items)</h3>
+              <table class="w-full border-collapse border border-gray-300">
+                <thead>
+                  <tr class="bg-gray-100">
+                    <th class="border border-gray-300 px-2 py-1">Product</th>
+                    <th class="border border-gray-300 px-2 py-1">SKU</th>
+                    <th class="border border-gray-300 px-2 py-1">Qty</th>
+                    <th class="border border-gray-300 px-2 py-1">Price</th>
+                    <th class="border border-gray-300 px-2 py-1">Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${order.items && order.items.length > 0 ? order.items.map(item => `
+                    <tr>
+                      <td class="border border-gray-300 px-2 py-1">${item.product_name}</td>
+                      <td class="border border-gray-300 px-2 py-1">${item.product_sku}</td>
+                      <td class="border border-gray-300 px-2 py-1">${item.quantity}</td>
+                      <td class="border border-gray-300 px-2 py-1">₹${item.unit_price}</td>
+                      <td class="border border-gray-300 px-2 py-1">₹${item.subtotal}</td>
+                    </tr>
+                  `).join('') : `
+                    <tr>
+                      <td colspan="5" class="border border-gray-300 px-2 py-1 text-center">No items found</td>
+                    </tr>
+                  `}
+                </tbody>
+              </table>
+              
+              <h3 class="font-semibold mt-4 mb-2">Prescription</h3>
+              ${prescriptionThumb}
+            </div>
+          </div>
+        </td>
+      </tr>`;
+    tbody.innerHTML += row;
+  });
+
+  document.getElementById("pageInfo").innerText =
+    `Page ${currentPage} of ${Math.ceil(tableOrders.length / rowsPerPage)}`;
+
+  // Add event listeners for expandable rows
+  document.querySelectorAll('.expandable-row').forEach(row => {
+    row.addEventListener('click', function() {
+      const orderId = this.getAttribute('data-order-id');
+      const detailsRow = document.getElementById(`details-${orderId}`);
+      
+      // Close all other open details
+      document.querySelectorAll('.order-details').forEach(detail => {
+        if (detail.id != `details-${orderId}`) {
+          detail.style.display = 'none';
+        }
+      });
+      
+      // Toggle current details
+      if (detailsRow.style.display == 'table-row') {
+        detailsRow.style.display = 'none';
+      } else {
+        detailsRow.style.display = 'table-row';
       }
     });
-    
-    // Toggle current details
-    if (detailsRow.style.display === 'table-row') {
-      detailsRow.style.display = 'none';
-    } else {
-      detailsRow.style.display = 'table-row';
-    }
   });
-});
 }
-
 // Update Cards
 function updateCards() {
 const all = filteredOrders.length;
-const processing = filteredOrders.filter(o => o.status === "processing").length;
-const packed = filteredOrders.filter(o => o.status === "packed").length;
-const delivered = filteredOrders.filter(o => o.status === "delivered").length;
+const processing = filteredOrders.filter(o => o.status == "processing").length;
+const packed = filteredOrders.filter(o => o.status == "packed").length;
+const delivered = filteredOrders.filter(o => o.status == "delivered").length;
 
 document.getElementById("allOrdersCount").innerText = all;
 document.getElementById("processingCount").innerText = processing;
@@ -476,7 +758,7 @@ try {
   console.log('Updating order:', orderId, 'to status:', newStatus);
   
   // Find the order by order_id
-  const order = orders.find(o => o.order_id === orderId);
+  const order = orders.find(o => o.order_id == orderId);
   if (!order) {
     console.error('Order not found with order_id:', orderId);
     showToast('Order not found.');
@@ -485,7 +767,7 @@ try {
   
   // If status is changing to shipped, prompt for tracking number
   let trackingNumber = order.tracking_number;
-  if (newStatus === 'shipped' && !trackingNumber) {
+  if (newStatus == 'shipped' && !trackingNumber) {
     trackingNumber = prompt('Please enter tracking number:');
     if (!trackingNumber) {
       // Reset dropdown to previous value if no tracking number provided
@@ -499,7 +781,7 @@ try {
   // First, let's find the order's id in the database
   const allOrdersResponse = await fetch(ENDPOINTS.orders);
   const allOrders = await allOrdersResponse.json();
-  const orderInDb = allOrders.find(o => o.order_id === orderId);
+  const orderInDb = allOrders.find(o => o.order_id == orderId);
   
   if (!orderInDb) {
     console.error('Order not found in database with order_id:', orderId);
@@ -522,8 +804,8 @@ try {
   if (response.ok) {
     // Update local data
     const updatedOrder = await response.json();
-    const index = orders.findIndex(o => o.order_id === orderId);
-    if (index !== -1) {
+    const index = orders.findIndex(o => o.order_id == orderId);
+    if (index != -1) {
       orders[index] = {...orders[index], ...updatedOrder};
     }
     
@@ -538,7 +820,7 @@ try {
   showToast('Error updating order status. Please try again.');
   
   // Reset dropdown to previous value
-  const order = orders.find(o => o.order_id === orderId);
+  const order = orders.find(o => o.order_id == orderId);
   if (order) {
     const dropdown = document.querySelector(`.status-dropdown[data-order-id="${orderId}"]`);
     if (dropdown) dropdown.value = order.status;
@@ -611,14 +893,108 @@ try {
 //     showToast('Failed to generate invoice');
 //   }
 // }
+// Generate Invoice
+// Generate Invoice - FIXED order_id comparison
+async function generateInvoice(orderId) {
+  const { jsPDF } = window.jspdf;
+
+  try {
+    // Fetch order details - use the id field for JSON Server
+    const orderRes = await fetch(`http://localhost:3000/orders/${orderId}`);
+    if (!orderRes.ok) throw new Error('Order not found');
+    const order = await orderRes.json();
+
+    // Fetch all order items and filter by order.id
+    const itemsRes = await fetch(`http://localhost:3000/order_items`);
+    const orderItemsData = await itemsRes.json();
+    
+    // FIX: Extract items that belong to this order (compare with order.id)
+    let items = [];
+    orderItemsData.forEach(orderItemEntry => {
+      const numericKeys = Object.keys(orderItemEntry).filter(key => !isNaN(key));
+      
+      if (numericKeys.length > 0) {
+        // Nested structure
+        numericKeys.forEach(key => {
+          const item = orderItemEntry[key];
+          if (item && item.order_id == order.id) {
+            items.push(item);
+          }
+        });
+      } else {
+        // Flat structure
+        if (orderItemEntry.order_id == order.id) {
+          items.push(orderItemEntry);
+        }
+      }
+    });
+
+    // Rest of your invoice generation code remains the same...
+    const doc = new jsPDF();
+
+    // Invoice Header
+    doc.setFontSize(22);
+    doc.text('Pharmacy Management System', 14, 20);
+    doc.setFontSize(16);
+    doc.text('Invoice', 14, 30);
+
+    // Order Info
+    doc.setFontSize(12);
+    doc.text(`Order Number: ${order.order_number}`, 14, 40);
+    doc.text(`Order Date: ${new Date(order.order_date).toLocaleDateString()}`, 14, 48);
+    doc.text(`Payment Method: ${order.payment_method}`, 14, 56);
+    doc.text(`Payment Status: ${order.payment_status}`, 14, 64);
+    doc.text(`Shipping Notes: ${order.notes || 'N/A'}`, 14, 72);
+
+    // Table Header
+    doc.setFontSize(10);
+    doc.text('Product ID', 14, 90);
+    doc.text('Quantity', 60, 90);
+    doc.text('Unit Price', 90, 90);
+    doc.text('Subtotal', 140, 90);
+    
+    // Table Rows
+    let yPosition = 100;
+    items.forEach(item => {
+      const productId = item.product_id ?? 'N/A';
+      const quantity = item.quantity ?? 0;
+      const unitPrice = item.unit_price ?? 0;
+      const subtotal = item.subtotal ?? 0;
+    
+      doc.text(productId.toString(), 14, yPosition);
+      doc.text(quantity.toString(), 60, yPosition);
+      doc.text(`₹${unitPrice.toFixed(2)}`, 90, yPosition);
+      doc.text(`₹${subtotal.toFixed(2)}`, 140, yPosition);
+    
+      yPosition += 8;
+      if (yPosition > 250) {
+        doc.addPage();
+        yPosition = 20;
+      }
+    });
+
+    // Total Amount
+    doc.setFontSize(14);
+    doc.text(`Total Amount: ₹${order.total_amount.toFixed(2)}`, 14, yPosition + 10);
+
+    // Save PDF
+    doc.save(`Invoice_${order.order_number}.pdf`);
+
+    showToast(`Invoice for order #${order.order_number} generated successfully`);
+
+  } catch (error) {
+    console.error(error);
+    showToast('Failed to generate invoice');
+  }
+}
 
 
 // Filter orders by status
 function filterByStatus(status) {
-if (status === "all") {
+if (status == "all") {
   tableOrders = [...filteredOrders];
 } else {
-  tableOrders = filteredOrders.filter(o => o.status === status);
+  tableOrders = filteredOrders.filter(o => o.status == status);
 }
 currentPage = 1;
 renderTable();
@@ -665,11 +1041,11 @@ const paymentStatusFilter = document.getElementById('paymentStatusFilter').value
 tableOrders = [...filteredOrders];
 
 if (statusFilter) {
-  tableOrders = tableOrders.filter(o => o.status === statusFilter);
+  tableOrders = tableOrders.filter(o => o.status == statusFilter);
 }
 
 if (paymentStatusFilter) {
-  tableOrders = tableOrders.filter(o => o.payment_status === paymentStatusFilter);
+  tableOrders = tableOrders.filter(o => o.payment_status == paymentStatusFilter);
 }
 
 currentPage = 1;
@@ -685,11 +1061,11 @@ const status = document.getElementById('statusFilter').value;
 tableOrders = [...filteredOrders];
 
 if (status) {
-  tableOrders = tableOrders.filter(o => o.status === status);
+  tableOrders = tableOrders.filter(o => o.status == status);
 }
 
 if (paymentStatus) {
-  tableOrders = tableOrders.filter(o => o.payment_status === paymentStatus);
+  tableOrders = tableOrders.filter(o => o.payment_status == paymentStatus);
 }
 
 currentPage = 1;
@@ -705,11 +1081,11 @@ const paymentStatus = document.getElementById('paymentStatusFilter').value;
 tableOrders = [...filteredOrders];
 
 if (status) {
-  tableOrders = tableOrders.filter(o => o.status === status);
+  tableOrders = tableOrders.filter(o => o.status == status);
 }
 
 if (paymentStatus) {
-  tableOrders = tableOrders.filter(o => o.payment_status === paymentStatus);
+  tableOrders = tableOrders.filter(o => o.payment_status == paymentStatus);
 }
 
 currentPage = 1;
@@ -788,7 +1164,7 @@ document.querySelector(".close-modal").addEventListener("click", closeModal);
 // Close modal when clicking outside the image
 window.addEventListener("click", function(event) {
 const modal = document.getElementById("prescriptionModal");
-if (event.target === modal) {
+if (event.target == modal) {
   closeModal();
 }
 });

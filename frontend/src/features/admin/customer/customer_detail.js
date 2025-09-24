@@ -136,7 +136,7 @@ const customerId = urlParams.get('customerId'); // Keep as string since customer
       if (!customersRes.ok) throw new Error("Failed to fetch customers");
       
       const allCustomers = await customersRes.json();
-      customerData = allCustomers.find(customer => customer.customer_id === customerId);
+      customerData = allCustomers.find(customer => customer.customer_id == customerId);
       
       if (!customerData) {
         throw new Error("Customer not found");

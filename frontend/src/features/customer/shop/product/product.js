@@ -198,45 +198,53 @@
 
 
 function loadComponent(id, filePath) {
-  const el = document.getElementById(id);
-  if (!el) {
-    console.warn(`Element with id="${id}" not found. Skipping load for ${filePath}`);
-    return Promise.resolve();
-  }
-
-  return fetch(filePath)
-    .then(response => {
-      if (!response.ok) throw new Error(`Failed to fetch ${filePath}`);
-      return response.text();
-    })
-    .then(data => {
-      el.innerHTML = data;
-      // Execute any scripts in the loaded content
-      const scripts = el.querySelectorAll('script');
-      scripts.forEach(script => {
-        const newScript = document.createElement('script');
-        if (script.src) {
-          newScript.src = script.src;
-        } else {
-          newScript.textContent = script.textContent;
+    fetch(filePath)
+      .then(res => {
+        if (!res.ok) throw new Error(`Failed to load ${filePath}`);
+        return res.text();
+      })
+      .then(data => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.innerHTML = data;
+          
+          // If this is the header component, we need to load the navbar script
+          if (id === 'header') {
+            // Load the navbar script
+            const script = document.createElement('script');
+            script.src = '/frontend/src/core/components/navbar.js';
+            script.onload = () => {
+              console.log("Navbar script loaded successfully");
+              // Initialize auth after script is loaded
+              setTimeout(() => {
+                if (window.initAuth) {
+                  console.log("Calling initAuth after script load");
+                  window.initAuth();
+                } else if (window.refreshAuth) {
+                  console.log("Calling refreshAuth after script load");
+                  window.refreshAuth();
+                }
+              }, 100);
+            };
+            script.onerror = () => {
+              console.error("Failed to load navbar script");
+            };
+            document.head.appendChild(script);
+          }
+          
+          // Reattach event listeners after loading
+          setTimeout(attachEventListeners, 100);
         }
-        document.head.appendChild(newScript);
-      });
-    })
-    .catch(err => console.error("Error loading component:", err));
-}
-
-loadComponent("header", "/frontend/src/core/components/navbar.html").then(() => {
-  // Initialize authentication after navbar is loaded
-  setTimeout(() => {
-    if (window.initAuth) {
-      window.initAuth();
-    } else if (window.refreshAuth) {
-      window.refreshAuth();
-    }
-  }, 100);
-});
-loadComponent("footer", "/frontend/src/core/components/footer.html");
+      })
+      .catch(err => console.error("Error loading component:", err));
+  }
+  
+  // Load components
+  document.addEventListener('DOMContentLoaded', function () {
+    loadComponent("header", "/frontend/src/core/components/navbar.html");
+    loadComponent("footer", "/frontend/src/core/components/footer.html");
+    initPage();
+  });
 
 async function fetchProduct() {
   const params = new URLSearchParams(window.location.search);
@@ -338,13 +346,13 @@ async function fetchProduct() {
           
                   <div class="mt-4">
                       <div id="tab-description" class="tab-content active">
-                          <p class="text-gray-600">${product.description}</p>
+                          <p class="text-gray-600 text-m">${product.description}</p>
                       </div>
                       <div id="tab-composition" class="tab-content">
-                          <p class="text-gray-600">${product.composition}</p>
+                          <p class="text-gray-600 text-m">${product.composition}</p>
                       </div>
                       <div id="tab-side-effects" class="tab-content">
-                          <p class="text-gray-600">${product.side_effects || 'No significant side effects reported.'}</p>
+                          <p class="text-gray-600 text-m">${product.side_effects || 'No significant side effects reported.'}</p>
                       </div>
                       <div id="tab-safety" class="tab-content">
                           <p class="text-gray-600">
@@ -380,10 +388,7 @@ async function fetchProduct() {
                           class="flex-1 bg-[#A1E970] bg-opacity-90 hover:bg-[#A1E970] text-black font-bold py-3 px-4 md:px-6 rounded-lg transition duration-300">
                           Add to cart
                       </button>
-                      <button id="buy-now" 
-                          class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 md:px-6 rounded-lg transition duration-300">
-                          Buy Now
-                      </button>
+                     
                   </div>
                   ` : `
                   <button class="w-full bg-gray-300 text-gray-600 font-bold py-3 px-6 rounded-lg cursor-not-allowed" disabled>
@@ -449,41 +454,41 @@ function setupProductPage(product, inventory) {
   // Add to cart functionality
   if (addToCartBtn) {
       addToCartBtn.addEventListener("click", () => {
-          if (product.requires_prescription) {
-              // Show prescription upload section if not already visible
-              const uploadSection = document.getElementById("prescription-upload");
-              if (uploadSection) {
-                  uploadSection.classList.remove("hidden");
-                  uploadSection.scrollIntoView({ behavior: 'smooth' });
-              }
-          } else {
+        //   if (product.requires_prescription) {
+        //       // Show prescription upload section if not already visible
+        //       const uploadSection = document.getElementById("prescription-upload");
+        //       if (uploadSection) {
+        //           uploadSection.classList.remove("hidden");
+        //           uploadSection.scrollIntoView({ behavior: 'smooth' });
+        //       }
+        //   } else {
               const quantity = quantityInput ? parseInt(quantityInput.value) : 1;
               addToCart(product.id, quantity);
-          }
+        //   }
       });
   }
 
   // Buy now functionality
-  if (buyNowBtn) {
-      buyNowBtn.addEventListener("click", () => {
-          if (product.requires_prescription) {
-              // Show prescription upload section if not already visible
-              const uploadSection = document.getElementById("prescription-upload");
-              if (uploadSection) {
-                  uploadSection.classList.remove("hidden");
-                  uploadSection.scrollIntoView({ behavior: 'smooth' });
-              }
-              // Store intent to buy now
-              localStorage.setItem("buyNowProduct", JSON.stringify({
-                  productId: product.id,
-                  quantity: quantityInput ? parseInt(quantityInput.value) : 1
-              }));
-          } else {
-              const quantity = quantityInput ? parseInt(quantityInput.value) : 1;
-              addToCart(product.id, quantity, true);
-          }
-      });
-  }
+//   if (buyNowBtn) {
+//       buyNowBtn.addEventListener("click", () => {
+//           if (product.requires_prescription) {
+//               // Show prescription upload section if not already visible
+//               const uploadSection = document.getElementById("prescription-upload").display("hidden");
+//               if (uploadSection) {
+//                   uploadSection.classList.remove("hidden");
+//                   uploadSection.scrollIntoView({ behavior: 'smooth' });
+//               }
+//               // Store intent to buy now
+//               localStorage.setItem("buyNowProduct", JSON.stringify({
+//                   productId: product.id,
+//                   quantity: quantityInput ? parseInt(quantityInput.value) : 1
+//               }));
+//           } else {
+//               const quantity = quantityInput ? parseInt(quantityInput.value) : 1;
+//               addToCart(product.id, quantity, true);
+//           }
+//       });
+//   }
 
   // Tab functionality
   const tabLinks = document.querySelectorAll('.tab-link');

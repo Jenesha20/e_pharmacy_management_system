@@ -219,7 +219,7 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("currentUser", JSON.stringify(newUser));
       
       // Redirect to landing page
-      window.location.href = "../../customer/home/landing/landing.html";
+      window.location.href = "../../customer/auth/login/login.html";
     } catch (error) {
       console.error(error);
       alert("Something went wrong. Please try again.");

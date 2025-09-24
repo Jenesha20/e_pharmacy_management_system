@@ -150,9 +150,16 @@ document.addEventListener("DOMContentLoaded", () => {
           showNotification('Login successful! Redirecting...', 'success');
           
           // Redirect after a short delay
-          setTimeout(() => {
-            window.location.href = "../../../customer/home/landing/landing.html";
-          }, 1000);
+        // Redirect after a short delay based on role
+setTimeout(() => {
+  const role=user.role;
+  if (role == 'admin') {
+    window.location.href = "/frontend/src/features/admin/dashboard/dashboard.html"; // admin page
+  } else {
+    window.location.href = "../../../customer/shop/browse/browse.html"; // customer page
+  }
+}, 1000);
+
         } else {
           showNotification('Invalid email or password.', 'error');
           // Reset loading state

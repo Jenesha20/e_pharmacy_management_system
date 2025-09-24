@@ -3,8 +3,144 @@
 // For now, we'll define the functions locally to avoid import issues
 
 // API functions (copied from orders-api.js to avoid import issues)
+function loadComponent(id, filePath) {
+  fetch(filePath)
+    .then(res => {
+      if (!res.ok) throw new Error(`Failed to load ${filePath}`);
+      return res.text();
+    })
+    .then(data => {
+      const element = document.getElementById(id);
+      if (element) {
+        element.innerHTML = data;
+        
+        // If this is the header component, we need to load the navbar script
+        if (id === 'header') {
+          // Load the navbar script
+          const script = document.createElement('script');
+          script.src = '/frontend/src/core/components/navbar.js';
+          script.onload = () => {
+            console.log("Navbar script loaded successfully");
+            // Initialize auth after script is loaded
+            setTimeout(() => {
+              if (window.initAuth) {
+                console.log("Calling initAuth after script load");
+                window.initAuth();
+              } else if (window.refreshAuth) {
+                console.log("Calling refreshAuth after script load");
+                window.refreshAuth();
+              }
+            }, 100);
+          };
+          script.onerror = () => {
+            console.error("Failed to load navbar script");
+          };
+          document.head.appendChild(script);
+        }
+        
+        // Reattach event listeners after loading
+        setTimeout(attachEventListeners, 100);
+      }
+    })
+    .catch(err => console.error("Error loading component:", err));
+}
+
+// Load components
+document.addEventListener('DOMContentLoaded', function () {
+  loadComponent("header", "/frontend/src/core/components/navbar.html");
+  loadComponent("footer", "/frontend/src/core/components/footer.html");
+  initPage();
+});
+
 const API_BASE_URL = 'http://localhost:3000';
 
+// Get customer orders with details
+// async function getCustomerOrdersWithDetails(customerId) {
+//   try {
+//     console.log('Fetching orders for customer:', customerId);
+    
+//     // Get orders for the customer - filter by customer_id
+//     const ordersResponse = await fetch(`${API_BASE_URL}/orders`);
+//     if (!ordersResponse.ok) {
+//       console.log('Orders API not available, using localStorage fallback');
+//       throw new Error('Orders API not available');
+//     }
+    
+//     const allOrders = await ordersResponse.json();
+//     console.log('All orders fetched from API:', allOrders);
+    
+//     // Filter orders by customer_id - convert both to strings for comparison
+//     const orders = allOrders.filter(order => {
+//       const orderCustomerId = order.customer_id ? order.customer_id.toString() : null;
+//       const currentCustomerId = customerId ? customerId.toString() : null;
+//       console.log('Comparing order customer ID:', orderCustomerId, 'with current:', currentCustomerId);
+//       return orderCustomerId == currentCustomerId;
+//     });
+//     console.log('Filtered orders for customer:', orders);
+    
+//     // For each order, get the order items
+//     const ordersWithDetails = await Promise.all(
+//       orders.map(async (order) => {
+//         try {
+//           // Use order_id field to match with order_items
+//           const itemsResponse = await fetch(`${API_BASE_URL}/order_items?order_id=${order.order_id}`);
+//           if (!itemsResponse.ok) throw new Error('Failed to fetch order items');
+//           const orderItems = await itemsResponse.json();
+//           console.log('Order items for order', order.order_id, ':', orderItems);
+          
+//           // Get product details for each item
+//           const itemsWithProducts = await Promise.all(
+//             orderItems.map(async (item) => {
+//               try {
+//                 console.log('Fetching product for ID:', item.product_id);
+//                 if (!item.product_id || item.product_id == 'undefined') {
+//                   console.warn('Invalid product_id:', item.product_id);
+//                   return { ...item, product: { name: 'Unknown Product', image_url: null } };
+//                 }
+                
+//                 const productResponse = await fetch(`${API_BASE_URL}/products/${item.product_id}`);
+//                 if (!productResponse.ok) throw new Error('Failed to fetch product');
+//                 const product = await productResponse.json();
+//                 return { ...item, product };
+//               } catch (error) {
+//                 console.error('Error fetching product:', error);
+//                 return { ...item, product: { name: 'Unknown Product', image_url: null } };
+//               }
+//             })
+//           );
+          
+//           return { ...order, items: itemsWithProducts };
+//         } catch (error) {
+//           console.error('Error fetching order details:', error);
+//           return order;
+//         }
+//       })
+//     );
+    
+//     return ordersWithDetails;
+//   } catch (error) {
+//     console.warn('API failed, using localStorage fallback:', error);
+    
+//     // Fallback to localStorage
+//     const allOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+//     console.log('All orders from localStorage fallback:', allOrders);
+//     console.log('Looking for customer ID:', customerId, 'Type:', typeof customerId);
+    
+//     // Filter orders by customer_id - convert both to strings for comparison
+//     const orders = allOrders.filter(order => {
+//       const orderCustomerId = order.customer_id ? order.customer_id.toString() : null;
+//       const currentCustomerId = customerId ? customerId.toString() : null;
+//       console.log('Comparing order customer ID:', orderCustomerId, 'with current:', currentCustomerId, 'Match:', orderCustomerId == currentCustomerId);
+//       return orderCustomerId == currentCustomerId;
+//     });
+    
+//     console.log('Filtered orders from localStorage:', orders);
+//     console.log('Number of matching orders:', orders.length);
+//     return orders;
+//   }
+// }
+
+// Get customer orders with details
 // Get customer orders with details
 async function getCustomerOrdersWithDetails(customerId) {
   try {
@@ -25,7 +161,7 @@ async function getCustomerOrdersWithDetails(customerId) {
       const orderCustomerId = order.customer_id ? order.customer_id.toString() : null;
       const currentCustomerId = customerId ? customerId.toString() : null;
       console.log('Comparing order customer ID:', orderCustomerId, 'with current:', currentCustomerId);
-      return orderCustomerId === currentCustomerId;
+      return orderCustomerId == currentCustomerId;
     });
     console.log('Filtered orders for customer:', orders);
     
@@ -33,18 +169,66 @@ async function getCustomerOrdersWithDetails(customerId) {
     const ordersWithDetails = await Promise.all(
       orders.map(async (order) => {
         try {
-          // Use order_id field to match with order_items
-          const itemsResponse = await fetch(`${API_BASE_URL}/order_items?order_id=${order.order_id}`);
-          if (!itemsResponse.ok) throw new Error('Failed to fetch order items');
-          const orderItems = await itemsResponse.json();
-          console.log('Order items for order', order.order_id, ':', orderItems);
+          console.log('Looking for items for order:', {
+            orderId: order.id,
+            numericOrderId: order.order_id,
+            orderNumber: order.order_number
+          });
+          
+          // FIX: Try multiple ways to find order items
+          let orderItems = [];
+          
+          // Method 1: Try with numeric order_id (correct way)
+          if (order.order_id) {
+            const itemsResponse1 = await fetch(`${API_BASE_URL}/order_items?order_id=${order.order_id}`);
+            if (itemsResponse1.ok) {
+              const items1 = await itemsResponse1.json();
+              if (items1.length > 0) {
+                console.log(`Found items using numeric order_id ${order.order_id}:`, items1);
+                orderItems = items1;
+              }
+            }
+          }
+          
+          // Method 2: Try with JSON-server id (fallback for incorrect data)
+          if (orderItems.length === 0 && order.id) {
+            const itemsResponse2 = await fetch(`${API_BASE_URL}/order_items?order_id=${order.id}`);
+            if (itemsResponse2.ok) {
+              const items2 = await itemsResponse2.json();
+              if (items2.length > 0) {
+                console.log(`Found items using JSON-server id ${order.id}:`, items2);
+                orderItems = items2;
+              }
+            }
+          }
+          
+          console.log('Final order items found:', orderItems);
+          
+          // Process the order items structure
+          let itemsArray = [];
+          if (orderItems.length > 0) {
+            const firstItem = orderItems[0];
+            // Check if items are stored as nested objects (0, 1, 2, etc.)
+            if (firstItem['0'] || firstItem['1']) {
+              // Extract items from the nested structure
+              itemsArray = Object.keys(firstItem)
+                .filter(key => !isNaN(key)) // Get numeric keys (0, 1, 2, etc.)
+                .map(key => firstItem[key])
+                .filter(item => item && item.product_id); // Filter valid items
+            } else {
+              // Normal array structure
+              itemsArray = orderItems.filter(item => item && item.product_id);
+            }
+          }
+          
+          console.log('Processed order items:', itemsArray);
           
           // Get product details for each item
           const itemsWithProducts = await Promise.all(
-            orderItems.map(async (item) => {
+            itemsArray.map(async (item) => {
               try {
                 console.log('Fetching product for ID:', item.product_id);
-                if (!item.product_id || item.product_id === 'undefined') {
+                if (!item.product_id || item.product_id == 'undefined') {
                   console.warn('Invalid product_id:', item.product_id);
                   return { ...item, product: { name: 'Unknown Product', image_url: null } };
                 }
@@ -63,7 +247,7 @@ async function getCustomerOrdersWithDetails(customerId) {
           return { ...order, items: itemsWithProducts };
         } catch (error) {
           console.error('Error fetching order details:', error);
-          return order;
+          return { ...order, items: [] };
         }
       })
     );
@@ -71,18 +255,11 @@ async function getCustomerOrdersWithDetails(customerId) {
     return ordersWithDetails;
   } catch (error) {
     console.warn('API failed, using localStorage fallback:', error);
-    
-    // Fallback to localStorage
-    const allOrders = JSON.parse(localStorage.getItem('orders') || '[]');
-    console.log('All orders from localStorage fallback:', allOrders);
-    console.log('Looking for customer ID:', customerId, 'Type:', typeof customerId);
-    
-    // Filter orders by customer_id - convert both to strings for comparison
     const orders = allOrders.filter(order => {
       const orderCustomerId = order.customer_id ? order.customer_id.toString() : null;
       const currentCustomerId = customerId ? customerId.toString() : null;
-      console.log('Comparing order customer ID:', orderCustomerId, 'with current:', currentCustomerId, 'Match:', orderCustomerId === currentCustomerId);
-      return orderCustomerId === currentCustomerId;
+      console.log('Comparing order customer ID:', orderCustomerId, 'with current:', currentCustomerId, 'Match:', orderCustomerId == currentCustomerId);
+      return orderCustomerId == currentCustomerId;
     });
     
     console.log('Filtered orders from localStorage:', orders);
@@ -90,6 +267,7 @@ async function getCustomerOrdersWithDetails(customerId) {
     return orders;
   }
 }
+
 
 let orders = [];
 let currentTab = 'current';
@@ -187,7 +365,7 @@ function debugOrdersInStorage() {
   const allOrders = JSON.parse(localStorage.getItem('orders') || '[]');
   const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
   
-  console.log('=== DEBUG: All orders in localStorage ===');
+  console.log('== DEBUG: All orders in localStorage ==');
   console.log('Total orders:', allOrders.length);
   console.log('Current user object:', currentUser);
   console.log('Current user ID:', currentUserId, 'Type:', typeof currentUserId);
@@ -207,7 +385,7 @@ function debugOrdersInStorage() {
   const matchingOrders = allOrders.filter(order => {
     const orderCustomerId = order.customer_id ? order.customer_id.toString() : null;
     const currentCustomerId = currentUserId ? currentUserId.toString() : null;
-    return orderCustomerId === currentCustomerId;
+    return orderCustomerId == currentCustomerId;
   });
   
   console.log('Orders that should match current user:', matchingOrders.length);
@@ -229,10 +407,10 @@ async function loadOrders() {
     const filteredOrders = orders.filter(order => {
       const orderCustomerId = order.customer_id ? order.customer_id.toString() : null;
       const currentCustomerId = currentUserId ? currentUserId.toString() : null;
-      return orderCustomerId === currentCustomerId;
+      return orderCustomerId == currentCustomerId;
     });
     
-    if (filteredOrders.length !== orders.length) {
+    if (filteredOrders.length != orders.length) {
       console.warn('Backend returned orders for other customers, filtering them out');
       orders = filteredOrders;
     }
@@ -261,8 +439,8 @@ function loadOrdersFromLocalStorage() {
   orders = allOrders.filter(order => {
     const orderCustomerId = order.customer_id ? order.customer_id.toString() : null;
     const currentCustomerId = currentUserId ? currentUserId.toString() : null;
-    console.log('Comparing order customer ID:', orderCustomerId, 'with current:', currentCustomerId, 'Match:', orderCustomerId === currentCustomerId);
-    return orderCustomerId === currentCustomerId;
+    console.log('Comparing order customer ID:', orderCustomerId, 'with current:', currentCustomerId, 'Match:', orderCustomerId == currentCustomerId);
+    return orderCustomerId == currentCustomerId;
   });
   
   console.log('Filtered orders for customer:', orders);
@@ -318,15 +496,15 @@ function displayOrders() {
   currentOrdersList.innerHTML = '';
   pastOrdersList.innerHTML = '';
   
-  if (currentTab === 'current') {
-    if (currentOrders.length === 0) {
+  if (currentTab == 'current') {
+    if (currentOrders.length == 0) {
       showEmptyState();
     } else {
       currentSection.classList.remove('hidden');
       currentOrdersList.innerHTML = currentOrders.map(order => createOrderCard(order)).join('');
     }
   } else {
-    if (pastOrders.length === 0) {
+    if (pastOrders.length == 0) {
       showEmptyState();
     } else {
       pastSection.classList.remove('hidden');
@@ -379,9 +557,9 @@ function createOrderCard(order) {
               </div>
             </div>
             <div class="text-right">
-              <p class="text-lg font-semibold text-gray-900">$${order.total_amount.toFixed(2)}</p>
-              <p class="text-sm text-gray-500">${order.items ? order.items.reduce((total, item) => total + (item.quantity || 0), 0) : 0} item(s)</p>
-            </div>
+  <p class="text-lg font-semibold text-gray-900">Rs ${order.total_amount.toFixed(2)}</p>
+  
+</div>
           </div>
         </div>
         
@@ -391,7 +569,7 @@ function createOrderCard(order) {
                   class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
             View Details
           </button>
-          ${order.status === 'delivered' ? `
+          ${order.status == 'delivered' ? `
             <button onclick="reorderItems('${order.id}')" 
                     class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm">
               Reorder
@@ -446,7 +624,7 @@ function switchTab(tab) {
   const currentSection = document.getElementById('currentOrdersSection');
   const pastSection = document.getElementById('pastOrdersSection');
   
-  if (tab === 'current') {
+  if (tab == 'current') {
     currentTabBtn.classList.add('active');
     pastTabBtn.classList.remove('active');
     currentSection.classList.remove('hidden');
@@ -487,7 +665,7 @@ async function reorderItems(orderId) {
     for (const item of order.items) {
       if (item.product) {
         // Check if item already exists in cart
-        const existingItem = cart.find(cartItem => cartItem.id === item.product.id);
+        const existingItem = cart.find(cartItem => cartItem.id == item.product.id);
         if (existingItem) {
           existingItem.quantity += item.quantity;
         } else {
@@ -526,7 +704,7 @@ function showNotification(message, type = 'success', duration = 3000) {
   
   const notification = document.createElement('div');
   notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg notification ${
-    type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+    type == 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
   }`;
   notification.textContent = message;
   

@@ -46,7 +46,7 @@
     <div class="flex flex-1 flex-col md:flex-row">
      
       <div class="w-full md:w-1/2 bg-[#A1E970] bg-opacity-50 flex justify-center items-center p-4 order-2 md:order-1">
-        <img src="/frontend/src/core/assests/register.png" alt="illustration" class="max-w-md w-full"/>
+        <img src="/frontend/src/core/assests/register.png" alt="illustration" class="w-4/5 h-auto z-10"/>
       </div>
       
       <div class="w-full md:w-1/2 flex flex-col justify-center items-center px-6 md:px-24 py-8 order-1 md:order-2">
@@ -55,7 +55,7 @@
           <form id="registerForm">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
-                <label for="firstName" class="block text-sm font-medium text-gray-700">First Name</label>
+                <label for="firstName" class="block text-m font-medium text-gray-700">First Name</label>
                 <input 
                   id="firstName"
                   type="text"
@@ -66,7 +66,7 @@
                 <div id="firstNameError" class="error-message"></div>
               </div>
               <div>
-                <label for="lastName" class="block text-sm font-medium text-gray-700">Last Name</label>
+                <label for="lastName" class="block text-m font-medium text-gray-700">Last Name</label>
                 <input 
                   id="lastName"
                   type="text"
@@ -79,7 +79,7 @@
             </div>
             
             <div class="mb-4">
-              <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+              <label for="email" class="block text-m font-medium text-gray-700">Email Address</label>
               <input 
                 id="email"
                 type="email"
@@ -91,7 +91,7 @@
             </div>
             
             <div class="mb-4">
-              <label for="phoneNumber" class="block text-sm font-medium text-gray-700">Phone Number</label>
+              <label for="phoneNumber" class="block text-m font-medium text-gray-700">Phone Number</label>
               <input 
                 id="phoneNumber"
                 type="tel"
@@ -103,7 +103,7 @@
             </div>
           
             <div class="mb-4">
-              <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+              <label for="password" class="block text-m font-medium text-gray-700">Password</label>
               <div class="relative">
                 <input 
                   id="password"
@@ -124,7 +124,7 @@
             </div>
           
             <div class="mb-4">
-              <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+              <label for="confirmPassword" class="block text-m font-medium text-gray-700">Confirm Password</label>
               <div class="relative">
                 <input 
                   id="confirmPassword"
@@ -142,23 +142,23 @@
           
             <div class="mb-4 flex items-start">
               <input type="checkbox" id="agree" class="mt-1 mr-2" />
-              <label for="agree" class="text-sm">By signing up you agree to our <a href="#" class="text-cyan-500 hover:text-cyan-600">Privacy Policy</a> and 
+              <label for="agree" class="text-m">By signing up you agree to our <a href="#" class="text-cyan-500 hover:text-cyan-600">Privacy Policy</a> and 
               <a href="#" class="text-cyan-500 hover:text-cyan-600">Terms & Conditions</a></label>
             </div>
             <div id="agreeError" class="error-message mb-4"></div>
           
-            <button 
+           <a href="../login/login.html"><button 
               type="submit"
               id="submitButton"
-              class="w-full mt-2 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium 
+              class="w-full mt-2 py-2 px-4 border border-transparent rounded-md shadow-sm text-m font-medium 
                      bg-[#A1E970] hover:bg-[#8ed45f] focus:outline-none focus:ring-2 
                      focus:ring-offset-2 focus:ring-[#A1E970] transition-colors duration-200"
             >
               Create Account
-            </button>
+            </button></a> 
           </form>
           
-          <p class="mt-6 text-sm text-gray-600 text-center">
+          <p class="mt-6 text-m text-gray-600 text-center">
             Already have an account? 
             <a href="../login/login.html" class="font-medium text-cyan-500 hover:text-cyan-600">Login</a>
           </p>

@@ -548,15 +548,15 @@ function renderTable() {
       
       let statusBadge;
       if (status === "pending") {
-        statusBadge = `<span class="px-2 py-1 rounded-md text-sm bg-yellow-100 text-yellow-800">Pending</span>`;
+        statusBadge = `<span class="px-2 py-1 rounded-md text-lg bg-yellow-100 text-yellow-800">Pending</span>`;
       } else if (status === "approved") {
-        statusBadge = `<span class="px-2 py-1 rounded-md text-sm bg-green-100 text-green-800">Approved</span>`;
+        statusBadge = `<span class="px-2 py-1 rounded-md text-lg bg-green-100 text-green-800">Approved</span>`;
       } else {
-        statusBadge = `<span class="px-2 py-1 rounded-md text-sm bg-red-100 text-red-800">Rejected</span>`;
+        statusBadge = `<span class="px-2 py-1 rounded-md text-lg bg-red-100 text-red-800">Rejected</span>`;
       }
       
       const customerName = customer ? `${customer.first_name} ${customer.last_name}` : 'Unknown';
-      const orderNumber = order ? order.order_number : 'N/A';
+      const orderNumber = prescription.medicine_id ? prescription.medicine_id : 'N/A';
       
       const actionHtml = status === "pending"
         ? `<div class="flex items-center justify-center gap-2">
@@ -564,7 +564,7 @@ function renderTable() {
            </div>`
         : `<div class="flex items-center justify-center gap-2">
              ${statusBadge}
-             <button data-id="${prescription.id}" class="view-btn px-3 py-1 rounded-md bg-gray-200 text-sm hover:bg-gray-300">View</button>
+             <button data-id="${prescription.id}" class="view-btn px-3 py-1 rounded-md bg-gray-200 text-lg hover:bg-gray-300">View</button>
            </div>`;
 
       table.innerHTML += `
@@ -644,6 +644,7 @@ function openModal(prescriptionId) {
   const img = modalImage();
   const customer = customers.find(c => c.id === prescription.customer_id.toString());
   const order = orders.find(o => o.prescription_id == prescriptionId);
+  const product=products.find(o => o.product_id==prescription.medicine_id)
   const address = customerAddresses.find(a => a.customer_id == prescription.customer_id && a.is_default);
   
   // Set prescription image
@@ -679,11 +680,18 @@ function openModal(prescriptionId) {
     document.getElementById('orderItems').textContent = items.length > 0 
       ? items.map(oi => `${oi.quantity} x ${getProductName(oi.product_id)}`).join(', ')
       : 'No items';
+  } else if (product) {
+    // Fix: Only show product info if product exists
+    document.getElementById('orderId').textContent = product.id;
+    document.getElementById('orderDate').textContent = product.name;
+    document.getElementById('orderAmount').textContent = product.composition || 'N/A';
+    document.getElementById('orderItems').textContent = product.description || 'No description';
   } else {
-    document.getElementById('orderId').textContent = 'No associated order';
-    document.getElementById('orderDate').textContent = '-';
-    document.getElementById('orderAmount').textContent = '-';
-    document.getElementById('orderItems').textContent = '-';
+    // Fix: Handle case where neither order nor product is found
+    document.getElementById('orderId').textContent = prescription.medicine_id || 'N/A';
+    document.getElementById('orderDate').textContent = 'No product info';
+    document.getElementById('orderAmount').textContent = 'N/A';
+    document.getElementById('orderItems').textContent = 'No information available';
   }
   
   // Show verification history if already verified

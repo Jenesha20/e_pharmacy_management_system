@@ -8,8 +8,30 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     .status-filter-btn.active {
-      box-shadow: 0 0 0 2px white, 0 0 0 4px currentColor;
+      box-shadow: 0 0 0 1px white, 0 0 0 2px currentColor;
     }
+            .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .icon-container {
+            transition: transform 0.3s ease;
+        }
+        .card-hover:hover .icon-container {
+            transform: scale(1.1);
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
   </style>
 </head>
 <body class="bg-gray-100 font-sans">
@@ -26,7 +48,7 @@
       </div>
       <div class="flex items-center space-x-2">
         <span class="text-sm text-gray-500">Filter by status:</span>
-        <div id="statusFilters" class="flex space-x-1">
+        <div id="statusFilters" class="flex space-x-1 gap-x-2">
           <button data-status="all" class="status-filter-btn px-3 py-1 bg-blue-600 text-white rounded-md text-sm active">All</button>
           <button data-status="pending" class="status-filter-btn px-3 py-1 bg-yellow-500 text-white rounded-md text-sm">Pending</button>
           <button data-status="approved" class="status-filter-btn px-3 py-1 bg-green-600 text-white rounded-md text-sm">Approved</button>
@@ -36,44 +58,75 @@
     </div>
 
     <!-- Stats Overview -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-      <div class="bg-white p-4 rounded-lg shadow flex items-center justify-between">
-        <div>
-          <p class="text-gray-500 text-sm">Total Prescriptions</p>
-          <p id="totalCount" class="text-2xl font-bold">0</p>
-        </div>
-        <div class="bg-blue-100 p-3 rounded-full">
-          <i class="fas fa-file-prescription text-blue-600 text-xl"></i>
-        </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <!-- Total Prescriptions Card -->
+      <div class="bg-white p-6 rounded-xl shadow-md card-hover">
+          <div class="flex items-center justify-between">
+              <div>
+                  <p class="text-gray-500 text-lg">Total Prescriptions</p>
+                  <p id="totalCount" class="text-3xl font-bold text-gray-800">0</p>
+              </div>
+              <div class="bg-blue-100 p-4 rounded-full icon-container">
+                  <i class="fas fa-file-medical text-blue-600 text-2xl"></i>
+              </div>
+          </div>
+          <div class="mt-4 flex items-center text-sm text-blue-600">
+              <i class="fas fa-chart-line mr-1"></i>
+              <span>View all prescriptions</span>
+          </div>
       </div>
-      <div class="bg-white p-4 rounded-lg shadow flex items-center justify-between">
-        <div>
-          <p class="text-gray-500 text-sm">Pending</p>
-          <p id="pendingCount" class="text-2xl font-bold">0</p>
-        </div>
-        <div class="bg-yellow-100 p-3 rounded-full">
-          <i class="fas fa-clock text-yellow-600 text-xl"></i>
-        </div>
+
+      <!-- Pending Card -->
+      <div class="bg-white p-6 rounded-xl shadow-md card-hover">
+          <div class="flex items-center justify-between">
+              <div>
+                  <p class="text-gray-500 text-lg">Pending</p>
+                  <p id="pendingCount" class="text-3xl font-bold text-gray-800">0</p>
+              </div>
+              <div class="bg-yellow-100 p-4 rounded-full icon-container pulse">
+                  <i class="fas fa-hourglass-half text-yellow-600 text-2xl"></i>
+              </div>
+          </div>
+          <div class="mt-4 flex items-center text-sm text-yellow-600">
+              <i class="fas fa-exclamation-circle mr-1"></i>
+              <span>Requires attention</span>
+          </div>
       </div>
-      <div class="bg-white p-4 rounded-lg shadow flex items-center justify-between">
-        <div>
-          <p class="text-gray-500 text-sm">Approved</p>
-          <p id="approvedCount" class="text-2xl font-bold">0</p>
-        </div>
-        <div class="bg-green-100 p-3 rounded-full">
-          <i class="fas fa-check-circle text-green-600 text-xl"></i>
-        </div>
+
+      <!-- Approved Card -->
+      <div class="bg-white p-6 rounded-xl shadow-md card-hover">
+          <div class="flex items-center justify-between">
+              <div>
+                  <p class="text-gray-500 text-lg">Approved</p>
+                  <p id="approvedCount" class="text-3xl font-bold text-gray-800">0</p>
+              </div>
+              <div class="bg-green-100 p-4 rounded-full icon-container">
+                  <i class="fas fa-check-double text-green-600 text-2xl"></i>
+              </div>
+          </div>
+          <div class="mt-4 flex items-center text-sm text-green-600">
+              <i class="fas fa-thumbs-up mr-1"></i>
+              <span>Ready for fulfillment</span>
+          </div>
       </div>
-      <div class="bg-white p-4 rounded-lg shadow flex items-center justify-between">
-        <div>
-          <p class="text-gray-500 text-sm">Rejected</p>
-          <p id="rejectedCount" class="text-2xl font-bold">0</p>
-        </div>
-        <div class="bg-red-100 p-3 rounded-full">
-          <i class="fas fa-times-circle text-red-600 text-xl"></i>
-        </div>
+
+      <!-- Rejected Card -->
+      <div class="bg-white p-6 rounded-xl shadow-md card-hover">
+          <div class="flex items-center justify-between">
+              <div>
+                  <p class="text-gray-500 text-lg">Rejected</p>
+                  <p id="rejectedCount" class="text-3xl font-bold text-gray-800">0</p>
+              </div>
+              <div class="bg-red-100 p-4 rounded-full icon-container">
+                  <i class="fas fa-ban text-red-600 text-2xl"></i>
+              </div>
+          </div>
+          <div class="mt-4 flex items-center text-sm text-red-600">
+              <i class="fas fa-undo-alt mr-1"></i>
+              <span>Needs review</span>
+          </div>
       </div>
-    </div>
+  </div>
 
     <!-- Controls: Search + Category + Date + Reset -->
     <div class="flex items-center justify-between mb-4">
@@ -102,17 +155,17 @@
     <!-- Table -->
     <div class="bg-white p-4 rounded-lg shadow">
       <table class="w-full border-collapse">
-        <thead class="bg-gray-100">
+        <thead class="bg-blue-300">
           <tr>
-            <th class="text-left px-4 py-2 border">Prescription ID</th>
+            <th class="text-left px-4 py-2 border text-lg">Prescription ID</th>
             <th class="text-left px-4 py-2 border">Customer</th>
-            <th class="text-left px-4 py-2 border">Order ID</th>
+            <th class="text-left px-4 py-2 border">Medicine ID</th>
             <th class="text-left px-4 py-2 border">Upload Date</th>
             <th class="text-left px-4 py-2 border">Status</th>
             <th class="text-center px-4 py-2 border">Actions</th>
           </tr>
         </thead>
-        <tbody id="verificationTable" class="text-sm"></tbody>
+        <tbody id="verificationTable" class="text-lg"></tbody>
       </table>
     </div>
 
@@ -137,7 +190,7 @@
           <!-- Customer Information -->
           <div class="bg-gray-50 p-4 rounded-md">
             <h3 class="font-semibold mb-2 text-blue-700"><i class="fas fa-user mr-2"></i>Customer Information</h3>
-            <div id="customerInfo" class="text-sm">
+            <div id="customerInfo" class="text-m">
               <p><span class="font-medium">Name:</span> <span id="customerName">-</span></p>
               <p><span class="font-medium">Email:</span> <span id="customerEmail">-</span></p>
               <p><span class="font-medium">Phone:</span> <span id="customerPhone">-</span></p>
@@ -148,11 +201,11 @@
           <!-- Order Information -->
           <div class="bg-gray-50 p-4 rounded-md">
             <h3 class="font-semibold mb-2 text-blue-700"><i class="fas fa-shopping-cart mr-2"></i>Order Information</h3>
-            <div id="orderInfo" class="text-sm">
-              <p><span class="font-medium">Order ID:</span> <span id="orderId">-</span></p>
-              <p><span class="font-medium">Date:</span> <span id="orderDate">-</span></p>
-              <p><span class="font-medium">Amount:</span> <span id="orderAmount">-</span></p>
-              <p><span class="font-medium">Items:</span> <span id="orderItems">-</span></p>
+            <div id="orderInfo" class="text-m">
+              <p><span class="font-medium">Medicine Id:</span> <span id="orderId">-</span></p>
+              <p><span class="font-medium">Medicine NAme:</span> <span id="orderDate">-</span></p>
+              <p><span class="font-medium">Composition:</span> <span id="orderAmount">-</span></p>
+              <p><span class="font-medium">Description:</span> <span id="orderItems">-</span></p>
             </div>
           </div>
         </div>

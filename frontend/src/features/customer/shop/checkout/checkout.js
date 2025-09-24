@@ -227,9 +227,9 @@ function calculateTotals() {
   const shipping = subtotal > 30 || subtotal === 0 ? 0 : 5;
   const total = subtotal + shipping;
 
-  document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
-  document.getElementById('shipping').textContent = shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`;
-  document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+  document.getElementById('subtotal').textContent = `Rs ${subtotal.toFixed(2)}`;
+  document.getElementById('shipping').textContent = shipping === 0 ? 'Free' : `Rs ${shipping.toFixed(2)}`;
+  document.getElementById('total').textContent = `Rs ${total.toFixed(2)}`;
 }
 
 // Setup event listeners

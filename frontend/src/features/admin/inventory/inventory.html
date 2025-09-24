@@ -80,8 +80,8 @@
     <!-- Inventory Header -->
     <div class="flex items-center justify-between mb-6">
       <div class="mb-4">
-        <h1 class="text-2xl font-bold mb-1">Inventory</h1>
-        <p class="text-gray-600">A comprehensive overview of your pharmacy inventory.</p>
+        <h1 class="text-3xl font-bold mb-1">Inventory</h1>
+        <p class="text-gray-600 text-lg">A comprehensive overview of your pharmacy inventory.</p>
       </div>
       <div>
         <button id="exportBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-4 py-2 rounded shadow-md transition-colors duration-200 mr-2">
@@ -104,11 +104,11 @@
             <i class="fas fa-pills"></i>
           </div>
           <div>
-            <h2 class="text-gray-600">All Products</h2>
+            <h2 class="text-gray-600 text-lg">All Products</h2>
             <p id="allProductsCount" class="text-2xl font-bold">0</p>
           </div>
         </div>
-        <button class="text-blue-500 text-sm mt-2 inline-block filter-btn" data-status="All">
+        <button class="text-blue-500 text-m mt-2 inline-block filter-btn" data-status="All">
           Show Details
         </button>
       </div>
@@ -120,11 +120,11 @@
             <i class="fas fa-tags"></i>
           </div>
           <div>
-            <h2 class="text-gray-600">Categories</h2>
+            <h2 class="text-gray-600 text-lg">Categories</h2>
             <p id="categoriesCount" class="text-2xl font-bold">0</p>
           </div>
         </div>
-        <button class="text-green-500 text-sm mt-2 inline-block filter-btn" data-status="Category">
+        <button class="text-green-500 text-m mt-2 inline-block filter-btn" data-status="Category">
           Show Details
         </button>        
       </div>
@@ -136,11 +136,11 @@
             <i class="fas fa-exclamation-triangle"></i>
           </div>
           <div>
-            <h2 class="text-gray-600">Low Stock</h2>
+            <h2 class="text-gray-600 text-lg">Low Stock</h2>
             <p id="lowStockCount" class="text-2xl font-bold">0</p>
           </div>
         </div>
-        <button class="text-yellow-500 text-sm mt-2 inline-block filter-btn" data-status="LowStock">
+        <button class="text-yellow-500 text-m mt-2 inline-block filter-btn" data-status="LowStock">
           Show Details
         </button>
       </div>
@@ -152,11 +152,11 @@
             <i class="fas fa-calendar-times"></i>
           </div>
           <div>
-            <h2 class="text-gray-600">Expiring Soon</h2>
+            <h2 class="text-gray-600 text-lg">Expiring Soon</h2>
             <p id="expiringCount" class="text-2xl font-bold">0</p>
           </div>
         </div>
-        <button class="text-red-500 text-sm mt-2 inline-block filter-btn" data-status="Expiry">
+        <button class="text-red-500 text-m mt-2 inline-block filter-btn" data-status="Expiry">
           Show Details
         </button>
       </div>
@@ -170,7 +170,7 @@
                class="flex-1 outline-none text-gray-700" />
         <button id="searchClearBtn" class="ml-2 text-gray-400 hover:text-gray-600" title="Clear">✕</button>
       </div>
-      <div class="flex space-x-2">
+      <div class="flex space-x-2 text-m">
         <select id="categoryFilter" class="px-3 py-2 border rounded-md shadow-sm">
           <option value="">All categories</option>
           <!-- Categories will be populated dynamically -->
@@ -194,7 +194,7 @@
       <div class="overflow-x-auto">
         <table class="w-full border-collapse">
           <thead>
-            <tr class="bg-gray-100">
+            <tr class="bg-blue-300 text-lg">
               <th class="border border-gray-300 px-4 py-2">Image</th>
               <th class="border border-gray-300 px-4 py-2">Product Name</th>
               <th class="border border-gray-300 px-4 py-2">SKU</th>
@@ -205,7 +205,7 @@
               <th class="border border-gray-300 px-4 py-2">Actions</th>
             </tr>
           </thead>
-          <tbody id="inventoryTable">
+          <tbody id="inventoryTable" class="text-lg">
             <!-- Data injected via JS -->
           </tbody>
         </table>

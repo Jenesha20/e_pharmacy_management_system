@@ -16,7 +16,7 @@
             <div class="flex justify-between items-center mb-6">
                 <div>
                     <h1 class="text-3xl font-bold">Customers</h1>
-                    <p class="text-gray-500">Manage all registered customers</p>
+                    <p class="text-gray-500 text-lg">Manage all registered customers</p>
                 </div>
 
                 <div class="flex items-center space-x-4">
@@ -46,8 +46,8 @@
             <!-- Customer Table -->
             <div class="bg-white p-6 rounded-lg shadow">
                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-semibold">Customer List</h2>
-                    <div id="summaryStats" class="text-sm text-gray-600">
+                    <h2 class="text-2xl font-semibold">Customer List</h2>
+                    <div id="summaryStats" class="text-m text-gray-600">
                         <!-- Summary stats will be populated here -->
                     </div>
                 </div>
@@ -57,7 +57,7 @@
                 <div class="overflow-x-auto">
                     <table class="w-full border-collapse border border-gray-300">
                         <thead>
-                            <tr class="bg-gray-100">
+                            <tr class="bg-blue-300 text-lg">
                                 <th class="border border-gray-300 px-4 py-2">Customer ID</th>
                                 <th class="border border-gray-300 px-4 py-2">Name</th>
                                 <th class="border border-gray-300 px-4 py-2">Email</th>
@@ -68,7 +68,7 @@
                                 <th class="border border-gray-300 px-4 py-2">Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="customerTable">
+                        <tbody id="customerTable" class="text-lg">
                             <!-- Data injected via JS -->
                         </tbody>
                     </table>

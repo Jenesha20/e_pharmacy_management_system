@@ -52,7 +52,8 @@ let cartItems = []; // fetched cart items
 let productsRequiringPrescription = 0;
 let isLoggedIn = false;
 let currentUserId = null;
-let quantityUpdateInProgress = new Set(); // Track items being updated
+let quantityUpdateInProgress = new Set(); 
+let selectid = null;// Track items being updated
 
 // Attach event listeners to prevent undefined reference errors
 function attachEventListeners() {
@@ -625,11 +626,21 @@ function renderPrescriptionSelectionPanel(cartItems) {
     const selectedLabel = selectedPrescription ?
       'P' + (prescriptions.findIndex(p => p.id == item.prescriptionId) + 1) :
       'Select Prescription';
+//       const buttonHTML = `
+//   <button class="flex items-center justify-between px-4 py-2 text-sm text-gray-700 
+//                  bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 min-w-40
+//                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+//           onclick="selectPrescriptionItem(${item.id}, event)">
+//     <span id="selected-${item.id}">${selectedLabel}</span>
+//     <span class="material-icons text-sm ml-2">expand_more</span>
+//   </button>
+// `;
 
+ 
     const verificationStatus = selectedPrescription?.status;
     const statusDisplay = verificationStatus ?
       `<span class="prescription-status-above verification-status status-${verificationStatus}">${verificationStatus}</span>` : '';
-
+    selectid=item.it;
     const dropdownItems = prescriptions.map((p, i) => `
       <div class="prescription-dropdown-item" 
            data-item-id="${item.id}" 
@@ -641,9 +652,10 @@ function renderPrescriptionSelectionPanel(cartItems) {
         </div>
       </div>
     `).join("");
-
+  
     return `
       <div class="prescription-selection-item">
+
         <h4>${item.name}</h4>
         <p>Quantity: ${item.quantity} × $${item.price.toFixed(2)}</p>
         <div class="prescription-dropdown-container">
@@ -679,6 +691,13 @@ function renderPrescriptionSelectionPanel(cartItems) {
   }).join('');
 }
 
+// function selectPrescriptionItem(itemId, event) {
+//   selectedItemId = itemId; // Save the ID globally
+//   toggleDropdown(event, itemId); // existing function to open/close dropdown
+
+//   console.log("Selected Item ID:", selectedItemId);
+// }
+
 // Render order summary
 function renderOrderSummary(cartItems) {
   const container = document.getElementById("orderSummary");
@@ -691,15 +710,15 @@ function renderOrderSummary(cartItems) {
   container.innerHTML = `
         <div class="flex justify-between mb-2">
           <span class="text-gray-600">Subtotal</span>
-          <span class="font-medium">$${subtotal.toFixed(2)}</span>
+          <span class="font-medium">Rs ${subtotal.toFixed(2)}</span>
         </div>
         <div class="flex justify-between mb-2">
           <span class="text-gray-600">Shipping</span>
-          <span class="font-medium">${shipping == 0 ? 'Free' : '$' + shipping.toFixed(2)}</span>
+          <span class="font-medium">${shipping == 0 ? 'Free' : 'Rs ' + shipping.toFixed(2)}</span>
         </div>
         <div class="flex justify-between mt-4 pt-2 border-t border-gray-100">
           <span class="text-lg font-bold">Total</span>
-          <span class="text-lg font-bold">$${total.toFixed(2)}</span>
+          <span class="text-lg font-bold">Rs ${total.toFixed(2)}</span>
         </div>
       `;
 }
@@ -709,7 +728,8 @@ function renderOrderSummary(cartItems) {
 async function handlePrescriptionUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
-
+  const medicineId = selectid; // use the ID selected from the panel
+  //console.log('Uploading prescription for medicineId:', medicineI);
   const reader = new FileReader();
   reader.onload = async function (e) {
     try {
@@ -720,6 +740,7 @@ async function handlePrescriptionUpload(event) {
         image_url: e.target.result,
         status: null, // Set to null initially - will be pending only after verification request
         verified_by: null,
+        medicine_id:selectid,
         verification_notes: null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
@@ -797,6 +818,7 @@ async function deletePrescription(prescriptionId) {
 
 // Toggle dropdown
 function toggleDropdown(event, itemId) {
+  // selectid=itemId;
   console.log('toggleDropdown called for itemId:', itemId);
   event.preventDefault();
   event.stopPropagation();
@@ -1211,3 +1233,5 @@ function initPage() {
     }
   }, 500);
 }
+
+

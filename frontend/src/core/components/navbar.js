@@ -24,7 +24,7 @@
 
             // Profile button (avatar)
             const profileButton = document.createElement('button');
-            profileButton.className = 'w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold focus:outline-none';
+            profileButton.className = 'w-12 h-12 rounded-full bg-green-400 flex items-center justify-center text-white font-semibold focus:outline-none';
             const firstName = currentUser.first_name || 'U';
             profileButton.textContent = firstName[0].toUpperCase();
 
@@ -45,7 +45,7 @@
             const logoutBtn = dropdown.querySelector('#logoutBtn');
             logoutBtn.addEventListener('click', () => {
                 localStorage.removeItem("currentUser");
-                window.location.reload();
+                window.location.href = '/frontend/src/features/customer/home/landing/landing.html';
             });
 
             profileContainer.appendChild(profileButton);
@@ -63,7 +63,7 @@
             // No user → show login
             const loginLink = document.createElement('a');
             loginLink.href = "../../../customer/auth/login/login.html";
-            loginLink.className = "px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition";
+            loginLink.className = "px-4 py-2 bg-green-400 text-white rounded-lg hover:bg-blue-600 transition";
             loginLink.textContent = "Login";
             authSection.appendChild(loginLink);
         }

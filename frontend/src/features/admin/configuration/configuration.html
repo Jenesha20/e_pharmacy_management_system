@@ -3,11 +3,472 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J-Med CMS - Content Management System</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>Configuration</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background-color: #f9fafb;
+        }
+        .loading { 
+            opacity: 0.5; 
+            pointer-events: none; 
+        }
+        .success-animation { 
+            animation: pulse 0.5s ease-in-out; 
+        }
+        @keyframes pulse { 
+            0%, 100% { 
+                transform: scale(1); 
+            } 
+            50% { 
+                transform: scale(1.05); 
+            } 
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+        }
+        .form-input:focus {
+            outline: none;
+            ring: 2px;
+            ring-color: #10b981;
+            border-color: #10b981;
+        }
+        .action-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .item-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .item-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            background-color: white;
+        }
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .item-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        @media (min-width: 768px) {
+            .item-content {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        .grid-2-col {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        @media (min-width: 768px) {
+            .grid-2-col {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        .grid-3-col {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        @media (min-width: 768px) {
+            .grid-3-col {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .preview-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 12rem;
+            background-color: #f3f4f6;
+            border-radius: 0.5rem;
+            color: #6b7280;
+        }
+        .toast {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transform: translateY(150%);
+            transition: transform 0.3s ease-out;
+            z-index: 50;
+        }
+        .toast.show {
+            transform: translateY(0);
+        }
+    </style>
 </head>
-<body class="bg-gray-100">
+<body class="min-h-screen">
+    <!-- Header -->
     <div id="sidebar"></div>
-    <script src="configuration.js"></script>
+   <main class="md:ml-64 flex-1 p-6 pt-20 md:pt-6 bg-gray-100">
+    <div>
+        <h1 class="text-3xl font-bold">Customers</h1>
+        <p class="text-gray-500">Manage all registered customers</p>
+    </div>
+    <div class="container mx-auto px-4 py-8">
+        <!-- Connection Status Bar -->
+        <div id="connection-status" class="mb-4 p-3 rounded-lg bg-gray-100 flex items-center justify-between">
+            <div class="flex items-center">
+                <span id="status-icon" class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></span>
+                <span id="status-text" class="text-sm text-gray-600">Testing connection...</span>
+            </div>
+            <button onclick="testConnection()" class="text-blue-600 hover:text-blue-800 text-sm">
+                <span class="material-icons text-sm">refresh</span>
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Panel - Content Sections -->
+            <div class="lg:col-span-2 space-y-8">
+                
+                <!-- Hero Section -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="section-header bg-green-600 text-white">
+                        <span class="material-icons mr-3">home</span>
+                        <h2 class="text-2xl font-semibold">Hero Section</h2>
+                    </div>
+                    <div class="p-6 space-y-6">
+                        <div class="form-group">
+                            <label class="form-label" for="hero-title">Title</label>
+                            <input type="text" id="hero-title" class="form-input" placeholder="Your Health, Our Priority">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="hero-subtitle">Subtitle</label>
+                            <textarea id="hero-subtitle" rows="3" class="form-input" placeholder="Get your medications delivered safely and quickly..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="hero-background">Background Image URL</label>
+                            <input type="url" id="hero-background" class="form-input" placeholder="https://example.com/image.jpg">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trust Badges Section -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="section-header bg-blue-600 text-white">
+                        <span class="material-icons mr-3">verified</span>
+                        <h2 class="text-2xl font-semibold">Trust Badges</h2>
+                    </div>
+                    <div class="p-6">
+                        <div id="trust-badges-container" class="item-container">
+                            <!-- Trust badges will be loaded here -->
+                        </div>
+                        <button onclick="addTrustBadge()" class="action-button bg-blue-600 text-white hover:bg-blue-700 mt-4">
+                            <span class="material-icons mr-2">add</span>
+                            Add Trust Badge
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Categories Section -->
+                <!-- <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="section-header bg-purple-600 text-white">
+                        <span class="material-icons mr-3">category</span>
+                        <h2 class="text-2xl font-semibold">Product Categories</h2>
+                    </div>
+                    <div class="p-6">
+                        <div id="categories-container" class="item-container">
+                        </div>
+                        <button onclick="addCategory()" class="action-button bg-purple-600 text-white hover:bg-purple-700 mt-4">
+                            <span class="material-icons mr-2">add</span>
+                            Add Category
+                        </button>
+                    </div>
+                </div> -->
+
+                <!-- How It Works Section -->
+                <!-- <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="section-header bg-orange-600 text-white">
+                        <span class="material-icons mr-3">timeline</span>
+                        <h2 class="text-2xl font-semibold">How It Works</h2>
+                    </div>
+                    <div class="p-6">
+                        <div id="how-it-works-container" class="item-container">
+                        </div>
+                        <button onclick="addHowItWorksStep()" class="action-button bg-orange-600 text-white hover:bg-orange-700 mt-4">
+                            <span class="material-icons mr-2">add</span>
+                            Add Step
+                        </button>
+                    </div>
+                </div> -->
+
+                <!-- Testimonials Section -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="section-header bg-indigo-600 text-white">
+                        <span class="material-icons mr-3">rate_review</span>
+                        <h2 class="text-2xl font-semibold">Customer Testimonials</h2>
+                    </div>
+                    <div class="p-6">
+                        <div id="testimonials-container" class="item-container">
+                            <!-- Testimonials will be loaded here -->
+                        </div>
+                        <button onclick="addTestimonial()" class="action-button bg-indigo-600 text-white hover:bg-indigo-700 mt-4">
+                            <span class="material-icons mr-2">add</span>
+                            Add Testimonial
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Panel - Actions & Preview -->
+            <div class="space-y-8">
+                
+                <!-- Actions Panel -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Actions</h3>
+                    <div class="space-y-4">
+                        <button onclick="loadContent()" class="action-button bg-blue-600 text-white hover:bg-blue-700">
+                            <span class="material-icons mr-2">refresh</span>
+                            Load Content
+                        </button>
+                        <button onclick="saveContent()" class="action-button bg-green-600 text-white hover:bg-green-700">
+                            <span class="material-icons mr-2">save</span>
+                            Save All Changes
+                        </button>
+                        <button onclick="resetContent()" class="action-button bg-red-600 text-white hover:bg-red-700">
+                            <span class="material-icons mr-2">restore</span>
+                            Reset to Default
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Status Panel -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Status</h3>
+                    <div id="status-panel" class="space-y-3">
+                        <div class="status-item text-gray-600">
+                            <span class="material-icons text-sm">info</span>
+                            <span class="text-sm">Ready to manage content</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview Panel -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Quick Preview</h3>
+                    <div class="preview-placeholder">
+                        <span class="material-icons text-4xl mb-2">visibility</span>
+                        <p class="text-sm">Content preview will appear here</p>
+                    </div>
+                    <button onclick="openPreview()" class="action-button bg-gray-600 text-white hover:bg-gray-700 mt-4">
+                        Open Full Preview
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 text-center">
+            <div class="animate-spin w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+            <p class="text-gray-700">Processing...</p>
+        </div>
+    </div>
+
+    <!-- Success Toast -->
+    <div id="success-toast" class="toast bg-green-600 text-white">
+        <span class="material-icons">check_circle</span>
+        <span>Changes saved successfully!</span>
+    </div>
+
+    <!-- Error Toast -->
+    <div id="error-toast" class="toast bg-red-600 text-white">
+        <span class="material-icons">error</span>
+        <span id="error-message">An error occurred</span>
+    </div>
+</main>
+<script src="configuration.js"></script>
+<script>
+// Remove these functions entirely:
+/*
+function renderCategories() {
+    // Function implementation
+}
+
+function createCategoryElement(category, index) {
+    // Function implementation
+}
+
+function addCategory() {
+    // Function implementation
+}
+
+function removeCategory(button) {
+    // Function implementation
+}
+
+function renderHowItWorks() {
+    // Function implementation
+}
+
+function createHowItWorksElement(step, index) {
+    // Function implementation
+}
+
+function addHowItWorksStep() {
+    // Function implementation
+}
+
+function removeHowItWorksStep(button) {
+    // Function implementation
+}
+*/
+
+// Update the collectFormData function to remove categories and howItWorks collection:
+function collectFormData() {
+    // Hero section
+    contentData.hero = {
+        title: document.getElementById('hero-title').value,
+        subtitle: document.getElementById('hero-subtitle').value,
+        backgroundImage: document.getElementById('hero-background').value
+    };
+
+    // Trust badges
+    contentData.trustBadges = [];
+    document.querySelectorAll('#trust-badges-container .trust-badge-item').forEach((item, index) => {
+        const icon = item.querySelector('.trust-badge-icon').value;
+        const title = item.querySelector('.trust-badge-title').value;
+        const description = item.querySelector('.trust-badge-description').value;
+        
+        if (title && description) {
+            contentData.trustBadges.push({ icon, title, description });
+        }
+    });
+
+    // Testimonials
+    contentData.testimonials = [];
+    document.querySelectorAll('#testimonials-container .testimonial-item').forEach((item, index) => {
+        const name = item.querySelector('.testimonial-name').value;
+        const image = item.querySelector('.testimonial-image').value;
+        const feedback = item.querySelector('.testimonial-feedback').value;
+        
+        if (name && feedback) {
+            contentData.testimonials.push({ name, image, feedback });
+        }
+    });
+
+    // Ensure we have an ID for existing content
+    if (currentContentId) {
+        contentData.id = currentContentId;
+    }
+}
+
+// Update the populateForm function to remove categories and howItWorks rendering:
+function populateForm() {
+    // Hero section
+    if (contentData.hero) {
+        document.getElementById('hero-title').value = contentData.hero.title || '';
+        document.getElementById('hero-subtitle').value = contentData.hero.subtitle || '';
+        document.getElementById('hero-background').value = contentData.hero.backgroundImage || '';
+    }
+
+    // Trust badges
+    renderTrustBadges();
+    
+    // Testimonials
+    renderTestimonials();
+}
+
+// Update the getDefaultContent function to remove categories and howItWorks data:
+function getDefaultContent() {
+    return {
+        hero: {
+            title: "Your Health, Our Priority",
+            subtitle: "Get your medications delivered safely and quickly to your doorstep. Manage your prescriptions orders with ease.",
+            backgroundImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuDKqdHy3OdCsGZcnWlCO7ZjE99J-ZrL6NytCgehkHiwfVoPOBHtaXsEpg9OrlpF2TLKnovNkKfQuqNP9Fxp8FhXSDLGEmWpDyhIOWbOnTEd0F8y3mrxDRzBcrp9VLDehu6EHB58jKi8r-aBNikz3VzzgiIfeP_jGZMlX9MKLzvShZNVbAQSkAsWNXUICBkQX3ghYi7vdkZt13V3PYkXSSiWY1k4O-b17krJrUZYPHSiG_VkatDBRN-aECPhYm_NkAeYb2vs_KBbV9-P"
+        },
+        trustBadges: [
+            {
+                icon: "fas fa-pills",
+                title: "100% Genuine Medicines",
+                description: "All products are sourced from licensed suppliers"
+            },
+            {
+                icon: "fas fa-truck",
+                title: "Free Delivery",
+                description: "On orders over Rs 30"
+            },
+            {
+                icon: "fas fa-shield-alt",
+                title: "Secure Payments",
+                description: "Your data is always protected"
+            },
+            {
+                icon: "fas fa-user-md",
+                title: "Pharmacist Support",
+                description: "Expert advice available 24/7"
+            }
+        ],
+        testimonials: [
+            {
+                name: "Sophia Clark",
+                image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDUF86K3kYWYI3iNBqpeoze0vPC_yBOpl5a1M3TKEMToiyXqKYeeZ2axwPugztvu70cH_BoZrwG49aKWSfUPzPF4LK0JDweDXjW1oCXYyDCFnDgSNrmAi53pmGqp4gdZ6e2duHzZVjYewQtHZz3xHMOW4D2VO2zzJDyo8HFLPmG-4XrV5HIw9QMfM86LSmPSYnxjc_4PMpZkuxHZKP8kpocsaWUc2_RMA9_XlinsID0rGNuDusjyqMmEOxfhJz3SrwV5GoIF_htc8M-",
+                feedback: "J-Med has made managing my prescriptions so easy. I get my medications on time, every time, and the customer service is excellent."
+            },
+            {
+                name: "Emma Bennett",
+                image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDWJds4GahKYMTwg2vWchDO2kaGrXQFOQnGfol_RJ9XBXXDz-EbflY9bxVdB6gHd6I8OJdK6_FRNOlTP6bgwZnUtvwiC7L8MIuNWpwgEVUxsWX131MsvAPmDTOBt0gcu6XVfJ4oqXiiaWEUwv3s5CVUW3KR3bpaFeT4ivd2-8SnLltTfu2_4EPxNEe8YcLLkFm9cGBkXsHyGjoVH3HflnLdil2CVZeYGr1lkoglsbn3awFzS0MgNy_V0p7U9hEKHnEcXuI2OfhAPwaA",
+                feedback: "I love the convenience of ordering my health products online. The website is user-friendly, and I always find what I need."
+            },
+            {
+                name: "Olivia Carter",
+                image: "https://lh3.googleusercontent.com/aida-public/AB6AXuD3wx9H7YgawZlQWTxTS4vG-mda9HgYb2pAspmfGH5lVhSZTZzYUBdEbPkUMgkbVGbQF2Lym-g2ccj-qqM5VFzeC7F09SKZoPLYQ5lIE2XcGTk2EIkrbjWgNy2Ru7Dk9ZdtGq6x-hHQvgrZW5_AZHjmqfXiYTOZSafm9OrlQCDOEtNajt1lcjvCvv5Vd1DVJza_8MTHtzuAnjLrZ9WNENM66x3emA9dwqltZn4oaKI6XNG5M-0tpi0FLEkak-I4Zh0Uml0QYM4ye1mf",
+                feedback: "Great service and reliable delivery. I highly recommend J-Med for all your pharmacy needs."
+            }
+        ]
+    };
+}
+</script>
 </body>
 </html>

@@ -428,18 +428,19 @@ function renderTable(data) {
           ${isExpired ? '<span class="ml-1"><i class="fas fa-times-circle"></i></span>' : ''}
         </td>
         <td class="p-3">
-          <div class="flex flex-col space-y-2">
-            <button class="text-blue-600 hover:text-blue-800 text-sm edit-btn" data-id="${item.product_id}">
-              <i class="fas fa-edit mr-1"></i> Edit
-            </button>
-            <button class="text-green-600 hover:text-green-800 text-sm restock-btn" data-id="${item.product_id}">
-              <i class="fas fa-cubes mr-1"></i> Restock
-            </button>
-            <a href="inventory_detail.html?productId=${item.product_id}" class="text-purple-600 hover:text-purple-800 text-sm">
-              <i class="fas fa-info-circle mr-1"></i> Details
-            </a>
-          </div>
-        </td>
+        <div class="flex flex-row space-x-4">
+          <button class="text-blue-600 hover:text-blue-800 text-m edit-btn" data-id="${item.product_id}">
+            <i class="fas fa-edit mr-1"></i> Edit
+          </button>
+          <button class="text-green-600 hover:text-green-800 text-m restock-btn" data-id="${item.product_id}">
+            <i class="fas fa-cubes mr-1"></i> Restock
+          </button>
+          <a href="inventory_detail.html?productId=${item.product_id}" class="text-purple-600 hover:text-purple-800 text-m">
+            <i class="fas fa-info-circle mr-1"></i> Details
+          </a>
+        </div>
+      </td>
+      
       </tr>
     `;
     table.insertAdjacentHTML("beforeend", row);
