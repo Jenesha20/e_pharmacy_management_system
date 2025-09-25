@@ -732,7 +732,7 @@ async function reorderItems(orderId) {
     
     // Navigate to cart
     setTimeout(() => {
-      window.location.href = '../shop/cart/cart.html';
+      window.location.href = '/frontend/src/features/customer/shop/cart/cart.html';
     }, 1500);
   } catch (error) {
     console.error('Error reordering items:', error);

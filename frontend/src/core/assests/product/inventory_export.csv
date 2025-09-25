@@ -1,0 +1,7 @@
+Product Name,SKU,Category,Stock Quantity,Price,Expiry Date
+"Paracetamol 500mg",PARA-500,Pain Relief,65,5.99,"30/11/2025"
+"Ibuprofen 200mg",IBU-200,Pain Relief,120,6.49,"15/03/2026"
+"Vitamin C 1000mg",VITC-1000,Vitamins & Supplements,30,12.99,"22/10/2024"
+"Amoxicillin 250mg",AMOX-250,Cold & Flu,0,24.99,"10/05/2024"
+"Azithral",Azithral-500,Cold & Flu,25,18,"30/11/2025"
+"Alcof",Alcof-D,Cold & Flu,15,90,"30/11/2025"

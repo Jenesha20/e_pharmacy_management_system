@@ -1,0 +1,23 @@
+
+J-MED J-PHARMACY
+Receipt
+
+Order Number: ORD-20250925-556
+Order Date: 25/09/2025
+Payment Method: UPI
+Payment Status: completed
+
+Items:
+Paracetamol 500mg x2 - $11.98
+Vitamin C 1000mg x1 - $12.99
+
+Subtotal: $24.97
+Shipping: $2.99
+Total: $27.96
+
+Shipping Address:
+Moolapalyam
+Moolapalyam, Erode, Tamil Nadu 638002
+
+Thank you for your order!
+  

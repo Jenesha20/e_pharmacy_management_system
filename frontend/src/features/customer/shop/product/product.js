@@ -297,7 +297,7 @@ async function fetchProduct() {
                   <!-- Additional thumbnails would go here -->
               </div>
               <p class="text-center text-2xl font-bold text-gray-900 mt-4 md:mt-6">
-                  MRP Rs.${product.price}
+                  Rs.${product.price}
               </p>
               <p class="text-center ${stockClass} font-medium mt-2">
                   ${stockStatus}

@@ -673,7 +673,7 @@ function openModal(prescriptionId) {
   if (order) {
     document.getElementById('orderId').textContent = order.order_number;
     document.getElementById('orderDate').textContent = formatDate(order.order_date);
-    document.getElementById('orderAmount').textContent = `$${order.total_amount}`;
+    document.getElementById('orderAmount').textContent = `Rs ${order.total_amount}`;
     
     // Get order items
     const items = orderItems.filter(oi => oi.order_id == order.id);

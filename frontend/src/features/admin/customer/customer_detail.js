@@ -240,7 +240,7 @@ const customerId = urlParams.get('customerId'); // Keep as string since customer
           <td class="border px-4 py-2 font-medium">${order.order_number}</td>
           <td class="border px-4 py-2">${formatDate(order.order_date)}</td>
           <td class="border px-4 py-2">${order.items ? order.items.length : 0} item${order.items && order.items.length != 1 ? 's' : ''}</td>
-          <td class="border px-4 py-2">$${parseFloat(order.total_amount).toFixed(2)}</td>
+          <td class="border px-4 py-2">Rs ${parseFloat(order.total_amount).toFixed(2)}</td>
           <td class="border px-4 py-2">
             <span class="px-2 py-1 rounded-full text-xs ${getStatusClass(order.status)}">${formatStatus(order.status)}</span>
           </td>

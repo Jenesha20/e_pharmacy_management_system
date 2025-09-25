@@ -208,38 +208,6 @@
                     </div>
                 </div>
 
-                <!-- Categories Section -->
-                <!-- <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                    <div class="section-header bg-purple-600 text-white">
-                        <span class="material-icons mr-3">category</span>
-                        <h2 class="text-2xl font-semibold">Product Categories</h2>
-                    </div>
-                    <div class="p-6">
-                        <div id="categories-container" class="item-container">
-                        </div>
-                        <button onclick="addCategory()" class="action-button bg-purple-600 text-white hover:bg-purple-700 mt-4">
-                            <span class="material-icons mr-2">add</span>
-                            Add Category
-                        </button>
-                    </div>
-                </div> -->
-
-                <!-- How It Works Section -->
-                <!-- <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                    <div class="section-header bg-orange-600 text-white">
-                        <span class="material-icons mr-3">timeline</span>
-                        <h2 class="text-2xl font-semibold">How It Works</h2>
-                    </div>
-                    <div class="p-6">
-                        <div id="how-it-works-container" class="item-container">
-                        </div>
-                        <button onclick="addHowItWorksStep()" class="action-button bg-orange-600 text-white hover:bg-orange-700 mt-4">
-                            <span class="material-icons mr-2">add</span>
-                            Add Step
-                        </button>
-                    </div>
-                </div> -->
-
                 <!-- Testimonials Section -->
                 <div class="bg-white rounded-xl shadow-lg overflow-hidden">
                     <div class="section-header bg-indigo-600 text-white">
@@ -330,145 +298,416 @@
 </main>
 <script src="configuration.js"></script>
 <script>
-// Remove these functions entirely:
-/*
-function renderCategories() {
-    // Function implementation
-}
+    const API_BASE_URL = 'http://localhost:3000';
+    let contentData = {};
+    let currentContentId = null;
 
-function createCategoryElement(category, index) {
-    // Function implementation
-}
-
-function addCategory() {
-    // Function implementation
-}
-
-function removeCategory(button) {
-    // Function implementation
-}
-
-function renderHowItWorks() {
-    // Function implementation
-}
-
-function createHowItWorksElement(step, index) {
-    // Function implementation
-}
-
-function addHowItWorksStep() {
-    // Function implementation
-}
-
-function removeHowItWorksStep(button) {
-    // Function implementation
-}
-*/
-
-// Update the collectFormData function to remove categories and howItWorks collection:
-function collectFormData() {
-    // Hero section
-    contentData.hero = {
-        title: document.getElementById('hero-title').value,
-        subtitle: document.getElementById('hero-subtitle').value,
-        backgroundImage: document.getElementById('hero-background').value
-    };
-
-    // Trust badges
-    contentData.trustBadges = [];
-    document.querySelectorAll('#trust-badges-container .trust-badge-item').forEach((item, index) => {
-        const icon = item.querySelector('.trust-badge-icon').value;
-        const title = item.querySelector('.trust-badge-title').value;
-        const description = item.querySelector('.trust-badge-description').value;
-        
-        if (title && description) {
-            contentData.trustBadges.push({ icon, title, description });
-        }
+    // Initialize the CMS
+    document.addEventListener('DOMContentLoaded', function() {
+        testConnection();
+        loadContent();
     });
 
-    // Testimonials
-    contentData.testimonials = [];
-    document.querySelectorAll('#testimonials-container .testimonial-item').forEach((item, index) => {
-        const name = item.querySelector('.testimonial-name').value;
-        const image = item.querySelector('.testimonial-image').value;
-        const feedback = item.querySelector('.testimonial-feedback').value;
-        
-        if (name && feedback) {
-            contentData.testimonials.push({ name, image, feedback });
+    // Test API connection
+    async function testConnection() {
+        try {
+            updateConnectionStatus('Testing connection...', 'yellow');
+            const response = await fetch(`${API_BASE_URL}/content`);
+            
+            if (response.ok) {
+                updateConnectionStatus('Connected to JSON Server', 'green');
+            } else {
+                throw new Error('Connection failed');
+            }
+        } catch (error) {
+            console.error('Connection test failed:', error);
+            updateConnectionStatus('Disconnected - Server not reachable', 'red');
         }
-    });
-
-    // Ensure we have an ID for existing content
-    if (currentContentId) {
-        contentData.id = currentContentId;
-    }
-}
-
-// Update the populateForm function to remove categories and howItWorks rendering:
-function populateForm() {
-    // Hero section
-    if (contentData.hero) {
-        document.getElementById('hero-title').value = contentData.hero.title || '';
-        document.getElementById('hero-subtitle').value = contentData.hero.subtitle || '';
-        document.getElementById('hero-background').value = contentData.hero.backgroundImage || '';
     }
 
-    // Trust badges
-    renderTrustBadges();
-    
-    // Testimonials
-    renderTestimonials();
-}
+    // Update connection status display
+    function updateConnectionStatus(message, color) {
+        const statusIcon = document.getElementById('status-icon');
+        const statusText = document.getElementById('status-text');
+        
+        statusIcon.className = `w-3 h-3 bg-${color}-500 rounded-full mr-2`;
+        statusText.textContent = message;
+        
+        // Update the status bar background color
+        const statusBar = document.getElementById('connection-status');
+        statusBar.className = `mb-4 p-3 rounded-lg flex items-center justify-between ${
+            color === 'green' ? 'bg-green-100' : 
+            color === 'red' ? 'bg-red-100' : 'bg-yellow-100'
+        }`;
+    }
 
-// Update the getDefaultContent function to remove categories and howItWorks data:
-function getDefaultContent() {
-    return {
-        hero: {
-            title: "Your Health, Our Priority",
-            subtitle: "Get your medications delivered safely and quickly to your doorstep. Manage your prescriptions orders with ease.",
-            backgroundImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuDKqdHy3OdCsGZcnWlCO7ZjE99J-ZrL6NytCgehkHiwfVoPOBHtaXsEpg9OrlpF2TLKnovNkKfQuqNP9Fxp8FhXSDLGEmWpDyhIOWbOnTEd0F8y3mrxDRzBcrp9VLDehu6EHB58jKi8r-aBNikz3VzzgiIfeP_jGZMlX9MKLzvShZNVbAQSkAsWNXUICBkQX3ghYi7vdkZt13V3PYkXSSiWY1k4O-b17krJrUZYPHSiG_VkatDBRN-aECPhYm_NkAeYb2vs_KBbV9-P"
-        },
-        trustBadges: [
-            {
-                icon: "fas fa-pills",
-                title: "100% Genuine Medicines",
-                description: "All products are sourced from licensed suppliers"
-            },
-            {
-                icon: "fas fa-truck",
-                title: "Free Delivery",
-                description: "On orders over Rs 30"
-            },
-            {
-                icon: "fas fa-shield-alt",
-                title: "Secure Payments",
-                description: "Your data is always protected"
-            },
-            {
-                icon: "fas fa-user-md",
-                title: "Pharmacist Support",
-                description: "Expert advice available 24/7"
+    // Load content from API
+    async function loadContent() {
+        showLoading(true);
+        updateStatus('Loading content from server...');
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/content`);
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Loaded content data:', data);
+                
+                if (data && data.length > 0) {
+                    // Use the first content object
+                    contentData = data[0];
+                    currentContentId = contentData.id;
+                    console.log('Using existing content with ID:', currentContentId);
+                } else {
+                    // No content exists, use default
+                    contentData = getDefaultContent();
+                    currentContentId = null;
+                    console.log('No existing content found, using default');
+                }
+                
+                populateForm();
+                updateStatus('Content loaded successfully');
+                showSuccessToast('Content loaded successfully!');
+            } else {
+                throw new Error('Failed to load content');
             }
-        ],
-        testimonials: [
-            {
-                name: "Sophia Clark",
-                image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDUF86K3kYWYI3iNBqpeoze0vPC_yBOpl5a1M3TKEMToiyXqKYeeZ2axwPugztvu70cH_BoZrwG49aKWSfUPzPF4LK0JDweDXjW1oCXYyDCFnDgSNrmAi53pmGqp4gdZ6e2duHzZVjYewQtHZz3xHMOW4D2VO2zzJDyo8HFLPmG-4XrV5HIw9QMfM86LSmPSYnxjc_4PMpZkuxHZKP8kpocsaWUc2_RMA9_XlinsID0rGNuDusjyqMmEOxfhJz3SrwV5GoIF_htc8M-",
-                feedback: "J-Med has made managing my prescriptions so easy. I get my medications on time, every time, and the customer service is excellent."
-            },
-            {
-                name: "Emma Bennett",
-                image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDWJds4GahKYMTwg2vWchDO2kaGrXQFOQnGfol_RJ9XBXXDz-EbflY9bxVdB6gHd6I8OJdK6_FRNOlTP6bgwZnUtvwiC7L8MIuNWpwgEVUxsWX131MsvAPmDTOBt0gcu6XVfJ4oqXiiaWEUwv3s5CVUW3KR3bpaFeT4ivd2-8SnLltTfu2_4EPxNEe8YcLLkFm9cGBkXsHyGjoVH3HflnLdil2CVZeYGr1lkoglsbn3awFzS0MgNy_V0p7U9hEKHnEcXuI2OfhAPwaA",
-                feedback: "I love the convenience of ordering my health products online. The website is user-friendly, and I always find what I need."
-            },
-            {
-                name: "Olivia Carter",
-                image: "https://lh3.googleusercontent.com/aida-public/AB6AXuD3wx9H7YgawZlQWTxTS4vG-mda9HgYb2pAspmfGH5lVhSZTZzYUBdEbPkUMgkbVGbQF2Lym-g2ccj-qqM5VFzeC7F09SKZoPLYQ5lIE2XcGTk2EIkrbjWgNy2Ru7Dk9ZdtGq6x-hHQvgrZW5_AZHjmqfXiYTOZSafm9OrlQCDOEtNajt1lcjvCvv5Vd1DVJza_8MTHtzuAnjLrZ9WNENM66x3emA9dwqltZn4oaKI6XNG5M-0tpi0FLEkak-I4Zh0Uml0QYM4ye1mf",
-                feedback: "Great service and reliable delivery. I highly recommend J-Med for all your pharmacy needs."
+        } catch (error) {
+            console.error('Error loading content:', error);
+            contentData = getDefaultContent();
+            currentContentId = null;
+            populateForm();
+            showErrorToast('Failed to load content. Using default values.');
+            updateStatus('Using default content');
+        }
+
+        showLoading(false);
+    }
+
+    // Save content to API - FIXED VERSION
+    async function saveContent() {
+        showLoading(true);
+        updateStatus('Saving changes...');
+
+        try {
+            // Collect all form data
+            collectFormData();
+            console.log('Saving content data:', contentData);
+            console.log('Current content ID:', currentContentId);
+
+            // If we have an existing ID, update that record
+            if (currentContentId) {
+                const response = await fetch(`${API_BASE_URL}/content/${currentContentId}`, {
+                    method: 'PATCH', // Use PATCH instead of PUT for partial updates
+                    headers: { 
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(contentData)
+                });
+
+                if (response.ok) {
+                    const updatedContent = await response.json();
+                    console.log('Update successful:', updatedContent);
+                    updateStatus('All changes saved successfully');
+                    showSuccessToast('Content updated successfully!');
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(`Failed to update content: ${errorText}`);
+                }
+            } else {
+                // If no existing content, create new one
+                const response = await fetch(`${API_BASE_URL}/content`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(contentData)
+                });
+
+                if (response.ok) {
+                    const newContent = await response.json();
+                    currentContentId = newContent.id;
+                    console.log('Create successful, new ID:', currentContentId);
+                    updateStatus('New content created successfully');
+                    showSuccessToast('New content created successfully!');
+                } else {
+                    const errorText = await response.text();
+                    throw new Error(`Failed to create content: ${errorText}`);
+                }
             }
-        ]
-    };
-}
+        } catch (error) {
+            console.error('Error saving content:', error);
+            showErrorToast(error.message || 'Failed to save content. Please try again.');
+            updateStatus('Save failed');
+        }
+
+        showLoading(false);
+    }
+
+    // Collect form data
+    function collectFormData() {
+        // Hero section
+        contentData.hero = {
+            title: document.getElementById('hero-title').value,
+            subtitle: document.getElementById('hero-subtitle').value,
+            backgroundImage: document.getElementById('hero-background').value
+        };
+
+        // Trust badges
+        contentData.trustBadges = [];
+        document.querySelectorAll('#trust-badges-container .trust-badge-item').forEach((item, index) => {
+            const icon = item.querySelector('.trust-badge-icon').value;
+            const title = item.querySelector('.trust-badge-title').value;
+            const description = item.querySelector('.trust-badge-description').value;
+            
+            if (title && description) {
+                contentData.trustBadges.push({ icon, title, description });
+            }
+        });
+
+        // Testimonials
+        contentData.testimonials = [];
+        document.querySelectorAll('#testimonials-container .testimonial-item').forEach((item, index) => {
+            const name = item.querySelector('.testimonial-name').value;
+            const image = item.querySelector('.testimonial-image').value;
+            const feedback = item.querySelector('.testimonial-feedback').value;
+            
+            if (name && feedback) {
+                contentData.testimonials.push({ name, image, feedback });
+            }
+        });
+
+        // Ensure we have an ID for existing content
+        if (currentContentId) {
+            contentData.id = currentContentId;
+        }
+    }
+
+    // Populate form with data
+    function populateForm() {
+        // Hero section
+        if (contentData.hero) {
+            document.getElementById('hero-title').value = contentData.hero.title || '';
+            document.getElementById('hero-subtitle').value = contentData.hero.subtitle || '';
+            document.getElementById('hero-background').value = contentData.hero.backgroundImage || '';
+        }
+
+        // Trust badges
+        renderTrustBadges();
+        
+        // Testimonials
+        renderTestimonials();
+    }
+
+    // Render trust badges
+    function renderTrustBadges() {
+        const container = document.getElementById('trust-badges-container');
+        container.innerHTML = '';
+
+        const badges = contentData.trustBadges || getDefaultContent().trustBadges;
+        badges.forEach((badge, index) => {
+            container.appendChild(createTrustBadgeElement(badge, index));
+        });
+    }
+
+    // Create trust badge element
+    function createTrustBadgeElement(badge, index) {
+        const div = document.createElement('div');
+        div.className = 'trust-badge-item item-card';
+        div.innerHTML = `
+            <div class="item-header">
+                <h4 class="font-medium text-gray-700">Trust Badge ${index + 1}</h4>
+                <button onclick="removeTrustBadge(this)" class="text-red-500 hover:text-red-700">
+                    <span class="material-icons">delete</span>
+                </button>
+            </div>
+            <div class="item-content">
+                <div>
+                    <label class="form-label">Icon (FontAwesome class)</label>
+                    <input type="text" class="trust-badge-icon form-input" value="${badge.icon || 'fas fa-shield-alt'}" placeholder="fas fa-shield-alt">
+                </div>
+                <div>
+                    <label class="form-label">Title</label>
+                    <input type="text" class="trust-badge-title form-input" value="${badge.title || ''}" placeholder="Secure Payments">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="form-label">Description</label>
+                    <textarea class="trust-badge-description form-input" rows="2" placeholder="Your data is always protected">${badge.description || ''}</textarea>
+                </div>
+            </div>
+        `;
+        return div;
+    }
+
+    // Render testimonials
+    function renderTestimonials() {
+        const container = document.getElementById('testimonials-container');
+        container.innerHTML = '';
+
+        const testimonials = contentData.testimonials || getDefaultContent().testimonials;
+        testimonials.forEach((testimonial, index) => {
+            container.appendChild(createTestimonialElement(testimonial, index));
+        });
+    }
+
+    // Create testimonial element
+    function createTestimonialElement(testimonial, index) {
+        const div = document.createElement('div');
+        div.className = 'testimonial-item item-card';
+        div.innerHTML = `
+            <div class="item-header">
+                <h4 class="font-medium text-gray-700">Testimonial ${index + 1}</h4>
+                <button onclick="removeTestimonial(this)" class="text-red-500 hover:text-red-700">
+                    <span class="material-icons">delete</span>
+                </button>
+            </div>
+            <div class="item-content">
+                <div>
+                    <label class="form-label">Customer Name</label>
+                    <input type="text" class="testimonial-name form-input" value="${testimonial.name || ''}" placeholder="John Doe">
+                </div>
+                <div>
+                    <label class="form-label">Image URL</label>
+                    <input type="url" class="testimonial-image form-input" value="${testimonial.image || ''}" placeholder="https://example.com/avatar.jpg">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="form-label">Feedback</label>
+                    <textarea class="testimonial-feedback form-input" rows="3" placeholder="Great service and reliable delivery...">${testimonial.feedback || ''}</textarea>
+                </div>
+            </div>
+        `;
+        return div;
+    }
+
+    // Add functions
+    function addTrustBadge() {
+        const container = document.getElementById('trust-badges-container');
+        const index = container.children.length;
+        container.appendChild(createTrustBadgeElement({}, index));
+    }
+
+    function addTestimonial() {
+        const container = document.getElementById('testimonials-container');
+        const index = container.children.length;
+        container.appendChild(createTestimonialElement({}, index));
+    }
+
+    // Remove functions
+    function removeTrustBadge(button) {
+        button.closest('.trust-badge-item').remove();
+    }
+
+    function removeTestimonial(button) {
+        button.closest('.testimonial-item').remove();
+    }
+
+    // Reset content to default
+    function resetContent() {
+        if (confirm('Are you sure you want to reset all content to default values? This will overwrite any unsaved changes.')) {
+            contentData = getDefaultContent();
+            currentContentId = null;
+            populateForm();
+            updateStatus('Content reset to default values');
+            showSuccessToast('Content reset successfully!');
+        }
+    }
+
+    // Get default content structure
+    function getDefaultContent() {
+        return {
+            hero: {
+                title: "Your Health, Our Priority",
+                subtitle: "Get your medications delivered safely and quickly to your doorstep. Manage your prescriptions orders with ease.",
+                backgroundImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuDKqdHy3OdCsGZcnWlCO7ZjE99J-ZrL6NytCgehkHiwfVoPOBHtaXsEpg9OrlpF2TLKnovNkKfQuqNP9Fxp8FhXSDLGEmWpDyhIOWbOnTEd0F8y3mrxDRzBcrp9VLDehu6EHB58jKi8r-aBNikz3VzzgiIfeP_jGZMlX9MKLzvShZNVbAQSkAsWNXUICBkQX3ghYi7vdkZt13V3PYkXSSiWY1k4O-b17krJrUZYPHSiG_VkatDBRN-aECPhYm_NkAeYb2vs_KBbV9-P"
+            },
+            trustBadges: [
+                {
+                    icon: "fas fa-pills",
+                    title: "100% Genuine Medicines",
+                    description: "All products are sourced from licensed suppliers"
+                },
+                {
+                    icon: "fas fa-truck",
+                    title: "Free Delivery",
+                    description: "On orders over Rs 30"
+                },
+                {
+                    icon: "fas fa-shield-alt",
+                    title: "Secure Payments",
+                    description: "Your data is always protected"
+                },
+                {
+                    icon: "fas fa-user-md",
+                    title: "Pharmacist Support",
+                    description: "Expert advice available 24/7"
+                }
+            ],
+            testimonials: [
+                {
+                    name: "Sophia Clark",
+                    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDUF86K3kYWYI3iNBqpeoze0vPC_yBOpl5a1M3TKEMToiyXqKYeeZ2axwPugztvu70cH_BoZrwG49aKWSfUPzPF4LK0JDweDXjW1oCXYyDCFnDgSNrmAi53pmGqp4gdZ6e2duHzZVjYewQtHZz3xHMOW4D2VO2zzJDyo8HFLPmG-4XrV5HIw9QMfM86LSmPSYnxjc_4PMpZkuxHZKP8kpocsaWUc2_RMA9_XlinsID0rGNuDusjyqMmEOxfhJz3SrwV5GoIF_htc8M-",
+                    feedback: "J-Med has made managing my prescriptions so easy. I get my medications on time, every time, and the customer service is excellent."
+                },
+                {
+                    name: "Emma Bennett",
+                    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDWJds4GahKYMTwg2vWchDO2kaGrXQFOQnGfol_RJ9XBXXDz-EbflY9bxVdB6gHd6I8OJdK6_FRNOlTP6bgwZnUtvwiC7L8MIuNWpwgEVUxsWX131MsvAPmDTOBt0gcu6XVfJ4oqXiiaWEUwv3s5CVUW3KR3bpaFeT4ivd2-8SnLltTfu2_4EPxNEe8YcLLkFm9cGBkXsHyGjoVH3HflnLdil2CVZeYGr1lkoglsbn3awFzS0MgNy_V0p7U9hEKHnEcXuI2OfhAPwaA",
+                    feedback: "I love the convenience of ordering my health products online. The website is user-friendly, and I always find what I need."
+                },
+                {
+                    name: "Olivia Carter",
+                    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuD3wx9H7YgawZlQWTxTS4vG-mda9HgYb2pAspmfGH5lVhSZTZzYUBdEbPkUMgkbVGbQF2Lym-g2ccj-qqM5VFzeC7F09SKZoPLYQ5lIE2XcGTk2EIkrbjWgNy2Ru7Dk9ZdtGq6x-hHQvgrZW5_AZHjmqfXiYTOZSafm9OrlQCDOEtNajt1lcjvCvv5Vd1DVJza_8MTHtzuAnjLrZ9WNENM66x3emA9dwqltZn4oaKI6XNG5M-0tpi0FLEkak-I4Zh0Uml0QYM4ye1mf",
+                    feedback: "Great service and reliable delivery. I highly recommend J-Med for all your pharmacy needs."
+                }
+            ]
+        };
+    }
+
+    // Utility functions
+    function showLoading(show) {
+        const overlay = document.getElementById('loading-overlay');
+        if (show) {
+            overlay.classList.remove('hidden');
+        } else {
+            overlay.classList.add('hidden');
+        }
+    }
+
+    function updateStatus(message, isError = false) {
+        const statusPanel = document.getElementById('status-panel');
+        const icon = isError ? 'error' : 'info';
+        const color = isError ? 'text-red-600' : 'text-gray-600';
+        
+        statusPanel.innerHTML = `
+            <div class="status-item ${color}">
+                <span class="material-icons text-sm">${icon}</span>
+                <span class="text-sm">${message}</span>
+            </div>
+        `;
+    }
+
+    function showSuccessToast(message) {
+        const toast = document.getElementById('success-toast');
+        toast.querySelector('span:last-child').textContent = message;
+        toast.classList.add('show');
+        
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+
+    function showErrorToast(message) {
+        const toast = document.getElementById('error-toast');
+        const messageSpan = document.getElementById('error-message');
+        messageSpan.textContent = message;
+        toast.classList.add('show');
+        
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 4000);
+    }
+
+    function openPreview() {
+        // Open the landing page in a new window/tab
+        window.open('landing.html', '_blank');
+    }
 </script>
 </body>
 </html>

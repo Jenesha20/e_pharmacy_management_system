@@ -146,7 +146,7 @@ function displayOrderSummary() {
   // Update order total
   const orderTotalElement = document.getElementById('orderTotal');
   if (orderTotalElement) {
-    orderTotalElement.textContent = `$${orderData.total.toFixed(2)}`;
+    orderTotalElement.textContent = `Rs ${orderData.total.toFixed(2)}`;
     console.log('Order total updated in UI');
   } else {
     console.error('Order total element not found');
@@ -204,7 +204,7 @@ function displayOrderItemsPreview() {
             <p class="text-xs text-gray-500">Qty: ${item.quantity}</p>
           </div>
         </div>
-        <span class="text-sm font-medium text-gray-800">$${(item.price * item.quantity).toFixed(2)}</span>
+        <span class="text-sm font-medium text-gray-800">Rs ${(item.price * item.quantity).toFixed(2)}</span>
       </div>
     `;
   }).join('');
@@ -317,12 +317,12 @@ Payment Status: ${orderData.payment_status}
 
 Items:
 ${orderData.items.map(item => 
-  `${item.name} x${item.quantity} - $${(item.price * item.quantity).toFixed(2)}`
+  `${item.name} x${item.quantity} - Rs ${(item.price * item.quantity).toFixed(2)}`
 ).join('\n')}
 
-Subtotal: $${orderData.subtotal.toFixed(2)}
-Shipping: $${orderData.shipping.toFixed(2)}
-Total: $${orderData.total.toFixed(2)}
+Subtotal: Rs ${orderData.subtotal.toFixed(2)}
+Shipping: Rs ${orderData.shipping.toFixed(2)}
+Total: Rs ${orderData.total.toFixed(2)}
 
 Shipping Address:
 ${orderData.address.label}

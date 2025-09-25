@@ -341,7 +341,7 @@ async function fetchData() {
         category_name: category.name || 'Uncategorized',
         low_stock_threshold: inventory.low_stock_threshold || 10,
         // Update image path
-        image_url: product.image_url ? `images/${product.image_url}` : '../../../../core/api/images/placeholder-medicine.jpg'
+        image_url: product.image_url ? `images/${product.image_url}` : '/frontend/src/core/assests/product/azithral.jpeg'
       };
     });
 
@@ -421,7 +421,7 @@ function renderTable(data) {
           ${isLowStock ? '<span class="text-yellow-600 ml-1"><i class="fas fa-exclamation-circle"></i></span>' : ''}
           ${isOutOfStock ? '<span class="text-red-600 ml-1"><i class="fas fa-times-circle"></i></span>' : ''}
         </td>
-        <td class="p-3">$${item.price.toFixed(2)}</td>
+        <td class="p-3">Rs ${item.price.toFixed(2)}</td>
         <td class="p-3 ${isExpiringSoon ? 'text-yellow-600 font-medium' : ''} ${isExpired ? 'text-red-600 font-medium' : ''}">
           ${new Date(item.expiry_date).toLocaleDateString()}
           ${isExpiringSoon ? '<span class="ml-1"><i class="fas fa-exclamation-circle"></i></span>' : ''}

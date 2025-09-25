@@ -579,7 +579,7 @@ function renderCart(cartItems) {
             <div class="flex-grow item-details">
               <h3 class="font-medium text-gray-900">${item.name}</h3>
               <p class="text-sm text-gray-500">${item.composition || 'Medicine'}</p>
-              <p class="text-lg font-semibold text-green-600 mt-1">$${item.price.toFixed(2)}</p>
+              <p class="text-lg font-semibold text-green-600 mt-1">Rs ${item.price.toFixed(2)}</p>
               ${item.requires_prescription ? '<p class="text-xs text-orange-600 mt-1"><i class="fas fa-exclamation-triangle mr-1"></i>Prescription Required</p>' : ''}
             </div>
             
@@ -657,7 +657,7 @@ function renderPrescriptionSelectionPanel(cartItems) {
       <div class="prescription-selection-item">
 
         <h4>${item.name}</h4>
-        <p>Quantity: ${item.quantity} × $${item.price.toFixed(2)}</p>
+        <p>Quantity: ${item.quantity} × Rs ${item.price.toFixed(2)}</p>
         <div class="prescription-dropdown-container">
           ${statusDisplay ? `
             <div class="mb-2 text-center">
@@ -728,7 +728,7 @@ function renderOrderSummary(cartItems) {
 async function handlePrescriptionUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
-  const medicineId = selectid; // use the ID selected from the panel
+  const medicineId = 1; // use the ID selected from the panel
   //console.log('Uploading prescription for medicineId:', medicineI);
   const reader = new FileReader();
   reader.onload = async function (e) {
@@ -740,7 +740,7 @@ async function handlePrescriptionUpload(event) {
         image_url: e.target.result,
         status: null, // Set to null initially - will be pending only after verification request
         verified_by: null,
-        medicine_id:selectid,
+        medicine_id:1,
         verification_notes: null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()

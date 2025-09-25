@@ -359,7 +359,7 @@ const slider = document.getElementById("testimonial-slider");
         <h4 class="font-semibold text-sm mb-2 line-clamp-2">${product.name}</h4>
         <p class="text-gray-600 text-xs mb-2 line-clamp-2">${product.description}</p>
         <div class="flex justify-between items-center">
-          <span class="text-green-600 font-bold">$${product.price}</span>
+          <span class="text-green-600 font-bold">Rs ${product.price}</span>
           <button onclick="handleAddToCart(${product.id})" class="bg-blue-500 text-white px-3 py-1 rounded text-xs hover:bg-blue-600 transition">
             Add to Cart
           </button>

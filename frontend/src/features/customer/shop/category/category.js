@@ -184,7 +184,7 @@ function createProductCard(product, isFeatured) {
                 <a href="../../shop/product/product.html?id=${product.id}">${product.name}</a>
             </h3>
             <p class="text-sm text-gray-500">${product.composition || product.description || 'No description available'}</p>
-            <p class="font-semibold mt-2">$${product.price ? product.price.toFixed(2) : '0.00'}</p>
+            <p class="font-semibold mt-2">Rs ${product.price ? product.price.toFixed(2) : '0.00'}</p>
             <button class="w-full bg-[#A1E970] bg-opacity-90 text-black font-semibold py-2 rounded-lg mt-4 hover:bg-[#A1E970] add-to-cart-btn" data-id="${product.id}">
                 Add to cart
             </button>

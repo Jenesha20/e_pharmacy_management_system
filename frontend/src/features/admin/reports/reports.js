@@ -15,9 +15,9 @@ let mainChart, secondaryChart;
 const demoData = {
   sales: {
     summary: [
-      { title: 'Total Sales', value: '$12,458.75', change: '+12%' },
+      { title: 'Total Sales', value: 'Rs 12,458.75', change: '+12%' },
       { title: 'Number of Orders', value: '147', change: '+5%' },
-      { title: 'Average Order Value', value: '$84.75', change: '+3%' },
+      { title: 'Average Order Value', value: 'Rs 84.75', change: '+3%' },
       { title: 'Top Selling Category', value: 'Pain Relief', change: '+8%' }
     ],
     mainChart: [
@@ -37,7 +37,7 @@ const demoData = {
       { y: 980, label: 'Baby Care' }
     ],
     table: [
-      { id: 'S001', name: 'Total Revenue', value: '$12,458.75', change: '+12%' },
+      { id: 'S001', name: 'Total Revenue', value: 'Rs 12,458.75', change: '+12%' },
       { id: 'S002', name: 'Completed Orders', value: '132', change: '+8%' },
       { id: 'S003', name: 'Processing Orders', value: '15', change: '-2%' },
       { id: 'S004', name: 'Credit Card Payments', value: '89', change: '+5%' }
@@ -92,15 +92,15 @@ const demoData = {
       { y: 98, label: 'Skin Cream' }
     ],
     table: [
-      { id: 'P001', name: 'Vitamin C 1000mg', value: '$1,250.00', change: '+15%' },
-      { id: 'P002', name: 'Pain Relief Tablets', value: '$980.50', change: '+12%' },
-      { id: 'P003', name: 'Multivitamin Complex', value: '$750.25', change: '+8%' },
-      { id: 'P004', name: 'First Aid Kit', value: '$620.75', change: '+5%' }
+      { id: 'P001', name: 'Vitamin C 1000mg', value: 'Rs 1,250.00', change: '+15%' },
+      { id: 'P002', name: 'Pain Relief Tablets', value: 'Rs 980.50', change: '+12%' },
+      { id: 'P003', name: 'Multivitamin Complex', value: 'Rs 750.25', change: '+8%' },
+      { id: 'P004', name: 'First Aid Kit', value: 'Rs 620.75', change: '+5%' }
     ]
   },
   stock: {
     summary: [
-      { title: 'Total Stock Value', value: '$45,678.90', change: '+5%' },
+      { title: 'Total Stock Value', value: 'Rs 45,678.90', change: '+5%' },
       { title: 'Total Products', value: '356', change: '+3%' },
       { title: 'Low Stock Items', value: '23', change: '-8%' },
       { title: 'Out of Stock Items', value: '12', change: '-12%' }
@@ -340,19 +340,19 @@ function generateDemoReport(reportType) {
   // Render charts with demo data
   const chartConfigs = {
     sales: { 
-      main: { type: 'line', xTitle: 'Date', yTitle: 'Amount ($)', title: 'Sales Over Time' }, 
-      secondary: { type: 'pie', xTitle: 'Category', yTitle: 'Amount ($)', title: 'Sales by Category' } 
+      main: { type: 'line', xTitle: 'Date', yTitle: 'Amount (Rs)', title: 'Sales Over Time' }, 
+      secondary: { type: 'pie', xTitle: 'Category', yTitle: 'Amount (Rs)', title: 'Sales by Category' } 
     },
     customer: { 
       main: { type: 'column', xTitle: 'Date', yTitle: 'New Customers', title: 'Customer Acquisition' }, 
       secondary: { type: 'pie', xTitle: 'Type', yTitle: 'Count', title: 'Customer Types' } 
     },
     product: { 
-      main: { type: 'column', xTitle: 'Product', yTitle: 'Revenue ($)', title: 'Top Products by Revenue' }, 
+      main: { type: 'column', xTitle: 'Product', yTitle: 'Revenue (Rs)', title: 'Top Products by Revenue' }, 
       secondary: { type: 'column', xTitle: 'Product', yTitle: 'Quantity', title: 'Top Products by Quantity' } 
     },
     stock: { 
-      main: { type: 'pie', xTitle: 'Category', yTitle: 'Value ($)', title: 'Stock Value by Category' }, 
+      main: { type: 'pie', xTitle: 'Category', yTitle: 'Value (Rs)', title: 'Stock Value by Category' }, 
       secondary: { type: 'column', xTitle: 'Product', yTitle: 'Quantity', title: 'Low Stock Items' } 
     },
     prescription: { 
@@ -398,9 +398,9 @@ function generateSalesReport(orders, categoryId) {
   
   // Update summary cards
   updateSummaryCards([
-    { title: 'Total Sales', value: `$${totalSales.toFixed(2)}`, change: '+12%' },
+    { title: 'Total Sales', value: `Rs ${totalSales.toFixed(2)}`, change: '+12%' },
     { title: 'Number of Orders', value: numberOfOrders, change: '+5%' },
-    { title: 'Average Order Value', value: `$${averageOrderValue.toFixed(2)}`, change: '+3%' },
+    { title: 'Average Order Value', value: `Rs ${averageOrderValue.toFixed(2)}`, change: '+3%' },
     { title: 'Top Selling Category', value: 'Pain Relief', change: '+8%' }
   ]);
   
@@ -434,7 +434,7 @@ function generateSalesReport(orders, categoryId) {
   }
   
   // Render main chart (sales over time)
-  renderMainChart(salesDataPoints, 'Sales Over Time', 'Date', 'Amount ($)', 'line');
+  renderMainChart(salesDataPoints, 'Sales Over Time', 'Date', 'Amount (Rs)', 'line');
   
   // FIXED: Prepare category sales data for secondary chart with better fallbacks
   const categorySales = {};
@@ -492,11 +492,11 @@ function generateSalesReport(orders, categoryId) {
   })).sort((a, b) => b.y - a.y).slice(0, 5); // Take top 5 categories
   
   // Render secondary chart (sales by category)
-  renderSecondaryChart(categoryDataPoints, 'Sales by Category', 'Category', 'Amount ($)', 'pie');
+  renderSecondaryChart(categoryDataPoints, 'Sales by Category', 'Category', 'Amount (Rs)', 'pie');
   
   // Update data table
   updateDataTable([
-    { id: 'S001', name: 'Total Revenue', value: `$${totalSales.toFixed(2)}`, change: '+12%' },
+    { id: 'S001', name: 'Total Revenue', value: `Rs ${totalSales.toFixed(2)}`, change: '+12%' },
     { id: 'S002', name: 'Completed Orders', value: orders.filter(o => o.status === 'delivered' || o.status === 'completed').length, change: '+8%' },
     { id: 'S003', name: 'Processing Orders', value: orders.filter(o => o.status === 'processing' || o.status === 'pending').length, change: '-2%' },
     { id: 'S004', name: 'Credit Card Payments', value: orders.filter(o => o.payment_method === 'credit_card' || o.payment_method === 'card').length, change: '+5%' }
@@ -583,7 +583,7 @@ function generateProductReport(orders, categoryId) {
   }));
   
   // Render main chart (top products by revenue)
-  renderMainChart(topProductsDataPoints, 'Top Products by Revenue', 'Product', 'Revenue ($)', 'column');
+  renderMainChart(topProductsDataPoints, 'Top Products by Revenue', 'Product', 'Revenue (Rs)', 'column');
   
   // FIXED: Prepare product quantity data for secondary chart
   const productQuantityDataPoints = topProducts.map(product => ({
@@ -608,7 +608,7 @@ function generateProductReport(orders, categoryId) {
   const tableData = topProducts.map((product, index) => ({
     id: `P${String(index + 1).padStart(3, '0')}`,
     name: product,
-    value: `$${productSales[product].toFixed(2)}`,
+    value: `Rs ${productSales[product].toFixed(2)}`,
     change: index === 0 ? '+15%' : index === 1 ? '+12%' : index === 2 ? '+8%' : '+5%'
   }));
   
@@ -712,7 +712,7 @@ function generateStockReport(categoryId) {
   
   // Update summary cards
   updateSummaryCards([
-    { title: 'Total Stock Value', value: `$${totalStockValue.toFixed(2)}`, change: '+5%' },
+    { title: 'Total Stock Value', value: `Rs ${totalStockValue.toFixed(2)}`, change: '+5%' },
     { title: 'Total Products', value: filteredProducts.length, change: '+3%' },
     { title: 'Low Stock Items', value: lowStockItems.length, change: '-8%' },
     { title: 'Out of Stock Items', value: outOfStockItems.length, change: '-12%' }
@@ -743,7 +743,7 @@ function generateStockReport(categoryId) {
   }));
   
   // Render main chart (stock value by category)
-  renderMainChart(categoryStockDataPoints, 'Stock Value by Category', 'Category', 'Value ($)', 'pie');
+  renderMainChart(categoryStockDataPoints, 'Stock Value by Category', 'Category', 'Value (Rs)', 'pie');
   
   // Prepare low stock data for secondary chart
   const lowStockDataPoints = lowStockItems.slice(0, 5).map(product => {
@@ -885,7 +885,6 @@ function renderMainChart(dataPoints, title, xTitle, yTitle, chartType, isDemo = 
   container.appendChild(chartContainer);
   
   if (dataPoints.length === 0 && !isDemo) {
-    // If no data and not already using demo data, show demo data
     const reportType = document.getElementById('reportType').value;
     generateDemoReport(reportType);
     return;
@@ -906,13 +905,14 @@ function renderMainChart(dataPoints, title, xTitle, yTitle, chartType, isDemo = 
       axisY: {
         title: yTitle,
         includeZero: true,
-        interval: chartType === 'pie' ? undefined : (yTitle.includes('Revenue') || yTitle.includes('$') ? undefined : (dataPoints.some(point => point.y % 1 !== 0) ? undefined : 1)),
-        intervalType: chartType === 'pie' ? undefined : (yTitle.includes('Revenue') || yTitle.includes('$') ? undefined : (dataPoints.some(point => point.y % 1 !== 0) ? undefined : "number"))
+        interval: chartType === 'pie' ? undefined : (yTitle.includes('Revenue') || yTitle.includes('Rs') ? undefined : (dataPoints.some(point => point.y % 1 !== 0) ? undefined : 1)),
+        intervalType: chartType === 'pie' ? undefined : (yTitle.includes('Revenue') || yTitle.includes('Rs') ? undefined : (dataPoints.some(point => point.y % 1 !== 0) ? undefined : "number"))
       },
       data: [{
         type: chartType,
-        indexLabel: chartType === 'pie' ? "{label}: {y}" : undefined,
+        indexLabel: chartType === 'pie' ? "{label}: {y}" : "{y}", // show data values
         indexLabelFontSize: 12,
+        indexLabelPlacement: chartType === 'column' ? "outside" : undefined,
         dataPoints: dataPoints
       }]
     });
@@ -922,6 +922,7 @@ function renderMainChart(dataPoints, title, xTitle, yTitle, chartType, isDemo = 
     chartContainer.innerHTML = '<div class="flex items-center justify-center h-full text-red-500">Error rendering chart</div>';
   }
 }
+
 
 // Render secondary chart with demo data support
 function renderSecondaryChart(dataPoints, title, xTitle, yTitle, chartType, isDemo = false) {
@@ -971,13 +972,19 @@ function renderSecondaryChart(dataPoints, title, xTitle, yTitle, chartType, isDe
       axisX: {
         title: xTitle,
         valueFormatString: chartType === 'line' || chartType === 'column' ? "DD MMM" : undefined,
-        labelAngle: chartType === 'column' ? -45 : 0
+        labelAngle: chartType === 'column' ? -45 : 0,
+        gridThickness: 0,   // remove vertical grid lines
+        lineThickness: 0,   // remove axis line
+        tickLength: 0       // remove ticks
       },
       axisY: {
         title: yTitle,
         includeZero: true,
-        interval: chartType === 'pie' ? undefined : (yTitle.includes('Revenue') || yTitle.includes('$') ? undefined : (dataPoints.some(point => point.y % 1 !== 0) ? undefined : 1)),
-        intervalType: chartType === 'pie' ? undefined : (yTitle.includes('Revenue') || yTitle.includes('$') ? undefined : (dataPoints.some(point => point.y % 1 !== 0) ? undefined : "number"))
+        interval: chartType === 'pie' ? undefined : (yTitle.includes('Revenue') || yTitle.includes('Rs') ? undefined : (dataPoints.some(point => point.y % 1 !== 0) ? undefined : 1)),
+        intervalType: chartType === 'pie' ? undefined : (yTitle.includes('Revenue') || yTitle.includes('Rs') ? undefined : (dataPoints.some(point => point.y % 1 !== 0) ? undefined : "number")),
+        gridThickness: 0,   // remove horizontal grid lines
+        lineThickness: 0,   // remove axis line
+        tickLength: 0       // remove ticks
       },
       data: [{
         type: chartType,
@@ -1001,6 +1008,7 @@ function renderSecondaryChart(dataPoints, title, xTitle, yTitle, chartType, isDe
     `;
   }
 }
+
 
 // Export to PDF (unchanged)
 function exportToPDF() {

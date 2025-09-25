@@ -32,19 +32,24 @@ function loadComponent(id, filePath) {
           };
           document.head.appendChild(script);
         }
-        
-        // Reattach event listeners after loading
-        setTimeout(attachEventListeners, 100);
       }
     })
     .catch(err => console.error("Error loading component:", err));
+}
+
+// Initialize the page - this function was missing
+function initPage() {
+  console.log("Initializing page...");
+  // This function can be used for any additional page initialization
+  // For now, we'll just call fetchData which will handle everything
+  fetchData();
 }
 
 // Load components
 document.addEventListener('DOMContentLoaded', function () {
   loadComponent("header", "/frontend/src/core/components/navbar.html");
   loadComponent("footer", "/frontend/src/core/components/footer.html");
-  initPage();
+  initPage(); // Now this function is defined
 });
   
   let products = [];
@@ -53,6 +58,10 @@ document.addEventListener('DOMContentLoaded', function () {
   let featuredProducts = [];
   const itemsPerPage = 10;
   let currentPage = 1;
+  
+  // Featured Products Carousel Variables
+  let currentFeaturedIndex = 0;
+  let carouselInterval;
   
   // Filter state
   let filterState = {
@@ -63,56 +72,6 @@ document.addEventListener('DOMContentLoaded', function () {
     requiresPrescription: false,
     sortBy: 'relevance'
   };
-  
-  // Fetch products and categories from backend
-//   async function fetchData() {
-//     try {
-//       // Fetch products
-//       const productsResponse = await fetch("http://localhost:3000/products");
-//       if (!productsResponse.ok) throw new Error("Failed to fetch products");
-//       products = await productsResponse.json();
-      
-//       // Fetch categories
-//       const categoriesResponse = await fetch("http://localhost:3000/categories");
-//       if (categoriesResponse.ok) {
-//         categories = await categoriesResponse.json();
-//         renderCategoryFilters();
-//       }
-      
-//       // Fetch inventory to check stock status
-//       const inventoryResponse = await fetch("http://localhost:3000/inventory");
-//       if (inventoryResponse.ok) {
-//         const inventory = await inventoryResponse.json();
-        
-//         // Add stock information to products
-//         products = products.map(product => {
-//           const inventoryItem = inventory.find(item => item.product_id === product.product_id);
-//           return {
-//             ...product,
-//             stock: inventoryItem ? inventoryItem.quantity_in_stock : 0,
-//             inStock: inventoryItem ? inventoryItem.quantity_in_stock > 0 : false
-//           };
-//         });
-//       }
-      
-//       // Filter featured products (only 5)
-//       featuredProducts = products.filter(product => product.featured_product === true).slice(0, 5);
-      
-//       // Initialize filtered products
-//       filteredProducts = [...products];
-      
-//       // Render featured products
-//       renderFeaturedProducts();
-      
-//       // Apply initial filters and render products
-//       applyFilters();
-      
-//     } catch (err) {
-//       console.error("Error fetching data:", err);
-//       document.getElementById("product-list").innerHTML =
-//           "<p class='text-red-500 col-span-full'>Failed to load products.</p>";
-//     }
-//   }
   
   function getCurrentUser() {
     return JSON.parse(localStorage.getItem("currentUser"));
@@ -253,10 +212,6 @@ document.addEventListener('DOMContentLoaded', function () {
     renderProducts(currentPage);
   }
   
-  // Featured Products Carousel Variables
-  let currentFeaturedIndex = 0;
-  const itemsPerView = 5; // Number of products to show at once
-
   // Render featured products
   function renderFeaturedProducts() {
     const container = document.getElementById("featured-products");
@@ -269,12 +224,11 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
   
-    featuredProducts.forEach(product => {
+    featuredProducts.forEach((product, index) => {
         const card = document.createElement("div");
-        card.className = "bg-white rounded-lg overflow-hidden shadow-sm relative border border-[#A1E970]";
-        card.style.minWidth = '200px';
+        card.className = "featured-product-card flex-shrink-0 bg-white rounded-lg overflow-hidden shadow-sm relative border border-[#A1E970]";
+        card.style.width = 'calc(20% - 16px)'; // 5 items per view with gap
         card.style.marginRight = '16px';
-        card.style.flex = '0 0 auto';
 
         card.innerHTML = `
             <!-- Prescription Badge -->
@@ -309,7 +263,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <a href="../../shop/product/product.html?id=${product.id}">${product.name}</a>
                 </h3>
                 <p class="text-sm text-gray-500 truncate">${product.composition || 'No description available'}</p>
-                <p class="font-semibold mt-2 text-sm">$${product.price ? product.price.toFixed(2) : '0.00'}</p>
+                <p class="font-semibold mt-2 text-sm">Rs ${product.price ? product.price.toFixed(2) : '0.00'}</p>
                 <button class="w-full bg-[#A1E970] bg-opacity-90 text-black font-semibold py-2 rounded-lg mt-4 hover:bg-[#A1E970] add-to-cart-btn text-sm ${!product.inStock ? 'opacity-50 cursor-not-allowed' : ''}" 
                   data-id="${product.id}" ${!product.inStock ? 'disabled' : ''}>
                     ${!product.inStock ? 'Out of Stock' : 'Add to cart'}
@@ -332,54 +286,86 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Setup carousel after rendering
-    setupFeaturedCarousel();
+    setTimeout(() => {
+      setupFeaturedCarousel();
+    }, 100);
   }
 
   // Setup featured products carousel
   function setupFeaturedCarousel() {
+    // Clear existing interval
+    if (carouselInterval) {
+      clearInterval(carouselInterval);
+    }
+    
     const prevBtn = document.getElementById('browse-featured-prev');
     const nextBtn = document.getElementById('browse-featured-next');
     const container = document.getElementById('featured-products');
     
-    if (!prevBtn || !nextBtn || !container) return;
+    if (!prevBtn || !nextBtn || !container) {
+      console.log('Carousel elements not found, retrying in 500ms...');
+      setTimeout(setupFeaturedCarousel, 500);
+      return;
+    }
 
     const totalProducts = featuredProducts.length;
+    const itemsPerView = Math.min(5, totalProducts); // Max 5 items per view
     const maxIndex = Math.max(0, totalProducts - itemsPerView);
+    
+    // Reset index if it's beyond the new max
+    if (currentFeaturedIndex > maxIndex) {
+      currentFeaturedIndex = 0;
+    }
 
     function updateCarousel() {
-      const translateX = -(currentFeaturedIndex * (200 + 16)); // 200px card width + 16px margin
+      const card = container.querySelector('.featured-product-card');
+      const cardWidth = card ? card.offsetWidth + 16 : 216; // Default width + margin
+      const translateX = -(currentFeaturedIndex * cardWidth);
       container.style.transform = `translateX(${translateX}px)`;
     }
 
-    prevBtn.addEventListener('click', () => {
+    // Initialize carousel position
+    updateCarousel();
+
+    prevBtn.onclick = () => {
       if (currentFeaturedIndex > 0) {
         currentFeaturedIndex--;
         updateCarousel();
+      } else if (totalProducts > itemsPerView) {
+        // Loop to the end
+        currentFeaturedIndex = maxIndex;
+        updateCarousel();
       }
-    });
+    };
 
-    nextBtn.addEventListener('click', () => {
+    nextBtn.onclick = () => {
       if (currentFeaturedIndex < maxIndex) {
         currentFeaturedIndex++;
         updateCarousel();
-      }
-    });
-
-    // Auto-advance carousel every 6 seconds
-    setInterval(() => {
-      if (currentFeaturedIndex < maxIndex) {
-        currentFeaturedIndex++;
-        updateCarousel();
-      } else {
+      } else if (totalProducts > itemsPerView) {
+        // Loop to the beginning
         currentFeaturedIndex = 0;
         updateCarousel();
       }
-    }, 6000);
+    };
+
+    // Auto-advance carousel every 6 seconds only if there are more than 5 products
+    if (totalProducts > itemsPerView) {
+      carouselInterval = setInterval(() => {
+        if (currentFeaturedIndex < maxIndex) {
+          currentFeaturedIndex++;
+        } else {
+          currentFeaturedIndex = 0;
+        }
+        updateCarousel();
+      }, 6000);
+    }
+    
+    console.log('Carousel initialized successfully');
   }
   
   // Add product to cart
- // Add product to cart
-async function addToCart(productId) {
+  async function addToCart(productId) {
     // Check if user is logged in first
     const currentUser = getCurrentUser();
     if (!currentUser) {
@@ -541,6 +527,7 @@ async function addToCart(productId) {
   window.showLoginRequiredModal = showLoginRequiredModal;
   window.closeLoginRequiredModal = closeLoginRequiredModal;
   window.goToLogin = goToLogin;
+  window.changePage = changePage;
   
   // Helper functions to get product details
   function getProductName(productId) {
@@ -632,6 +619,11 @@ async function addToCart(productId) {
       // Apply initial filters and render products
       applyFilters();
       
+      // Setup all event listeners after data is loaded
+      setupSearch();
+      setupFilters();
+      setupMobileFilters();
+      
     } catch (err) {
       console.error("Error fetching data:", err);
       const productList = document.getElementById("product-list");
@@ -694,7 +686,7 @@ async function addToCart(productId) {
                 <a href="../../shop/product/product.html?id=${product.id}">${product.name}</a>
             </h3>
             <p class="text-sm text-gray-500 truncate">${product.composition || 'No description available'}</p>
-            <p class="font-semibold mt-2 text-sm">$${product.price ? product.price.toFixed(2) : '0.00'}</p>
+            <p class="font-semibold mt-2 text-sm">Rs ${product.price ? product.price.toFixed(2) : '0.00'}</p>
             <button class="w-full bg-[#A1E970] bg-opacity-90 text-black font-semibold py-2 rounded-lg mt-4 hover:bg-[#A1E970] add-to-cart-btn text-sm ${!product.inStock ? 'opacity-50 cursor-not-allowed' : ''}" 
               data-id="${product.id}" ${!product.inStock ? 'disabled' : ''}>
                 ${!product.inStock ? 'Out of Stock' : 'Add to cart'}
@@ -718,53 +710,55 @@ async function addToCart(productId) {
   }
   
   // Pagination UI
-  function renderPagination(activePage) {
-    const pagination = document.getElementById("pagination");
-    if (!pagination) return;
-    
-    pagination.innerHTML = "";
-    const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
-  
-    // Hide pagination if only one page
-    if (totalPages <= 1) {
-        pagination.style.display = "none";
-        return;
-    }
-    
-    pagination.style.display = "flex";
-  
-    // Prev
+ // Pagination UI
+function renderPagination(activePage) {
+  const pagination = document.getElementById("pagination");
+  if (!pagination) return;
+
+  pagination.innerHTML = "";
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+
+  // Hide pagination if only one page
+  if (totalPages <= 1) {
+    pagination.style.display = "none";
+    return;
+  }
+
+  pagination.style.display = "flex";
+
+  // Prev button
+  pagination.insertAdjacentHTML("beforeend", `
+    <button 
+      class="px-3 py-1 border rounded text-sm ${activePage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-200"}"
+      ${activePage === 1 ? "disabled" : `onclick="changePage(${activePage - 1})"`}
+    >Prev</button>
+  `);
+
+  // Page numbers
+  for (let i = 1; i <= totalPages; i++) {
     pagination.insertAdjacentHTML("beforeend", `
-        <button 
-            class="px-3 py-1 border rounded text-sm ${activePage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-200"}"
-            ${activePage === 1 ? "disabled" : `onclick="changePage(${activePage - 1})"`}
-        >Prev</button>
-    `);
-  
-    // Page numbers
-    for (let i = 1; i <= totalPages; i++) {
-        pagination.insertAdjacentHTML("beforeend", `
-            <button 
-                class="px-3 py-1 border rounded text-sm ${i === activePage ? "bg-[#A1E970] font-bold" : "hover:bg-gray-200"}"
-                onclick="changePage(${i})"
-            >${i}</button>
-        `);
-    }
-  
-    // Next
-    pagination.insertAdjacentHTML("beforeend", `
-        <button 
-            class="px-3 py-1 border rounded text-sm ${activePage === totalPages ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-200"}"
-            ${activePage === totalPages ? "disabled" : `onclick="changePage(${activePage + 1})"`}
-        >Next</button>
+      <button 
+        class="px-3 py-1 border rounded text-sm ${i === activePage ? "bg-[#A1E970] font-bold" : "hover:bg-gray-200"}"
+        onclick="changePage(${i})"
+      >${i}</button>
     `);
   }
-  
-  function changePage(page) {
-    currentPage = page;
-    renderProducts(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+
+  // Next button
+  pagination.insertAdjacentHTML("beforeend", `
+    <button 
+      class="px-3 py-1 border rounded text-sm ${activePage === totalPages ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-200"}"
+      ${activePage === totalPages ? "disabled" : `onclick="changePage(${activePage + 1})"`}
+    >Next</button>
+  `);
+}
+
+// Handle page change
+function changePage(page) {
+  currentPage = page;
+  renderProducts(currentPage);
+}
+
   
   // Setup search functionality
   function setupSearch() {
@@ -800,16 +794,16 @@ async function addToCart(productId) {
     const mobileMaxPriceDisplay = document.getElementById('mobile-max-price-display');
     
     // Calculate max price from products
-    const maxProductPrice = Math.max(...products.map(p => p.price), 100);
+    const maxProductPrice = products.length > 0 ? Math.max(...products.map(p => p.price), 100) : 100;
     
     if (priceRange && maxPriceDisplay) {
       priceRange.max = maxProductPrice;
       priceRange.value = maxProductPrice;
-      maxPriceDisplay.textContent = `$${maxProductPrice}`;
+      maxPriceDisplay.textContent = `Rs ${maxProductPrice}`;
       filterState.maxPrice = maxProductPrice;
       
       priceRange.addEventListener('input', function() {
-        maxPriceDisplay.textContent = `$${this.value}`;
+        maxPriceDisplay.textContent = `Rs ${this.value}`;
         filterState.maxPrice = parseFloat(this.value);
         applyFilters();
       });
@@ -818,10 +812,10 @@ async function addToCart(productId) {
     if (mobilePriceRange && mobileMaxPriceDisplay) {
       mobilePriceRange.max = maxProductPrice;
       mobilePriceRange.value = maxProductPrice;
-      mobileMaxPriceDisplay.textContent = `$${maxProductPrice}`;
+      mobileMaxPriceDisplay.textContent = `Rs ${maxProductPrice}`;
       
       mobilePriceRange.addEventListener('input', function() {
-        mobileMaxPriceDisplay.textContent = `$${this.value}`;
+        mobileMaxPriceDisplay.textContent = `Rs ${this.value}`;
         filterState.maxPrice = parseFloat(this.value);
       });
     }
@@ -886,7 +880,7 @@ async function addToCart(productId) {
       filterState = {
         searchTerm: '',
         selectedCategories: [],
-        maxPrice: Math.max(...products.map(p => p.price), 100),
+        maxPrice: products.length > 0 ? Math.max(...products.map(p => p.price), 100) : 100,
         inStockOnly: true,
         requiresPrescription: false,
         sortBy: 'relevance'
@@ -901,11 +895,11 @@ async function addToCart(productId) {
       }
       if (priceRange && maxPriceDisplay) {
         priceRange.value = filterState.maxPrice;
-        maxPriceDisplay.textContent = `$${filterState.maxPrice}`;
+        maxPriceDisplay.textContent = `Rs ${filterState.maxPrice}`;
       }
       if (mobilePriceRange && mobileMaxPriceDisplay) {
         mobilePriceRange.value = filterState.maxPrice;
-        mobileMaxPriceDisplay.textContent = `$${filterState.maxPrice}`;
+        mobileMaxPriceDisplay.textContent = `Rs ${filterState.maxPrice}`;
       }
       if (document.getElementById('filter-instock')) {
         document.getElementById('filter-instock').checked = true;
@@ -985,44 +979,7 @@ async function addToCart(productId) {
     });
   }
   
-  // // Initialize everything when DOM is loaded
-  // document.addEventListener("DOMContentLoaded", function() {
-  //   fetchData().then(() => {
-  //     setupSearch();
-  //     setupFilters();
-  //     setupMobileFilters();
-  //   });
-  // });
-
   function getQueryParam(param) {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(param);
   }
-  
-  document.addEventListener("DOMContentLoaded", function() {
-    const categoryParam = getQueryParam('category'); // e.g., "Pain relief"
-    
-    fetchData().then(() => {
-      setupSearch();
-      setupFilters();
-      setupMobileFilters();
-  
-      // Apply category filter if query param exists
-      if (categoryParam) {
-        const categoryObj = categories.find(c => c.name.toLowerCase() === categoryParam.toLowerCase());
-        if (categoryObj) {
-          filterState.selectedCategories = [categoryObj.category_id];
-  
-          // Check the corresponding checkbox
-          const checkbox = document.getElementById(`category-${categoryObj.category_id}`);
-          if (checkbox) checkbox.checked = true;
-  
-          applyFilters();
-        }
-      }
-    });
-  });
-  
-  
-  // Make changePage function available globally
-  window.changePage = changePage;

@@ -321,7 +321,7 @@ function renderSalesChart(orders) {
     animationEnabled: true,
     theme: "light2",
     axisX: { title: "Date", valueFormatString: "DD MMM" },
-    axisY: { title: "Sales ($)", includeZero: true },
+    axisY: { title: "Sales (Rs)", includeZero: true },
     data: [{ type: "column", indexLabel: "{y}", indexLabelPlacement: "outside", dataPoints: salesData }]
   });
   chart.render();

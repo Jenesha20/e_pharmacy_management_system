@@ -217,11 +217,13 @@
         </nav>
 
         <!-- FAQ -->
-        <div class="p-4 border-t border-gray-700">
-            <a href="../customer/contact.html" class="block text-center bg-teal-500 text-white px-3 py-2 rounded faq-text">
-                Look at the FAQs
-            </a>
-        </div>
+       <!-- Logout -->
+<div class="p-4 border-t border-gray-700">
+    <button id="logoutBtn" class="block w-full text-center bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded">
+        Logout
+    </button>
+</div>
+
     </aside>
 
  
@@ -265,6 +267,17 @@
                 overlay.classList.remove('active');
             }
         });
+        const logoutBtn = document.getElementById('logoutBtn');
+
+logoutBtn.addEventListener('click', () => {
+    // Example: clear session/local storage
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // Redirect to login page
+    window.location.href = "frontend/src/features/customer/home/landing/landing.html"; 
+    // change path if your login page is different
+});
     </script>
 </body>
 </html>

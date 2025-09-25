@@ -385,7 +385,7 @@ function renderTable(data) {
               <td class="p-3">${customer.email}</td>
               <td class="p-3">${customer.phone_number}</td>
              <td class="p-3">${customer.city}, ${customer.state}</td>
-              <td class="p-3">${customer.orderCount} ($${customer.totalSpent.toFixed(2)})</td>
+              <td class="p-3">${customer.orderCount} (Rs ${customer.totalSpent.toFixed(2)})</td>
               
               <td class="p-3">
                   <a href="customer_detail.html?customerId=${customer.customer_id}" 
@@ -423,9 +423,9 @@ function updateSummaryStats() {
   
   document.getElementById("summaryStats").innerHTML = `
       <span class="mr-4"><strong>${totalCustomers}</strong> Customers</span>
-      <span class="mr-4"><strong>${verifiedCustomers}</strong> Verified</span>
+     
       <span class="mr-4"><strong>${totalOrders}</strong> Orders</span>
-      <span><strong>$${totalRevenue.toFixed(2)}</strong> Revenue</span>
+      <span><strong>Rs ${totalRevenue.toFixed(2)}</strong> Revenue</span>
   `;
 }
 
