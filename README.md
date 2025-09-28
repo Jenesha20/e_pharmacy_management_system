@@ -2,7 +2,7 @@
 
 # 💊 E-Pharmacy Management System
 
-A modern, feature-based **E-Pharmacy Management System** built with **HTML, CSS, JavaScript, and Tailwind CSS**, designed for **medicine ordering, prescription management, and pharmacy administration**.
+A modern, feature-based **E-Pharmacy Management System** built with **HTML,JavaScript, and Tailwind CSS**, designed for **medicine ordering, prescription management, and pharmacy administration**.
 
 ---
 
