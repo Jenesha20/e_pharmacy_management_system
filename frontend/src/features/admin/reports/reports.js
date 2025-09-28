@@ -47,7 +47,7 @@ const demoData = {
     summary: [
       { title: 'Total Customers', value: '1,247', change: '+8%' },
       { title: 'New Customers', value: '89', change: '+12%' },
-      { title: 'Returning Customers', value: '423', change: '+5%' },
+      { title: 'Frequent Customers', value: '423', change: '+5%' },
       { title: 'Avg. Orders per Customer', value: '2.8', change: '+3%' }
     ],
     mainChart: [
@@ -61,7 +61,7 @@ const demoData = {
     ],
     secondaryChart: [
       { y: 89, label: 'New Customers' },
-      { y: 423, label: 'Returning Customers' }
+      { y: 423, label: 'Frequent Customers' }
     ],
     table: [
       { id: 'C001', name: 'Verified Customers', value: '1,089', change: '+10%' },
@@ -634,7 +634,7 @@ function generateCustomerReport(orders) {
   updateSummaryCards([
     { title: 'Total Customers', value: customers.length, change: '+8%' },
     { title: 'New Customers', value: newCustomers, change: '+12%' },
-    { title: 'Returning Customers', value: returningCustomers, change: '+5%' },
+    { title: 'Frequent Customers', value: returningCustomers, change: '+5%' },
     { title: 'Avg. Orders per Customer', value: orders.length > 0 ? (orders.length / Object.keys(customerOrderCount).length).toFixed(1) : '0', change: '+3%' }
   ]);
   
@@ -661,7 +661,7 @@ function generateCustomerReport(orders) {
   // Prepare customer type data for secondary chart
   const customerTypeDataPoints = [
     { y: newCustomers, label: 'New Customers' },
-    { y: returningCustomers, label: 'Returning Customers' }
+    { y: returningCustomers, label: 'Frequent Customers' }
   ];
   
   // Render secondary chart (customer types)

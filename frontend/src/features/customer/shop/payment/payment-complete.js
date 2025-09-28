@@ -204,7 +204,7 @@ function displayOrderItemsPreview() {
             <p class="text-xs text-gray-500">Qty: ${item.quantity}</p>
           </div>
         </div>
-        <span class="text-sm font-medium text-gray-800">Rs ${(item.price * item.quantity).toFixed(2)}</span>
+        <span class="text-sm font-medium text-gray-800">Rs ${((item.price-((item.discount/100)*item.price)) * item.quantity).toFixed(2)}</span>
       </div>
     `;
   }).join('');
@@ -317,7 +317,7 @@ Payment Status: ${orderData.payment_status}
 
 Items:
 ${orderData.items.map(item => 
-  `${item.name} x${item.quantity} - Rs ${(item.price * item.quantity).toFixed(2)}`
+  `${item.name} x${item.quantity} - Rs ${((item.price-((item.discount/100)*item.price)) * item.quantity).toFixed(2)}`
 ).join('\n')}
 
 Subtotal: Rs ${orderData.subtotal.toFixed(2)}

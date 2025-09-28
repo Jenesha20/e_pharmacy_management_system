@@ -136,9 +136,9 @@ function loadOrderData() {
   console.log('Cart items details:', cartItems.map(item => ({
     id: item.id,
     name: item.name,
-    price: item.price,
+    price: (item.price-((item.discount/100)*item.price)),
     quantity: item.quantity,
-    total: item.price * item.quantity
+    total: (item.price-((item.discount/100)*item.price)) * item.quantity
   })));
   displayOrderSummary();
   displayDeliveryAddress();
@@ -218,7 +218,7 @@ function displayOrderSummary() {
   }
   
   // Calculate totals
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const subtotal = cartItems.reduce((sum, item) => sum + ((item.price-((item.discount/100)*item.price)) * item.quantity), 0);
   const shipping = subtotal > 30 ? 0 : 2.99; // Reduced shipping cost
   const total = subtotal + shipping;
   
@@ -247,7 +247,7 @@ function displayOrderSummary() {
           <p class="text-xs text-gray-500">Qty: ${item.quantity}</p>
         </div>
       </div>
-      <span class="text-sm font-medium text-gray-800">Rs ${(item.price * item.quantity).toFixed(2)}</span>
+      <span class="text-sm font-medium text-gray-800">Rs ${((item.price-((item.discount/100)*item.price)) * item.quantity).toFixed(2)}</span>
     </div>
   `).join('');
   
@@ -326,7 +326,7 @@ async function completeOrder(paymentMethod) {
     
     // Calculate order totals
     const totals = calculateOrderTotals(cartItems.map(item => ({
-      unit_price: item.price,
+      unit_price: (item.price-((item.discount/100)*item.price)),
       quantity: item.quantity
     })));
     
@@ -451,148 +451,7 @@ function showNotification(message, type = 'success', duration = 3000) {
   }, duration);
 }
 
-// Process payment - Direct redirect without validation
-// function processPayment() {
-//   console.log('=== PAYMENT PROCESS STARTED ===');
-//   console.log('Skipping validation, creating order and redirecting to payment complete page...');
-  
-//   // Get selected payment method (default to UPI if none selected)
-//   const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked');
-//   const paymentMethod = selectedMethod ? selectedMethod.value : 'upi';
-//   console.log('Selected payment method:', paymentMethod);
-  
-//   // Show loading state
-//   const button = document.querySelector('button[onclick="processPayment()"]');
-//   if (button) {
-//     button.disabled = true;
-//     button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
-//   }
-  
-//   // Get customer ID from currentUser object
-//   const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-//   const customerId = currentUser && currentUser.customer_id ? currentUser.customer_id.toString() : '6';
-//   console.log('Processing order for customer:', customerId);
-  
-//   // Calculate totals
-//   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-//   const shipping = subtotal > 30 ? 0 : 2.99; // Reduced shipping cost
-//   const total = subtotal + shipping;
-  
-//   console.log('Pricing calculation:', {
-//     cartItems: cartItems,
-//     subtotal: subtotal,
-//     shipping: shipping,
-//     total: total
-//   });
-  
-//   // Generate order number
-//   const now = new Date();
-//   const year = now.getFullYear();
-//   const month = String(now.getMonth() + 1).padStart(2, '0');
-//   const day = String(now.getDate()).padStart(2, '0');
-//   const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-//   const orderNumber = `ORD-${year}${month}${day}-${random}`;
-  
-//   // Create order object for API (matching db.json structure)
-//   const order = {
-//     id: 'order_' + Date.now(),
-//     order_id: Date.now(),
-//     order_number: orderNumber,
-//     customer_id: customerId,
-//     order_date: new Date().toISOString(),
-//     total_amount: total,
-//     status: 'confirmed',
-//     shipping_address_id: selectedAddress?.id || 'default_address',
-//     prescription_id: null,
-//     payment_method: paymentMethod,
-//     payment_status: 'completed',
-//     tracking_number: null,
-//     notes: null
-//   };
-  
-//   // Create order object for localStorage (with full details)
-//   const orderForLocalStorage = {
-//     id: 'order_' + Date.now(),
-//     order_id: Date.now(),
-//     order_number: orderNumber,
-//     items: cartItems,
-//     address: selectedAddress,
-//     subtotal: subtotal,
-//     shipping: shipping,
-//     total: total,
-//     status: 'confirmed',
-//     payment_method: paymentMethod,
-//     payment_status: 'completed',
-//     customer_id: customerId,
-//     order_date: new Date().toISOString(),
-//     created_at: new Date().toISOString()
-//   };
-  
-//   console.log('Created order:', order);
-  
-//   // Save to API (async, don't wait)
-//   fetch('http://localhost:3000/orders', {
-//     method: 'POST',
-//     headers: {
-//       'Content-Type': 'application/json',
-//     },
-//     body: JSON.stringify(order)
-//   }).then(response => {
-//     if (response.ok) {
-//       console.log('Order saved to API successfully');
-      
-//       // Create order items for each cart item
-//       cartItems.forEach((item, index) => {
-//         const orderItem = {
-//           id: 'item_' + Date.now() + '_' + index + '_' + Math.random().toString(36).substr(2, 9),
-//           order_item_id: Date.now() + index + Math.random(),
-//           order_id: order.order_id,
-//           product_id: item.id,
-//           quantity: item.quantity,
-//           unit_price: item.price,
-//           subtotal: item.price * item.quantity
-//         };
-        
-//         // Save order item to API
-//         fetch('http://localhost:3000/order_items', {
-//           method: 'POST',
-//           headers: {
-//             'Content-Type': 'application/json',
-//           },
-//           body: JSON.stringify(orderItem)
-//         }).then(itemResponse => {
-//           if (itemResponse.ok) {
-//             console.log('Order item saved to API:', orderItem);
-//           } else {
-//             console.warn('Failed to save order item to API:', orderItem);
-//           }
-//         }).catch(itemError => {
-//           console.warn('Failed to save order item to API:', itemError);
-//         });
-//       });
-//     } else {
-//       console.warn('Failed to save order to API');
-//     }
-//   }).catch(error => {
-//     console.warn('API not available:', error);
-//   });
-  
-//   // Save to localStorage
-//   const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-//   orders.push(orderForLocalStorage);
-//   localStorage.setItem('orders', JSON.stringify(orders));
-//   console.log('Order saved to localStorage:', orderForLocalStorage);
-  
-//   // Show success notification
-//   showNotification('Payment successful! Redirecting...', 'success');
-  
-//   // Redirect immediately
-//   console.log('Redirecting to payment complete page...');
-//   window.location.href = 'payment-complete.html';
-// }
 
-// Process payment - Direct redirect without validation
-// Process payment - Direct redirect without validation
 async function processPayment() {
   console.log('🚀🚀🚀 PAYMENT PROCESS STARTED 🚀🚀🚀');
   console.log('=== PAYMENT PROCESS STARTED ===');
@@ -651,7 +510,7 @@ async function processPayment() {
   console.log('✅ Cart has items, proceeding with order creation');
   
   // Calculate totals
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const subtotal = cartItems.reduce((sum, item) => sum + ((item.price-((item.discount/100)*item.price)) * item.quantity), 0);
   const shipping = subtotal > 30 ? 0 : 2.99;
   const total = subtotal + shipping;
   
@@ -774,7 +633,7 @@ async function processPayment() {
     console.log(`=== PROCESSING CART ITEM ${index + 1}/${cartItems.length} ===`);
     console.log('Cart item details:', item);
     console.log('Item ID:', item.id, 'Type:', typeof item.id);
-    console.log('Item price:', item.price, 'Type:', typeof item.price);
+    console.log('Item price:', (item.price-((item.discount/100)*item.price)), 'Type:', typeof item.price);
     console.log('Item quantity:', item.quantity, 'Type:', typeof item.quantity);
     
     const orderItem = {
@@ -783,8 +642,8 @@ async function processPayment() {
       order_id: finalOrderId,
       product_id: parseInt(item.id),
       quantity: item.quantity,
-      unit_price: item.price,
-      subtotal: item.price * item.quantity
+      unit_price: (item.price-((item.discount/100)*item.price)),
+      subtotal: (item.price-((item.discount/100)*item.price)) * item.quantity
     };
     
     console.log(`Creating order item ${index + 1}/${cartItems.length}:`, orderItem);
@@ -1260,8 +1119,8 @@ async function testOrderItemCreation() {
             order_id: latestOrder.order_id,
             product_id: parseInt(item.id),
             quantity: item.quantity,
-            unit_price: item.price,
-            subtotal: item.price * item.quantity
+            unit_price: (item.price-((item.discount/100)*item.price)),
+            subtotal: (item.price-((item.discount/100)*item.price)) * item.quantity
           };
           
           console.log(`Creating test order item ${index + 1}:`, testOrderItem);
@@ -1320,8 +1179,8 @@ async function testOrderItemsCreation() {
       order_id: testOrderId,
       product_id: parseInt(item.id),
       quantity: item.quantity,
-      unit_price: item.price,
-      subtotal: item.price * item.quantity
+      unit_price: (item.price-((item.discount/100)*item.price)),
+      subtotal: (item.price-((item.discount/100)*item.price)) * item.quantity
     };
     
     console.log(`Creating test order item ${index + 1}:`, orderItem);

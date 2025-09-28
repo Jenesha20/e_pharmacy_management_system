@@ -223,7 +223,7 @@ function renderOrderItems() {
 
 // Calculate and display totals
 function calculateTotals() {
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const subtotal = cartItems.reduce((sum, item) => sum + ((item.price-((item.discount/100)*item.price)) * item.quantity), 0);
   const shipping = subtotal > 30 || subtotal === 0 ? 0 : 5;
   const total = subtotal + shipping;
 

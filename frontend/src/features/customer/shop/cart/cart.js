@@ -561,7 +561,7 @@ function renderCart(cartItems) {
 
   cartItems.forEach(item => {
     // Validate item has required properties
-    if (!item.id || !item.name || !item.price) {
+    if (!item.id || !item.name || !(item.price-((item.discount/100)*item.price)).toFixed(2)) {
       console.error('Invalid cart item:', item);
       return; // Skip rendering invalid items
     }
@@ -579,7 +579,7 @@ function renderCart(cartItems) {
             <div class="flex-grow item-details">
               <h3 class="font-medium text-gray-900">${item.name}</h3>
               <p class="text-sm text-gray-500">${item.composition || 'Medicine'}</p>
-              <p class="text-lg font-semibold text-green-600 mt-1">Rs ${item.price.toFixed(2)}</p>
+              <p class="text-lg font-semibold text-green-600 mt-1">Rs ${(item.price-((item.discount/100)*item.price)).toFixed(2)}</p>
               ${item.requires_prescription ? '<p class="text-xs text-orange-600 mt-1"><i class="fas fa-exclamation-triangle mr-1"></i>Prescription Required</p>' : ''}
             </div>
             
@@ -657,7 +657,7 @@ function renderPrescriptionSelectionPanel(cartItems) {
       <div class="prescription-selection-item">
 
         <h4>${item.name}</h4>
-        <p>Quantity: ${item.quantity} × Rs ${item.price.toFixed(2)}</p>
+        <p>Quantity: ${item.quantity} × Rs ${(item.price-((item.discount/100)*item.price)).toFixed(2)}</p>
         <div class="prescription-dropdown-container">
           ${statusDisplay ? `
             <div class="mb-2 text-center">
@@ -703,7 +703,7 @@ function renderOrderSummary(cartItems) {
   const container = document.getElementById("orderSummary");
   if (!container) return;
 
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const subtotal = cartItems.reduce((sum, item) => sum + ((item.price-((item.discount/100)*item.price)).toFixed(2) * item.quantity), 0);
   const shipping = subtotal > 30 || subtotal == 0 ? 0 : 5;
   const total = subtotal + shipping;
 

@@ -234,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <!-- Prescription Badge -->
             ${
               product.requires_prescription
-              ? `<span class="absolute top-1 right-1 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded text-center">
+              ? `<span class="absolute top-1 right-1 bg-red-500 text-white text-sm px-1.5 py-0.5 rounded text-center">
                   Rx
               </span>`
               : ""
@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <!-- Stock Status -->
             ${
               !product.inStock
-              ? `<span class="absolute top-1 left-1 bg-gray-500 text-white text-xs px-1.5 py-0.5 rounded text-center">
+              ? `<span class="absolute top-1 left-1 bg-gray-500 text-white text-sm px-1.5 py-0.5 rounded text-center">
                   Out
               </span>`
               : ""
@@ -262,8 +262,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 <h3 class="font-semibold text-m">
                     <a href="../../shop/product/product.html?id=${product.id}">${product.name}</a>
                 </h3>
-                <p class="text-sm text-gray-500 truncate">${product.composition || 'No description available'}</p>
-                <p class="font-semibold mt-2 text-sm">Rs ${product.price ? product.price.toFixed(2) : '0.00'}</p>
+                <p class="text-m text-gray-500 truncate">${product.composition || 'No description available'}</p>
+                <p class="font-semibold mt-2 text-sm">Rs ${(product.price-((product.discount/100)*product.price)) ? (product.price-((product.discount/100)*product.price)).toFixed(2) : '0.00'}</p>
                 <button class="w-full bg-[#A1E970] bg-opacity-90 text-black font-semibold py-2 rounded-lg mt-4 hover:bg-[#A1E970] add-to-cart-btn text-sm ${!product.inStock ? 'opacity-50 cursor-not-allowed' : ''}" 
                   data-id="${product.id}" ${!product.inStock ? 'disabled' : ''}>
                     ${!product.inStock ? 'Out of Stock' : 'Add to cart'}
@@ -686,7 +686,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <a href="../../shop/product/product.html?id=${product.id}">${product.name}</a>
             </h3>
             <p class="text-sm text-gray-500 truncate">${product.composition || 'No description available'}</p>
-            <p class="font-semibold mt-2 text-sm">Rs ${product.price ? product.price.toFixed(2) : '0.00'}</p>
+            <p class="font-semibold mt-2 text-sm">Rs ${(product.price-((product.discount/100)*product.price)) ? (product.price-((product.discount/100)*product.price)).toFixed(2) : '0.00'}</p>
             <button class="w-full bg-[#A1E970] bg-opacity-90 text-black font-semibold py-2 rounded-lg mt-4 hover:bg-[#A1E970] add-to-cart-btn text-sm ${!product.inStock ? 'opacity-50 cursor-not-allowed' : ''}" 
               data-id="${product.id}" ${!product.inStock ? 'disabled' : ''}>
                 ${!product.inStock ? 'Out of Stock' : 'Add to cart'}
