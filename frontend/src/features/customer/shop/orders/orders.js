@@ -1,8 +1,3 @@
-// Orders page functionality with backend integration
-// Note: Import statements require a local server to work properly
-// For now, we'll define the functions locally to avoid import issues
-
-// API functions (copied from orders-api.js to avoid import issues)
 function loadComponent(id, filePath) {
   fetch(filePath)
     .then(res => {

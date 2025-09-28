@@ -54,25 +54,25 @@
       
       <!-- Photo Upload Section at Top -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1" for="medicine-photos">Upload Photo</label>
+        <label class="block text-md font-medium text-gray-700 mb-1" for="medicine-photos">Upload Photo</label>
         <input
           class="w-full p-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
           id="medicine-photos"
           type="file"
           accept="image/*"
         />
-        <p class="text-xs text-gray-500 mt-1">Upload an image of the medicine (optional). The image will be converted to base64 and stored directly in the database.</p>
+        <p class="text-sm text-gray-500 mt-1">Upload an image of the medicine (optional). The image will be converted to base64 and stored directly in the database.</p>
         <div id="photo-preview" class="flex flex-wrap mt-2 gap-2"></div>
       </div>
 
       <!-- Medicine Name and SKU -->
       <div class="grid grid-cols-2 gap-6">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1" for="medicine-name">Medicine Name*</label>
+          <label class="block text-md font-medium text-gray-700 mb-1" for="medicine-name">Medicine Name*</label>
           <input class="w-full p-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" id="medicine-name" type="text" required/>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1" for="medicine-sku">SKU*</label>
+          <label class="block text-md font-medium text-gray-700 mb-1" for="medicine-sku">SKU*</label>
           <input class="w-full p-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" id="medicine-sku" type="text" required/>
         </div>
       </div>
@@ -80,7 +80,7 @@
       <!-- Category and Manufacturer -->
       <div class="grid grid-cols-2 gap-6">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1" for="medicine-category">Medicine Category*</label>
+          <label class="block text-md font-medium text-gray-700 mb-1" for="medicine-category">Medicine Category*</label>
           <div class="relative">
             <select class="w-full p-2 border border-gray-300 rounded-md bg-gray-100 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500" id="medicine-category" required>
               <option value="">- Select Category -</option>
@@ -89,7 +89,7 @@
           </div>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1" for="manufacturer">Manufacturer*</label>
+          <label class="block text-md font-medium text-gray-700 mb-1" for="manufacturer">Manufacturer*</label>
           <input class="w-full p-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" id="manufacturer" type="text" required/>
         </div>
       </div>
@@ -97,11 +97,11 @@
       <!-- Composition and Description -->
       <div class="grid grid-cols-2 gap-6">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1" for="composition">Composition*</label>
+          <label class="block text-md font-medium text-gray-700 mb-1" for="composition">Composition*</label>
           <input class="w-full p-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" id="composition" type="text" required/>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1" for="description">Description*</label>
+          <label class="block text-md font-medium text-gray-700 mb-1" for="description">Description*</label>
           <input class="w-full p-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" id="description" type="text" required/>
         </div>
       </div>
@@ -109,11 +109,11 @@
       <!-- Price and Quantity -->
       <div class="grid grid-cols-2 gap-6">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1" for="price">MRP (₹)*</label>
+          <label class="block text-md font-medium text-gray-700 mb-1" for="price">MRP (₹)*</label>
           <input class="w-full p-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" id="price" type="number" step="0.01" min="0" required/>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1" for="dis">Discount (%)*</label>
+          <label class="block text-md font-medium text-gray-700 mb-1" for="dis">Discount (%)*</label>
           <input class="w-full p-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" id="dis" type="number" step="0.01" min="0" required/>
         </div>
         
@@ -122,11 +122,11 @@
       <!-- Expiry Date and Low Stock Threshold -->
       <div class="grid grid-cols-2 gap-6">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1" for="quantity">Initial Stock Quantity*</label>
+          <label class="block text-md font-medium text-gray-700 mb-1" for="quantity">Initial Stock Quantity*</label>
           <input class="w-full p-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" id="quantity" type="number" min="0" required/>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1" for="low-stock-threshold">Low Stock Threshold*</label>
+          <label class="block text-md font-medium text-gray-700 mb-1" for="low-stock-threshold">Low Stock Threshold*</label>
           <input class="w-full p-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" id="low-stock-threshold" type="number" min="1" value="10" required/>
         </div>
       </div>
@@ -134,7 +134,7 @@
       <!-- Prescription Required -->
       <div class="grid grid-cols-2 gap-6">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1" for="expiry-date">Expiry Date*</label>
+          <label class="block text-md font-medium text-gray-700 mb-1" for="expiry-date">Expiry Date*</label>
           <div class="relative">
             <input class="w-full p-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" id="expiry-date" type="date" required/>
             <span class="material-icons absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">calendar_today</span>
@@ -142,7 +142,7 @@
         </div>
       
         <div class="relative">
-          <label class="block text-sm font-medium text-gray-700 mb-1" for="requires-prescription">Requires Prescription*</label>
+          <label class="block text-md font-medium text-gray-700 mb-1" for="requires-prescription">Requires Prescription*</label>
           <select class="w-full p-2 border border-gray-300 rounded-md bg-gray-100 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500" id="requires-prescription" required>
             <option value="false">No</option>
             <option value="true">Yes</option>
@@ -155,13 +155,13 @@
       <div>
         <label class="flex items-center">
           <input type="checkbox" id="featured-product" class="rounded border-gray-300 text-red-600 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50">
-          <span class="ml-2 text-sm font-medium text-gray-700">Featured Product</span>
+          <span class="ml-2 text-md font-medium text-gray-700">Featured Product</span>
         </label>
       </div>
 
       <!-- Side Effects -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1" for="side-effects">Side Effects*</label>
+        <label class="block text-md font-medium text-gray-700 mb-1" for="side-effects">Side Effects*</label>
         <textarea class="w-full p-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" id="side-effects" rows="2" required></textarea>
       </div>
 

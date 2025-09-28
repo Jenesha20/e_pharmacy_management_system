@@ -1,7 +1,3 @@
-// Payment page functionality
-// Note: Import statements require a local server to work properly
-// For now, we'll define the functions locally to avoid import issues
-
 let orderData = null;
 let cartItems = [];
 let selectedAddress = null;

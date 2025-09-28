@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+</head>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#1D4ED8",
+            "background-light": "#FFFFFF",
+            "background-dark": "#111827",
+            "text-light": "#1F2937",
+            "text-dark": "#F9FAFB",
+            "subtext-light": "#6B7280",
+            "subtext-dark": "#9CA3AF",
+            "border-light": "#E5E7EB",
+            "border-dark": "#374151"
+          },
+          fontFamily: {
+            display: ["Inter", "sans-serif"],
+          },
+          borderRadius: {
+            DEFAULT: "0.5rem",
+          },
+        },
+      },
+    };
+  </script>
+<style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
+    <div id="header"></div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+<main class="py-12 md:py-20">
+<div class="max-w-4xl mx-auto">
+<div class="prose lg:prose-xl dark:prose-invert max-w-none">
+<h1 class="text-4xl md:text-5xl font-extrabold text-text-light dark:text-text-dark">Privacy Policy</h1>
+<p class="mt-4 text-lg text-subtext-light dark:text-subtext-dark">
+            At J-Med, we are committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your personal information when you use our services. By using J-Med, you agree to the terms outlined in this policy.
+          </p>
+<h2 class="mt-12 text-2xl font-bold text-text-light dark:text-text-dark">Information We Collect</h2>
+<p class="text-subtext-light dark:text-subtext-dark">We collect various types of information to provide and improve our services, including:</p>
+<ul class="list-disc pl-5 mt-4 space-y-2 text-subtext-light dark:text-subtext-dark">
+<li><strong>Personal Information:</strong> Name, contact details, date of birth, and payment information.</li>
+<li><strong>Health Information:</strong> Prescription details, medical history, and health-related queries.</li>
+<li><strong>Usage Data:</strong> Information about your interactions with our website and app, such as pages visited and search queries.</li>
+<li><strong>Device Information:</strong> Device type, operating system, and IP address.</li>
+</ul>
+<h2 class="mt-12 text-2xl font-bold text-text-light dark:text-text-dark">How We Use Your Information</h2>
+<p class="text-subtext-light dark:text-subtext-dark">We use your information for the following purposes:</p>
+<ul class="list-disc pl-5 mt-4 space-y-2 text-subtext-light dark:text-subtext-dark">
+<li>To process and fulfill your orders.</li>
+<li>To manage your prescriptions and provide medication reminders.</li>
+<li>To personalize your experience and offer relevant products and services.</li>
+<li>To communicate with you about your orders, promotions, and updates.</li>
+<li>To improve our services and develop new features.</li>
+<li>To ensure the security and integrity of our platform.</li>
+</ul>
+<h2 class="mt-12 text-2xl font-bold text-text-light dark:text-text-dark">Information Sharing and Disclosure</h2>
+<p class="text-subtext-light dark:text-subtext-dark">We may share your information with:</p>
+<ul class="list-disc pl-5 mt-4 space-y-2 text-subtext-light dark:text-subtext-dark">
+<li>Healthcare providers to verify prescriptions and provide medical advice.</li>
+<li>Payment processors to handle transactions securely.</li>
+<li>Service providers who assist us in delivering our services, such as shipping companies and customer support.</li>
+<li>Legal authorities if required by law or to protect our rights and safety.</li>
+</ul>
+<h2 class="mt-12 text-2xl font-bold text-text-light dark:text-text-dark">Data Security</h2>
+<p class="text-subtext-light dark:text-subtext-dark">We implement robust security measures to protect your information from unauthorized access, use, or disclosure. These measures include encryption, access controls, and regular security audits.</p>
+<h2 class="mt-12 text-2xl font-bold text-text-light dark:text-text-dark">Your Rights</h2>
+<p class="text-subtext-light dark:text-subtext-dark">You have the right to:</p>
+<ul class="list-disc pl-5 mt-4 space-y-2 text-subtext-light dark:text-subtext-dark">
+<li>Access and update your personal information.</li>
+<li>Request the deletion of your information.</li>
+<li>Opt-out of marketing communications.</li>
+<li>Lodge a complaint with a data protection authority.</li>
+</ul>
+<h2 class="mt-12 text-2xl font-bold text-text-light dark:text-text-dark">Changes to This Policy</h2>
+<p class="text-subtext-light dark:text-subtext-dark">We may update this Privacy Policy from time to time. We will notify you of any significant changes by posting the updated policy on our website.</p>
+</div>
+</div>
+</main>
+<div id="footer"></div>
+</div>
+    <script>
+        function loadComponent(id, filePath) {
+  fetch(filePath)
+    .then(res => {
+      if (!res.ok) throw new Error(`Failed to load ${filePath}`);
+      return res.text();
+    })
+    .then(data => {
+      const element = document.getElementById(id);
+      if (element) {
+        element.innerHTML = data;
+        
+        // If this is the header component, we need to load the navbar script
+        if (id === 'header') {
+          // Load the navbar script
+          const script = document.createElement('script');
+          script.src = '/frontend/src/core/components/navbar.js';
+          script.onload = () => {
+            console.log("Navbar script loaded successfully");
+            // Initialize auth after script is loaded
+            setTimeout(() => {
+              if (window.initAuth) {
+                console.log("Calling initAuth after script load");
+                window.initAuth();
+              } else if (window.refreshAuth) {
+                console.log("Calling refreshAuth after script load");
+                window.refreshAuth();
+              }
+            }, 100);
+          };
+          script.onerror = () => {
+            console.error("Failed to load navbar script");
+          };
+          document.head.appendChild(script);
+        }
+        
+        // Reattach event listeners after loading
+        setTimeout(attachEventListeners, 100);
+      }
+    })
+    .catch(err => console.error("Error loading component:", err));
+}
+
+// Load components
+document.addEventListener('DOMContentLoaded', function () {
+  loadComponent("header", "/frontend/src/core/components/navbar.html");
+  loadComponent("footer", "/frontend/src/core/components/footer.html");
+  initPage();
+});
+    </script>
+</body>
+</html>
