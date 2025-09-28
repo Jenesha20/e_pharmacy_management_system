@@ -80,6 +80,234 @@
         .search-container:focus-within .search-suggestions {
             display: block;
         }
+        
+        /* Toast notification animations */
+        #toast {
+            transition: all 0.3s ease-in-out;
+            min-width: 300px;
+            font-weight: 500;
+        }
+        #toast.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        #toast.hidden {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.8);
+        }
+        
+        /* Featured Products Carousel Styles */
+        #featured-carousel {
+            position: relative;
+            overflow: visible;
+        }
+
+        #featured-carousel .relative.h-64 {
+            background-image: url('../../../../core/assests/carousal.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            padding: 0 4rem; /* Add padding to prevent overlap with navigation buttons */
+            min-height: 24rem; /* Increased height */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Add blur effect overlay */
+        #featured-carousel .relative.h-64::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('../../../../core/assests/carousal.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: blur(8px);
+            transform: scale(1.1); /* Slightly scale to avoid blur edges */
+            z-index: -1;
+        }
+
+        /* Add a subtle overlay for better text readability */
+        #featured-carousel .relative.h-64::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(1px);
+            z-index: 0;
+        }
+
+        #featured-carousel [data-carousel-item] {
+            transition: all 0.7s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+        }
+
+        #featured-carousel [data-carousel-item].hidden {
+            opacity: 0;
+            transform: translateX(100%);
+            display: none;
+        }
+
+        #featured-carousel [data-carousel-item].block {
+            opacity: 1;
+            transform: translateX(0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Carousel indicators */
+        #carousel-indicators {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            width: 100% !important;
+        }
+        
+        #carousel-indicators button {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin: 0 3px;
+        }
+
+        #carousel-indicators button:hover {
+            transform: scale(1.2);
+        }
+
+        /* Carousel navigation buttons */
+        #featured-carousel [data-carousel-prev],
+        #featured-carousel [data-carousel-next] {
+            transition: all 0.3s ease;
+            z-index: 40; /* Ensure buttons are above content */
+            display: flex !important;
+            visibility: visible !important;
+        }
+
+        #featured-carousel [data-carousel-prev]:hover,
+        #featured-carousel [data-carousel-next]:hover {
+            transform: scale(1.1);
+        }
+
+        #featured-carousel [data-carousel-prev] span,
+        #featured-carousel [data-carousel-next] span {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        #featured-carousel [data-carousel-prev]:hover span,
+        #featured-carousel [data-carousel-next]:hover span {
+            background: rgba(255, 255, 255, 0.95);
+            transform: scale(1.1);
+            border-color: rgba(0, 0, 0, 0.2);
+        }
+
+        /* Product card styling within carousel */
+        #featured-carousel .bg-white {
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        #featured-carousel .add-to-cart-btn {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #featured-carousel .add-to-cart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(161, 233, 112, 0.4);
+        }
+
+        #featured-carousel .add-to-cart-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Placeholder icon styles */
+        .placeholder-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            border-radius: 0.375rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            #featured-carousel .relative.h-64 {
+                min-height: 20rem; /* Maintain increased height on mobile */
+                padding: 0 2rem; /* Reduce padding on mobile */
+            }
+            
+            #featured-carousel .max-w-sm {
+                max-width: 90%;
+            }
+            
+            #featured-carousel .w-20 {
+                width: 5rem; /* Smaller image on mobile */
+            }
+            
+            #featured-carousel .h-20 {
+                height: 5rem; /* Smaller image on mobile */
+            }
+            
+            #featured-carousel .bg-white {
+                min-height: 240px; /* Smaller card height on mobile */
+            }
+            
+            #featured-carousel [data-carousel-prev],
+            #featured-carousel [data-carousel-next] {
+                padding: 0 1rem; /* Reduce button padding on mobile */
+            }
+        }
+
+        @media (max-width: 480px) {
+            #featured-carousel .relative.h-64 {
+                min-height: 18rem; /* Slightly smaller height on small mobile */
+                padding: 0 1rem; /* Further reduce padding on small mobile */
+            }
+            
+            #featured-carousel .max-w-sm {
+                max-width: 95%;
+            }
+            
+            #featured-carousel .w-20 {
+                width: 4rem; /* Even smaller image on small mobile */
+            }
+            
+            #featured-carousel .h-20 {
+                height: 4rem; /* Even smaller image on small mobile */
+            }
+            
+            #featured-carousel .bg-white {
+                min-height: 220px; /* Even smaller card height on small mobile */
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -111,9 +339,39 @@
 
         <!-- Featured Products Section -->
         <section class="mb-12">
-            <h3 class="text-xl font-semibold mb-4">Featured Product</h3>
-            <div id="featured-product" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-              <!-- JS will insert product card here -->
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold">Featured Products</h3>
+            </div>
+            
+            <!-- Automatic Carousel for Featured Products -->
+            <div id="featured-carousel" class="relative w-full" data-carousel="slide">
+                <!-- Carousel wrapper -->
+                <div class="relative h-64 overflow-hidden rounded-lg md:h-80 bg-gradient-to-r from-blue-50 to-green-50">
+                    <!-- Featured products will be loaded dynamically here -->
+                </div>
+                
+                <!-- Slider indicators -->
+                <div id="carousel-indicators" class="absolute z-30 flex justify-center items-center bottom-5 left-1/2 transform -translate-x-1/2 space-x-3">
+                    <!-- Indicators will be generated dynamically -->
+                </div>
+                
+                <!-- Slider controls -->
+                <button type="button" class="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-prev>
+                    <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none">
+                        <svg class="w-4 h-4 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1l-4 4 4 4"/>
+                        </svg>
+                        <span class="sr-only">Previous</span>
+                    </span>
+                </button>
+                <button type="button" class="absolute top-0 right-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-next>
+                    <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none">
+                        <svg class="w-4 h-4 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1l4 4-4 4"/>
+                        </svg>
+                        <span class="sr-only">Next</span>
+                    </span>
+                </button>
             </div>
         </section>
 
@@ -358,7 +616,7 @@
                         placeholder="Enter zip code"
                         type="text"
                     />
-                    <div id="toast" class="fixed bottom-5 right-5 p-4 rounded-lg text-white hidden"></div>
+                    <div id="toast" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6 rounded-lg text-white text-center shadow-2xl z-50 hidden"></div>
                 </div>
             </div>
         </div>
@@ -368,16 +626,18 @@
     const zipInput = document.getElementById("zipInput");
     const toast = document.getElementById("toast");
 
-    const availableZipCodes = ["560001", "560002", "110001", "400001"];
+    const availableZipCodes = ["600001", "600002", "600003", "600004"];
 
     function showToast(message, isSuccess = true) {
         toast.textContent = message;
-        toast.className = `fixed bottom-5 right-5 p-4 rounded-lg text-white ${
+        toast.className = `fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6 rounded-lg text-white text-center shadow-2xl z-50 ${
             isSuccess ? "bg-green-500" : "bg-red-500"
         }`;
         toast.classList.remove("hidden");
+        toast.classList.add("show");
 
         setTimeout(() => {
+            toast.classList.remove("show");
             toast.classList.add("hidden");
         }, 3000);
     }
@@ -547,6 +807,13 @@ function redirectToCategory(categoryName) {
             renderCategories(content.categories);
             renderHowItWorks(content.howItWorks);
             renderTestimonials(content.testimonials);
+            
+            // Initialize testimonial slider after testimonials are rendered
+            setTimeout(() => {
+                if (window.initializeTestimonialSlider) {
+                    window.initializeTestimonialSlider();
+                }
+            }, 100);
         }
 
         // Load content when DOM is ready
@@ -596,99 +863,6 @@ function redirectToCategory(categoryName) {
         });
     </script>
     
-    <script>
-        const API_URL = "http://localhost:3000/products";
-      
-        async function loadFeaturedProduct() {
-          try {
-            const res = await fetch(API_URL);
-            const products = await res.json();
-      
-            // Filter featured product(s) (assuming backend returns `featured: true`)
-            const featured = products.filter(p => p.featured_product);
-      
-            const container = document.getElementById("featured-product");
-            container.innerHTML = "";
-      
-            featured.forEach(product => {
-              const card = `
-                <div class="product-card bg-white rounded-lg shadow-md p-4 flex flex-col">
-                  <img alt="${product.name}" 
-                       class="h-40 object-contain mx-auto mb-4" 
-                       src="${product.image_url}" />
-                  
-                  <h4 class="font-semibold text-gray-800">${product.name}</h4>
-                  <p class="text-sm text-gray-500 mb-2">${product.composition}</p>
-                  
-                  
-                  <p class="text-lg font-bold text-gray-900 mb-4">Rs ${product.price}</p>
-                  
-                  <button onclick="handleAddToCart(${product.id})" 
-                          class="mt-auto w-full bg-green-500 text-white rounded-lg py-2 hover:bg-green-600 transition flex items-center justify-center">
-                    <span class="material-icons mr-2 text-sm">add_shopping_cart</span> Add to cart
-                  </button>
-                </div>
-              `;
-              container.innerHTML += card;
-            });
-          } catch (error) {
-            console.error("Error fetching featured products:", error);
-          }
-        }
-      
-        function renderStars(rating) {
-          let stars = "";
-          for (let i = 1; i <= 5; i++) {
-            stars += `<i class="fas fa-star${i <= Math.floor(rating) ? "" : "-half-alt"}"></i>`;
-          }
-          return stars;
-        }
-      
-        // Load on page load
-        loadFeaturedProduct();
-
-        document.querySelectorAll('.category-card').forEach(card => {
-  card.addEventListener('click', () => {
-    const categoryName = card.dataset.category;
-
-    // Navigate to browse.html with category query param
-    window.location.href = `../../shop/browse/browse.html?category=${encodeURIComponent(categoryName)}`;
-  });
-});
-// const zipInput = document.getElementById("zipInput");
-//   const toast = document.getElementById("toast");
-
-//   // Example: available zip codes
-//   const availableZipCodes = ["560001", "560002", "110001", "400001"];
-
-//   function showToast(message, isSuccess = true) {
-//     toast.textContent = message;
-//     toast.className = `fixed bottom-5 right-5 p-4 rounded-lg text-white ${
-//       isSuccess ? "bg-green-500" : "bg-red-500"
-//     }`;
-//     toast.classList.remove("hidden");
-
-//     setTimeout(() => {
-//       toast.classList.add("hidden");
-//     }, 3000);
-//   }
-
-//   zipInput.addEventListener("keypress", function (e) {
-//     if (e.key === "Enter") {
-//       const zip = zipInput.value.trim();
-//       if (zip.length === 6 && /^\d+$/.test(zip)) {
-//         if (availableZipCodes.includes(zip)) {
-//           showToast("Delivery is available in this area!", true);
-//         } else {
-//           showToast("Sorry, delivery is not available in this area.", false);
-//         }
-//       } else {
-//         showToast("Please enter a valid 6-digit zip code.", false);
-//       }
-//     }
-//   });
-
-      </script>
       
 </body>
 </html>

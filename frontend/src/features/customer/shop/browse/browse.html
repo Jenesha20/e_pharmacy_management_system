@@ -8,6 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
     <link rel="stylesheet" href="browse.css">
+    <!-- HS Carousel -->
+    <script src="https://cdn.jsdelivr.net/npm/preline@2.0.3/dist/preline.min.js"></script>
     <style>
         body {
             font-family: 'Roboto', sans-serif;
@@ -152,19 +154,37 @@
                 <section class="mb-12">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-xl font-semibold">Featured Products</h2>
-                        <!-- <div class="flex space-x-2">
-                            <button id="browse-featured-prev" class="p-2 bg-gray-200 rounded-full hover:bg-gray-300 transition">
-                                <span class="material-icons">chevron_left</span>
-                            </button>
-                            <button id="browse-featured-next" class="p-2 bg-gray-200 rounded-full hover:bg-gray-300 transition">
-                                <span class="material-icons">chevron_right</span>
-                            </button>
-                        </div> -->
                     </div>
-                    <div class="relative overflow-hidden">
-                        <div id="featured-products" class="flex transition-transform duration-500 ease-in-out">
-                            <!-- Featured products will be loaded dynamically -->
+                    
+                    <!-- Automatic Carousel for Featured Products -->
+                    <div id="featured-carousel" class="relative w-full" data-carousel="slide">
+                        <!-- Carousel wrapper -->
+                        <div class="relative h-64 overflow-hidden rounded-lg md:h-80 bg-gradient-to-r from-blue-50 to-green-50">
+                            <!-- Featured products will be loaded dynamically here -->
                         </div>
+                        
+                        <!-- Slider indicators -->
+                        <div id="carousel-indicators" class="absolute z-30 flex -translate-x-1/2 bottom-5 left-1/2 space-x-3 rtl:space-x-reverse">
+                            <!-- Indicators will be generated dynamically -->
+                        </div>
+                        
+                        <!-- Slider controls -->
+                        <button type="button" class="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-prev>
+                            <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none">
+                                <svg class="w-4 h-4 text-gray-800 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4"/>
+                                </svg>
+                                <span class="sr-only">Previous</span>
+                            </span>
+                        </button>
+                        <button type="button" class="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-next>
+                            <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none">
+                                <svg class="w-4 h-4 text-gray-800 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+                                </svg>
+                                <span class="sr-only">Next</span>
+                            </span>
+                        </button>
                     </div>
                 </section>
 

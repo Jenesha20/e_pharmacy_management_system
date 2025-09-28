@@ -526,6 +526,11 @@ function createOrderCard(order) {
                   class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
             View Details
           </button>
+          <button onclick="downloadInvoice('${order.id}')" 
+                  class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm">
+            <i class="fas fa-download mr-1"></i>
+            Download Invoice
+          </button>
           ${order.status == 'delivered' ? `
             <button onclick="reorderItems('${order.id}')" 
                     class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm">
@@ -683,7 +688,135 @@ function showNotification(message, type = 'success', duration = 3000) {
   }, duration);
 }
 
+// Download invoice functionality
+function downloadInvoice(orderId) {
+  const order = orders.find(o => o.id == orderId);
+  if (!order) {
+    showNotification('Order not found', 'error');
+    return;
+  }
+  
+  try {
+    // Create invoice HTML
+    const invoiceHTML = generateInvoiceHTML(order);
+    
+    // Create a new window with the invoice
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(invoiceHTML);
+    printWindow.document.close();
+    
+    // Wait for content to load then print
+    printWindow.onload = function() {
+      printWindow.print();
+    };
+    
+    showNotification('Invoice generated successfully', 'success');
+  } catch (error) {
+    console.error('Error generating invoice:', error);
+    showNotification('Failed to generate invoice', 'error');
+  }
+}
+
+// Generate invoice HTML
+function generateInvoiceHTML(order) {
+  const orderDate = new Date(order.order_date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+  
+  const customerName = order.customer ? 
+    `${order.customer.first_name} ${order.customer.last_name}` : 
+    `Customer ${order.customer_id}`;
+  
+  const customerEmail = order.customer ? order.customer.email : 'N/A';
+  const customerPhone = order.customer ? order.customer.phone_number : 'N/A';
+  
+  const shippingAddress = order.shippingAddress ? 
+    `${order.shippingAddress.address_line1}${order.shippingAddress.address_line2 ? ', ' + order.shippingAddress.address_line2 : ''}, ${order.shippingAddress.city}, ${order.shippingAddress.state} ${order.shippingAddress.zip_code}` : 
+    'No shipping address available';
+  
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Invoice - ${order.order_number || order.id}</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .invoice-title { font-size: 24px; font-weight: bold; color: #333; }
+        .invoice-details { margin-bottom: 30px; }
+        .customer-info, .order-info { margin-bottom: 20px; }
+        .items-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .items-table th, .items-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .items-table th { background-color: #f2f2f2; }
+        .total-section { text-align: right; margin-top: 20px; }
+        .total-amount { font-size: 18px; font-weight: bold; }
+        .footer { margin-top: 40px; text-align: center; color: #666; }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <div class="invoice-title">INVOICE</div>
+        <p>E-Pharmacy Management System</p>
+      </div>
+      
+      <div class="invoice-details">
+        <div class="customer-info">
+          <h3>Bill To:</h3>
+          <p><strong>Name:</strong> ${customerName}</p>
+          <p><strong>Email:</strong> ${customerEmail}</p>
+          <p><strong>Phone:</strong> ${customerPhone}</p>
+          <p><strong>Shipping Address:</strong> ${shippingAddress}</p>
+        </div>
+        
+        <div class="order-info">
+          <h3>Order Details:</h3>
+          <p><strong>Order Number:</strong> ${order.order_number || order.id}</p>
+          <p><strong>Order Date:</strong> ${orderDate}</p>
+          <p><strong>Payment Method:</strong> ${order.payment_method ? order.payment_method.toUpperCase() : 'N/A'}</p>
+          <p><strong>Status:</strong> ${order.status.toUpperCase()}</p>
+        </div>
+      </div>
+      
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>SKU</th>
+            <th>Quantity</th>
+            <th>Unit Price</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${order.items && order.items.length > 0 ? order.items.map(item => `
+            <tr>
+              <td>${item.product?.name || 'Unknown Product'}</td>
+              <td>${item.product?.sku || 'N/A'}</td>
+              <td>${item.quantity || 0}</td>
+              <td>₹${item.unit_price || 0}</td>
+              <td>₹${item.subtotal || (item.quantity * item.unit_price) || 0}</td>
+            </tr>
+          `).join('') : '<tr><td colspan="5">No items found</td></tr>'}
+        </tbody>
+      </table>
+      
+      <div class="total-section">
+        <p class="total-amount">Total Amount: ₹${order.total_amount ? order.total_amount.toFixed(2) : '0.00'}</p>
+      </div>
+      
+      <div class="footer">
+        <p>Thank you for your business!</p>
+        <p>Generated on ${new Date().toLocaleDateString()}</p>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
 // Make functions globally available
 window.switchTab = switchTab;
 window.viewOrderDetails = viewOrderDetails;
 window.reorderItems = reorderItems;
+window.downloadInvoice = downloadInvoice;

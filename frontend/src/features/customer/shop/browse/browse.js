@@ -45,6 +45,38 @@ function initPage() {
   fetchData();
 }
 
+// Handle URL parameters for category filtering
+function handleURLParameters() {
+  const categoryParam = getQueryParam('category');
+  if (categoryParam) {
+    console.log('Category parameter found:', categoryParam);
+    // Find the category by name and apply filter
+    const category = categories.find(cat => 
+      cat.name.toLowerCase() === decodeURIComponent(categoryParam).toLowerCase()
+    );
+    
+    if (category) {
+      console.log('Found category:', category);
+      // Set the filter state
+      filterState.selectedCategories = [category.category_id];
+      
+      // Update the UI checkboxes
+      const desktopCheckbox = document.getElementById(`category-${category.category_id}`);
+      const mobileCheckbox = document.getElementById(`mobile-category-${category.category_id}`);
+      
+      if (desktopCheckbox) {
+        desktopCheckbox.checked = true;
+      }
+      if (mobileCheckbox) {
+        mobileCheckbox.checked = true;
+      }
+      
+      // Apply the filter
+      applyFilters();
+    }
+  }
+}
+
 // Load components
 document.addEventListener('DOMContentLoaded', function () {
   loadComponent("header", "/frontend/src/core/components/navbar.html");
@@ -59,9 +91,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const itemsPerPage = 10;
   let currentPage = 1;
   
-  // Featured Products Carousel Variables
-  let currentFeaturedIndex = 0;
-  let carouselInterval;
+  // HS Carousel will handle the carousel functionality
   
   // Filter state
   let filterState = {
@@ -212,70 +242,86 @@ document.addEventListener('DOMContentLoaded', function () {
     renderProducts(currentPage);
   }
   
+  // Carousel state
+  let currentSlide = 0;
+  let carouselInterval;
+  
   // Render featured products
   function renderFeaturedProducts() {
-    const container = document.getElementById("featured-products");
-    if (!container) return;
+    const carouselWrapper = document.querySelector("#featured-carousel .relative.h-64");
+    const indicatorsContainer = document.getElementById("carousel-indicators");
     
-    container.innerHTML = "";
+    if (!carouselWrapper || !indicatorsContainer) return;
+    
+    carouselWrapper.innerHTML = "";
+    indicatorsContainer.innerHTML = "";
   
     if (featuredProducts.length === 0) {
-        container.innerHTML = "<p class='text-gray-500 col-span-full'>No featured products available.</p>";
+        carouselWrapper.innerHTML = `
+          <div class="flex items-center justify-center h-full">
+            <p class="text-gray-500 text-lg">No featured products available.</p>
+          </div>
+        `;
         return;
     }
   
+    // Create carousel slides
     featuredProducts.forEach((product, index) => {
-        const card = document.createElement("div");
-        card.className = "featured-product-card flex-shrink-0 bg-white rounded-lg overflow-hidden shadow-sm relative border border-[#A1E970]";
-        card.style.width = 'calc(20% - 16px)'; // 5 items per view with gap
-        card.style.marginRight = '16px';
-
-        card.innerHTML = `
-            <!-- Prescription Badge -->
-            ${
-              product.requires_prescription
-              ? `<span class="absolute top-1 right-1 bg-red-500 text-white text-sm px-1.5 py-0.5 rounded text-center">
-                  Rx
-              </span>`
-              : ""
-            }
-
-            <!-- Stock Status -->
-            ${
-              !product.inStock
-              ? `<span class="absolute top-1 left-1 bg-gray-500 text-white text-sm px-1.5 py-0.5 rounded text-center">
-                  Out
-              </span>`
-              : ""
-            }
-  
-            <a href="../../shop/product/product.html?id=${product.id}">
-                <div class="p-4 flex justify-center items-center">
-                    ${product.image_url ? 
-                      `<img src="${product.image_url}" alt="${product.name}" class="h-32 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                       <div class="placeholder-icon" style="display: none;"><i class="fas fa-pills text-gray-400 text-4xl"></i></div>` :
-                      `<div class="placeholder-icon"><i class="fas fa-pills text-gray-400 text-4xl"></i></div>`
-                    }
+        const slide = document.createElement("div");
+        slide.className = index === 0 ? "flex items-center justify-center duration-700 ease-in-out" : "hidden duration-700 ease-in-out";
+        slide.setAttribute("data-carousel-item", "");
+        
+        const discountedPrice = product.price - ((product.discount/100) * product.price);
+        
+        slide.innerHTML = `
+            <div class="w-full h-full flex items-center justify-center p-4">
+                <div class="bg-white rounded-xl shadow-lg p-4 w-full max-w-sm relative">
+                    <!-- Prescription Badge -->
+                    ${product.requires_prescription ? 
+                      `<span class="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full z-10">Rx</span>` 
+                      : ""}
+                    
+                    <!-- Stock Status -->
+                    ${!product.inStock ? 
+                      `<span class="absolute top-2 left-2 bg-gray-500 text-white text-xs px-2 py-1 rounded-full z-10">Out of Stock</span>` 
+                      : ""}
+                    
+                    <div class="flex flex-col items-center text-center pt-2">
+                        <div class="mb-3 w-20 h-20 flex items-center justify-center bg-gray-100 rounded-lg mx-auto">
+                            ${product.image_url ? 
+                              `<img src="${product.image_url}" alt="${product.name}" class="w-full h-full object-contain rounded-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                               <div class="placeholder-icon hidden w-full h-full flex items-center justify-center"><i class="fas fa-pills text-gray-400 text-2xl"></i></div>` :
+                              `<div class="placeholder-icon w-full h-full flex items-center justify-center"><i class="fas fa-pills text-gray-400 text-2xl"></i></div>`
+                            }
+                        </div>
+                        
+                        <h3 class="text-base font-bold mb-2 text-gray-800 leading-tight">
+                            <a href="../../shop/product/product.html?id=${product.id}" class="hover:text-blue-600">${product.name}</a>
+                        </h3>
+                        
+                        <p class="text-gray-600 mb-3 text-xs leading-relaxed">${product.composition || 'No description available'}</p>
+                        
+                        <div class="flex flex-col items-center gap-1 mb-3">
+                            <span class="text-lg font-bold text-green-600">Rs ${discountedPrice.toFixed(2)}</span>
+                            ${product.discount > 0 ? 
+                              `<span class="text-xs text-gray-500 line-through">Rs ${product.price.toFixed(2)}</span>` 
+                              : ""}
+                        </div>
+                        
+                        <button class="bg-[#A1E970] text-black font-semibold py-2 px-4 rounded-lg hover:bg-[#90D660] transition-colors add-to-cart-btn text-sm w-full ${!product.inStock ? 'opacity-50 cursor-not-allowed' : ''}" 
+                          data-id="${product.id}" ${!product.inStock ? 'disabled' : ''}>
+                            ${!product.inStock ? 'Out of Stock' : 'Add to Cart'}
+                        </button>
+                    </div>
                 </div>
-            </a>
-            <div class="p-4">
-                <h3 class="font-semibold text-m">
-                    <a href="../../shop/product/product.html?id=${product.id}">${product.name}</a>
-                </h3>
-                <p class="text-m text-gray-500 truncate">${product.composition || 'No description available'}</p>
-                <p class="font-semibold mt-2 text-sm">Rs ${(product.price-((product.discount/100)*product.price)) ? (product.price-((product.discount/100)*product.price)).toFixed(2) : '0.00'}</p>
-                <button class="w-full bg-[#A1E970] bg-opacity-90 text-black font-semibold py-2 rounded-lg mt-4 hover:bg-[#A1E970] add-to-cart-btn text-sm ${!product.inStock ? 'opacity-50 cursor-not-allowed' : ''}" 
-                  data-id="${product.id}" ${!product.inStock ? 'disabled' : ''}>
-                    ${!product.inStock ? 'Out of Stock' : 'Add to cart'}
-                </button>
             </div>
         `;
   
-        container.appendChild(card);
+        carouselWrapper.appendChild(slide);
   
         // Attach event if product is in stock
         if (product.inStock) {
-          const addButton = card.querySelector(".add-to-cart-btn");
+          const addButton = slide.querySelector(".add-to-cart-btn");
           if (addButton) {
             addButton.addEventListener("click", function(e) {
               e.stopPropagation();
@@ -283,86 +329,110 @@ document.addEventListener('DOMContentLoaded', function () {
             });
           }
         }
+        
+        // Create indicator
+        const indicator = document.createElement("button");
+        indicator.type = "button";
+        indicator.className = index === 0 ? "w-3 h-3 rounded-full bg-blue-600" : "w-3 h-3 rounded-full bg-gray-300 hover:bg-gray-400";
+        indicator.setAttribute("aria-current", index === 0 ? "true" : "false");
+        indicator.setAttribute("aria-label", `Slide ${index + 1}`);
+        indicator.setAttribute("data-carousel-slide-to", index);
+        indicator.addEventListener("click", () => goToSlide(index));
+        
+        indicatorsContainer.appendChild(indicator);
     });
 
-    // Setup carousel after rendering
-    setTimeout(() => {
-      setupFeaturedCarousel();
-    }, 100);
+    // Initialize carousel
+    initializeCarousel();
   }
-
-  // Setup featured products carousel
-  function setupFeaturedCarousel() {
+  
+  // Initialize carousel functionality
+  function initializeCarousel() {
+    const slides = document.querySelectorAll('[data-carousel-item]');
+    const indicators = document.querySelectorAll('[data-carousel-slide-to]');
+    const prevButton = document.querySelector('[data-carousel-prev]');
+    const nextButton = document.querySelector('[data-carousel-next]');
+    const carousel = document.getElementById('featured-carousel');
+    
+    if (slides.length === 0) return;
+    
     // Clear existing interval
     if (carouselInterval) {
       clearInterval(carouselInterval);
     }
     
-    const prevBtn = document.getElementById('browse-featured-prev');
-    const nextBtn = document.getElementById('browse-featured-next');
-    const container = document.getElementById('featured-products');
-    
-    if (!prevBtn || !nextBtn || !container) {
-      console.log('Carousel elements not found, retrying in 500ms...');
-      setTimeout(setupFeaturedCarousel, 500);
-      return;
-    }
-
-    const totalProducts = featuredProducts.length;
-    const itemsPerView = Math.min(5, totalProducts); // Max 5 items per view
-    const maxIndex = Math.max(0, totalProducts - itemsPerView);
-    
-    // Reset index if it's beyond the new max
-    if (currentFeaturedIndex > maxIndex) {
-      currentFeaturedIndex = 0;
-    }
-
-    function updateCarousel() {
-      const card = container.querySelector('.featured-product-card');
-      const cardWidth = card ? card.offsetWidth + 16 : 216; // Default width + margin
-      const translateX = -(currentFeaturedIndex * cardWidth);
-      container.style.transform = `translateX(${translateX}px)`;
-    }
-
-    // Initialize carousel position
-    updateCarousel();
-
-    prevBtn.onclick = () => {
-      if (currentFeaturedIndex > 0) {
-        currentFeaturedIndex--;
-        updateCarousel();
-      } else if (totalProducts > itemsPerView) {
-        // Loop to the end
-        currentFeaturedIndex = maxIndex;
-        updateCarousel();
-      }
-    };
-
-    nextBtn.onclick = () => {
-      if (currentFeaturedIndex < maxIndex) {
-        currentFeaturedIndex++;
-        updateCarousel();
-      } else if (totalProducts > itemsPerView) {
-        // Loop to the beginning
-        currentFeaturedIndex = 0;
-        updateCarousel();
-      }
-    };
-
-    // Auto-advance carousel every 6 seconds only if there are more than 5 products
-    if (totalProducts > itemsPerView) {
+    // Auto-play functionality
+    function startAutoplay() {
       carouselInterval = setInterval(() => {
-        if (currentFeaturedIndex < maxIndex) {
-          currentFeaturedIndex++;
-        } else {
-          currentFeaturedIndex = 0;
-        }
+        currentSlide = (currentSlide + 1) % slides.length;
         updateCarousel();
-      }, 6000);
+      }, 4000); // 4 seconds interval
     }
     
-    console.log('Carousel initialized successfully');
+    // Stop autoplay
+    function stopAutoplay() {
+      if (carouselInterval) {
+        clearInterval(carouselInterval);
+      }
+    }
+    
+    // Update carousel display
+    function updateCarousel() {
+      slides.forEach((slide, index) => {
+        if (index === currentSlide) {
+          slide.classList.remove('hidden');
+          slide.classList.add('flex', 'items-center', 'justify-center');
+        } else {
+          slide.classList.add('hidden');
+          slide.classList.remove('flex', 'items-center', 'justify-center');
+        }
+      });
+      
+      indicators.forEach((indicator, index) => {
+        indicator.classList.toggle('bg-blue-600', index === currentSlide);
+        indicator.classList.toggle('bg-gray-300', index !== currentSlide);
+        indicator.setAttribute('aria-current', index === currentSlide ? 'true' : 'false');
+      });
+    }
+    
+    // Go to specific slide
+    window.goToSlide = function(index) {
+      currentSlide = index;
+      updateCarousel();
+      stopAutoplay();
+      startAutoplay(); // Restart autoplay after manual navigation
+    };
+    
+    // Previous button
+    if (prevButton) {
+      prevButton.addEventListener('click', () => {
+        currentSlide = currentSlide === 0 ? slides.length - 1 : currentSlide - 1;
+        updateCarousel();
+        stopAutoplay();
+        startAutoplay();
+      });
+    }
+    
+    // Next button
+    if (nextButton) {
+      nextButton.addEventListener('click', () => {
+        currentSlide = (currentSlide + 1) % slides.length;
+        updateCarousel();
+        stopAutoplay();
+        startAutoplay();
+      });
+    }
+    
+    // Pause on hover
+    if (carousel) {
+      carousel.addEventListener('mouseenter', stopAutoplay);
+      carousel.addEventListener('mouseleave', startAutoplay);
+    }
+    
+    // Start autoplay
+    startAutoplay();
   }
+
   
   // Add product to cart
   async function addToCart(productId) {
@@ -608,7 +678,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       
       // Filter featured products (only 5)
-      featuredProducts = products.filter(product => product.featured_product === true).slice(0, 5);
+      featuredProducts = products.filter(product => product.featured_product === true);
       
       // Initialize filtered products
       filteredProducts = [...products];
@@ -623,6 +693,9 @@ document.addEventListener('DOMContentLoaded', function () {
       setupSearch();
       setupFilters();
       setupMobileFilters();
+      
+      // Handle URL parameters after data is loaded
+      handleURLParameters();
       
     } catch (err) {
       console.error("Error fetching data:", err);

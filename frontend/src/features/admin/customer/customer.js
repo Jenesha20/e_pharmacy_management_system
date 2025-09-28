@@ -284,6 +284,10 @@ let prescriptionsData = [];
 let filteredData = [];
 let currentPage = 1;
 const rowsPerPage = 10;
+let sortConfig = {
+    field: null,
+    direction: 'asc' // 'asc' or 'desc'
+};
 
 // Fetch data from API
 async function fetchData() {
@@ -361,13 +365,52 @@ function processCustomerData() {
     console.log('=== END PROCESSING CUSTOMER DATA ===');
 }
 
+// Sort data based on configuration
+function sortData(data) {
+    if (!sortConfig.field) return data;
+    
+    return [...data].sort((a, b) => {
+        let aValue, bValue;
+        
+        switch (sortConfig.field) {
+            case 'orders':
+                aValue = a.orderCount || 0;
+                bValue = b.orderCount || 0;
+                break;
+            default:
+                return 0;
+        }
+        
+        if (sortConfig.direction === 'asc') {
+            return aValue - bValue;
+        } else {
+            return bValue - aValue;
+        }
+    });
+}
+
+// Update sort icon based on current sort configuration
+function updateSortIcon() {
+    const sortIcon = document.getElementById("ordersSortIcon");
+    if (sortConfig.field === 'orders') {
+        sortIcon.textContent = sortConfig.direction === 'asc' ? '↑' : '↓';
+        sortIcon.className = "ml-1 text-xs text-blue-600 font-bold";
+    } else {
+        sortIcon.textContent = '⇅';
+        sortIcon.className = "ml-1 text-xs";
+    }
+}
+
 // Render customer table
 function renderTable(data) {
   const table = document.getElementById("customerTable");
   table.innerHTML = "";
 
+  // Apply sorting before pagination
+  const sortedData = sortData(data);
+  
   const start = (currentPage - 1) * rowsPerPage;
-  const paginatedData = data.slice(start, start + rowsPerPage);
+  const paginatedData = sortedData.slice(start, start + rowsPerPage);
 
   if (paginatedData.length == 0) {
       table.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-gray-500">No customers found</td></tr>`;
@@ -398,7 +441,8 @@ function renderTable(data) {
       table.insertAdjacentHTML("beforeend", row);
   });
 
-  renderPagination(data);
+  renderPagination(sortedData);
+  updateSortIcon();
 }
 
 // Populate location filter with unique city values
@@ -473,9 +517,24 @@ function applyFilters(searchTerm = "") {
       return matchesSearch && matchesLocation;
   });
   
+  // Preserve sorting when applying filters
   renderTable(filteredData);
   updateSummaryStats();
 }
+
+// Orders column sorting
+document.getElementById("ordersHeader").addEventListener("click", () => {
+  // Toggle sort direction or set to ascending if not currently sorting by orders
+  if (sortConfig.field === 'orders') {
+    sortConfig.direction = sortConfig.direction === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortConfig.field = 'orders';
+    sortConfig.direction = 'asc';
+  }
+  
+  currentPage = 1; // Reset to first page when sorting
+  renderTable(filteredData);
+});
 
 // Reset button
 document.getElementById("resetBtn").addEventListener("click", () => {
@@ -484,6 +543,11 @@ document.getElementById("resetBtn").addEventListener("click", () => {
 //   document.getElementById("statusFilter").value = "";
   filteredData = [...customersData];
   currentPage = 1;
+  
+  // Reset sorting
+  sortConfig.field = null;
+  sortConfig.direction = 'asc';
+  
   renderTable(filteredData);
   updateSummaryStats();
 });

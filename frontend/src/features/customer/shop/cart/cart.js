@@ -728,7 +728,6 @@ function renderOrderSummary(cartItems) {
 async function handlePrescriptionUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
-  const medicineId = 1; // use the ID selected from the panel
   //console.log('Uploading prescription for medicineId:', medicineI);
   const reader = new FileReader();
   reader.onload = async function (e) {
@@ -740,7 +739,7 @@ async function handlePrescriptionUpload(event) {
         image_url: e.target.result,
         status: null, // Set to null initially - will be pending only after verification request
         verified_by: null,
-        medicine_id:1,
+        medicine_id:selectid,
         verification_notes: null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()

@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadComponent("footer", "../../../../core/components/footer.html");
 
   // Carousel logic
-  const carousel = document.getElementById("carousel");
+  const carousel = document.getElementById("featured-carousel");
   if (!carousel) {
     console.error("Carousel element not found!");
     return;
@@ -276,12 +276,24 @@ function showNotification(message, type = 'info') {
     }, 300);
   }, 3000);
 }
-const slider = document.getElementById("testimonial-slider");
+// Testimonial slider functionality - will be initialized after testimonials are loaded
+function initializeTestimonialSlider() {
+  const slider = document.getElementById("testimonial-slider");
   const prevBtn = document.getElementById("prev");
   const nextBtn = document.getElementById("next");
 
+  if (!slider || !prevBtn || !nextBtn) {
+    console.log("Testimonial slider elements not found, skipping initialization");
+    return;
+  }
+
   let index = 0;
   const totalSlides = slider.children.length;
+
+  if (totalSlides === 0) {
+    console.log("No testimonial slides found");
+    return;
+  }
 
   function showSlide() {
     slider.style.transform = `translateX(-${index * 100}%)`;
@@ -302,18 +314,25 @@ const slider = document.getElementById("testimonial-slider");
     index = (index + 1) % totalSlides;
     showSlide();
   }, 5000);
+}
 
   // Featured Products Carousel
   let featuredProducts = [];
-  let currentFeaturedIndex = 0;
-  const itemsPerView = 5; // Number of products to show at once
+  let currentSlide = 0;
+  let carouselInterval;
 
   // Load featured products
   async function loadFeaturedProducts() {
     try {
-      const response = await fetch('../../../../core/api/db.json');
-      const data = await response.json();
-      featuredProducts = data.products.filter(product => product.featured_product === true);
+      const response = await fetch('http://localhost:3000/products');
+      const products = await response.json();
+      featuredProducts = products.filter(product => product.featured_product === true);
+      
+      // Limit to first 5 featured products for better UX
+      // featuredProducts = featuredProducts.slice(0, 5);
+      
+      console.log('Featured products found:', featuredProducts.length);
+      console.log('Featured products:', featuredProducts);
       
       if (featuredProducts.length === 0) {
         console.log('No featured products found');
@@ -321,99 +340,213 @@ const slider = document.getElementById("testimonial-slider");
       }
 
       renderFeaturedProducts();
-      setupFeaturedCarousel();
+      initializeCarousel();
     } catch (error) {
       console.error('Error loading featured products:', error);
     }
   }
 
-  // Render featured products
+  // Render featured products in carousel format
   function renderFeaturedProducts() {
-    const container = document.getElementById('featured-product');
-    if (!container) return;
-
-    container.innerHTML = '';
+    const carouselWrapper = document.querySelector("#featured-carousel .relative.h-64");
+    const indicatorsContainer = document.getElementById("carousel-indicators");
     
-    featuredProducts.forEach((product, index) => {
-      const productCard = createProductCard(product);
-      productCard.style.minWidth = '200px';
-      productCard.style.marginRight = '16px';
-      container.appendChild(productCard);
-    });
-  }
-
-  // Create product card
-  function createProductCard(product) {
-    const card = document.createElement('div');
-    card.className = 'bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300';
-    card.style.flex = '0 0 auto';
+    console.log('Carousel wrapper found:', carouselWrapper);
+    console.log('Indicators container found:', indicatorsContainer);
     
-    card.innerHTML = `
-      <div class="relative">
-        <img src="${product.image_url}" alt="${product.name}" class="w-full h-32 object-cover">
-        <div class="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs">
-          Featured
-        </div>
-      </div>
-      <div class="p-4">
-        <h4 class="font-semibold text-sm mb-2 line-clamp-2">${product.name}</h4>
-        <p class="text-gray-600 text-xs mb-2 line-clamp-2">${product.description}</p>
-        <div class="flex justify-between items-center">
-          <span class="text-green-600 font-bold">Rs ${product.price}</span>
-          <button onclick="handleAddToCart(${product.id})" class="bg-blue-500 text-white px-3 py-1 rounded text-xs hover:bg-blue-600 transition">
-            Add to Cart
-          </button>
-        </div>
-      </div>
-    `;
-    
-    return card;
-  }
-
-  // Setup featured products carousel
-  function setupFeaturedCarousel() {
-    const prevBtn = document.getElementById('featured-prev');
-    const nextBtn = document.getElementById('featured-next');
-    const container = document.getElementById('featured-product');
-    
-    if (!prevBtn || !nextBtn || !container) return;
-
-    const totalProducts = featuredProducts.length;
-    const maxIndex = Math.max(0, totalProducts - itemsPerView);
-
-    function updateCarousel() {
-      const translateX = -(currentFeaturedIndex * (200 + 16)); // 200px card width + 16px margin
-      container.style.transform = `translateX(${translateX}px)`;
+    if (!carouselWrapper || !indicatorsContainer) {
+      console.error('Carousel elements not found!');
+      return;
     }
-
-    prevBtn.addEventListener('click', () => {
-      if (currentFeaturedIndex > 0) {
-        currentFeaturedIndex--;
-        updateCarousel();
-      }
+    
+    carouselWrapper.innerHTML = "";
+    indicatorsContainer.innerHTML = "";
+  
+    if (featuredProducts.length === 0) {
+        carouselWrapper.innerHTML = `
+          <div class="flex items-center justify-center h-full">
+            <p class="text-gray-500 text-lg">No featured products available.</p>
+          </div>
+        `;
+        return;
+    }
+  
+    // Create carousel slides
+    featuredProducts.forEach((product, index) => {
+        const slide = document.createElement("div");
+        slide.className = index === 0 ? "flex items-center justify-center duration-700 ease-in-out" : "hidden duration-700 ease-in-out";
+        slide.setAttribute("data-carousel-item", "");
+        
+        const discountedPrice = product.price - ((product.discount/100) * product.price);
+        
+        slide.innerHTML = `
+            <div class="w-full h-full flex items-center justify-center p-4">
+                <div class="bg-white rounded-xl shadow-lg p-4 w-full max-w-sm relative">
+                    <!-- Prescription Badge -->
+                    ${product.requires_prescription ? 
+                      `<span class="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full z-10">Rx</span>` 
+                      : ""}
+                    
+                    <!-- Stock Status -->
+                    ${product.inStock === false ? 
+                      `<span class="absolute top-2 left-2 bg-gray-500 text-white text-xs px-2 py-1 rounded-full z-10">Out of Stock</span>` 
+                      : ""}
+                    
+                    <div class="flex flex-col items-center text-center pt-2">
+                        <div class="mb-3 w-20 h-20 flex items-center justify-center bg-gray-100 rounded-lg mx-auto">
+                            ${product.image_url ? 
+                              `<img src="${product.image_url}" alt="${product.name}" class="w-full h-full object-contain rounded-lg">` :
+                              `<div class="w-full h-full flex items-center justify-center"><i class="fas fa-pills text-gray-400 text-2xl"></i></div>`
+                            }
+                        </div>
+                        
+                        <h3 class="text-base font-bold mb-2 text-gray-800 leading-tight">
+                            <a href="../../shop/product/product.html?id=${product.id}" class="hover:text-blue-600">${product.name}</a>
+                        </h3>
+                        
+                        <p class="text-gray-600 mb-3 text-xs leading-relaxed">${product.composition || 'No description available'}</p>
+                        
+                        <div class="flex flex-col items-center gap-1 mb-3">
+                            <span class="text-lg font-bold text-green-600">Rs ${discountedPrice.toFixed(2)}</span>
+                            ${product.discount > 0 ? 
+                              `<span class="text-xs text-gray-500 line-through">Rs ${product.price.toFixed(2)}</span>` 
+                              : ""}
+                        </div>
+                        
+                        <button class="bg-green-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-700 hover:shadow-lg transform hover:scale-105 transition-all duration-300 add-to-cart-btn text-sm w-full ${product.inStock === false ? 'opacity-50 cursor-not-allowed' : ''}" 
+                          data-id="${product.id}" ${product.inStock === false ? 'disabled' : ''}>
+                            <span class="flex items-center justify-center">
+                              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a1 1 0 01-1 1H9a1 1 0 01-1-1v-6m8 0V9a1 1 0 00-1-1H8a1 1 0 00-1 1v4.01"></path>
+                              </svg>
+                              ${product.inStock === false ? 'Out of Stock' : 'Add to Cart'}
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+  
+        carouselWrapper.appendChild(slide);
+  
+        // Attach event if product is in stock
+        if (product.inStock !== false) {
+          const addButton = slide.querySelector(".add-to-cart-btn");
+          if (addButton) {
+            addButton.addEventListener("click", function(e) {
+              e.stopPropagation();
+              handleAddToCart(this.getAttribute("data-id"));
+            });
+          }
+        }
+        
+        // Create indicator
+        const indicator = document.createElement("button");
+        indicator.type = "button";
+        indicator.className = index === 0 ? "w-3 h-3 rounded-full bg-blue-600" : "w-3 h-3 rounded-full bg-gray-300 hover:bg-gray-400";
+        indicator.setAttribute("aria-current", index === 0 ? "true" : "false");
+        indicator.setAttribute("aria-label", `Slide ${index + 1}`);
+        indicator.setAttribute("data-carousel-slide-to", index);
+        indicator.addEventListener("click", () => goToSlide(index));
+        
+        indicatorsContainer.appendChild(indicator);
     });
+  }
 
-    nextBtn.addEventListener('click', () => {
-      if (currentFeaturedIndex < maxIndex) {
-        currentFeaturedIndex++;
+  // Initialize carousel functionality
+  function initializeCarousel() {
+    const slides = document.querySelectorAll('[data-carousel-item]');
+    const indicators = document.querySelectorAll('[data-carousel-slide-to]');
+    const prevButton = document.querySelector('[data-carousel-prev]');
+    const nextButton = document.querySelector('[data-carousel-next]');
+    const carousel = document.getElementById('featured-carousel');
+    
+    if (slides.length === 0) return;
+    
+    // Clear existing interval
+    if (carouselInterval) {
+      clearInterval(carouselInterval);
+    }
+    
+    // Auto-play functionality
+    function startAutoplay() {
+      carouselInterval = setInterval(() => {
+        currentSlide = (currentSlide + 1) % slides.length;
         updateCarousel();
+      }, 4000); // 4 seconds interval
+    }
+    
+    // Stop autoplay
+    function stopAutoplay() {
+      if (carouselInterval) {
+        clearInterval(carouselInterval);
       }
-    });
-
-    // Auto-advance carousel every 6 seconds
-    setInterval(() => {
-      if (currentFeaturedIndex < maxIndex) {
-        currentFeaturedIndex++;
+    }
+    
+    // Update carousel display
+    function updateCarousel() {
+      slides.forEach((slide, index) => {
+        if (index === currentSlide) {
+          slide.classList.remove('hidden');
+          slide.classList.add('flex', 'items-center', 'justify-center');
+        } else {
+          slide.classList.add('hidden');
+          slide.classList.remove('flex', 'items-center', 'justify-center');
+        }
+      });
+      
+      indicators.forEach((indicator, index) => {
+        indicator.classList.toggle('bg-blue-600', index === currentSlide);
+        indicator.classList.toggle('bg-gray-300', index !== currentSlide);
+        indicator.setAttribute('aria-current', index === currentSlide ? 'true' : 'false');
+      });
+    }
+    
+    // Go to specific slide
+    window.goToSlide = function(index) {
+      currentSlide = index;
+      updateCarousel();
+      stopAutoplay();
+      startAutoplay(); // Restart autoplay after manual navigation
+    };
+    
+    // Previous button
+    if (prevButton) {
+      prevButton.addEventListener('click', () => {
+        currentSlide = currentSlide === 0 ? slides.length - 1 : currentSlide - 1;
         updateCarousel();
-      } else {
-        currentFeaturedIndex = 0;
+        stopAutoplay();
+        startAutoplay();
+      });
+    }
+    
+    // Next button
+    if (nextButton) {
+      nextButton.addEventListener('click', () => {
+        currentSlide = (currentSlide + 1) % slides.length;
         updateCarousel();
-      }
-    }, 6000);
+        stopAutoplay();
+        startAutoplay();
+      });
+    }
+    
+    // Pause on hover
+    if (carousel) {
+      carousel.addEventListener('mouseenter', stopAutoplay);
+      carousel.addEventListener('mouseleave', startAutoplay);
+    }
+    
+    // Start autoplay
+    startAutoplay();
   }
 
   // Load featured products when page loads
-  loadFeaturedProducts();
+  // Wait for DOM to be fully loaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadFeaturedProducts);
+  } else {
+    loadFeaturedProducts();
+  }
   // function openBlog(type) {
   //   const modal = document.getElementById("blog-modal");
   //   const title = document.getElementById("blog-title");
@@ -438,3 +571,4 @@ const slider = document.getElementById("testimonial-slider");
 window.handleAddToCart = handleAddToCart;
 window.closeLoginRequiredModal = closeLoginRequiredModal;
 window.goToLogin = goToLogin;
+window.initializeTestimonialSlider = initializeTestimonialSlider;
