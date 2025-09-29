@@ -25,6 +25,7 @@ A modern, feature-based **E-Pharmacy Management System** built with **HTML,JavaS
 ## 🛠️ Technology Stack
 
 * **Frontend**: HTML5, CSS3, JavaScript (ES6+), Tailwind CSS
+* **Storage**: JSON Server
 * **Architecture**: Feature-based modular structure
 * **Styling**: Global + feature-specific CSS
 * **Utilities**: Modular helper functions for API calls, authentication, and validation
@@ -80,14 +81,23 @@ frontend/
 2. **Open the landing page**
 
    ```bash
-   open src/frontend/customer/home/landing/landing.html  -> Customer
+   open frontend/src/customer/home/landing/landing.html  -> Customer
    ```
 
    ```bash
-   open src/frontend/admin/dashboard/dashboard.html     -> Admin
+   open frontend/src/admin/dashboard/dashboard.html     -> Admin
+   ```
+3. **Storage Class**
+
+   ```bash
+   open frontend/src/core/api  
    ```
 
-3. Start managing medicines, prescriptions, and customers! 🎉
+   ```bash
+   json-server --watch db.json --port 3000
+   ```
+
+4. Start managing medicines, prescriptions, and customers! 🎉
 
 ---
 
@@ -107,6 +117,19 @@ frontend/
   * Verify prescriptions before dispatch
   * Generate sales & financial reports
   * Configure system settings
+
+---
+
+## 🎯 Credentials
+* **Customer Side**
+
+  * email -> jeneshamalars.22aid@kongu.edu
+  * password -> jene@2011
+
+* **Admin Side**
+
+  * email -> jeneshamalar@gmail.com
+  * password -> jene@2011
 
 ---
 
